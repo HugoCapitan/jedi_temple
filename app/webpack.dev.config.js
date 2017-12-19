@@ -2,6 +2,9 @@ const path = require('path')
 const webpack = require('webpack')
 
 module.exports = {
+  resolve: {
+    extensions: ['*', '.js', '.jsx']
+  },
   entry: [
     'webpack-hot-middleware/client', 
     path.resolve(__dirname, 'src', 'index.jsx')
@@ -15,7 +18,7 @@ module.exports = {
   module: {
     rules: [{
       test: /\.(js|jsx)?$/,
-      exclude: /node_modules/,
+      exclude: [/node_modules/, path.resolve(__dirname, 'src', 'index.jsx')],
       use: [{
         loader: 'babel-loader',
         options: {
