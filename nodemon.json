@@ -1,0 +1,8 @@
+{
+  "execMap": {
+    "js": "node index.js"
+  },
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
