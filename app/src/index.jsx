@@ -8,7 +8,7 @@ ReactDOM.render(
 )
 
 if (module.hot) {
-  module.hot.accept(App, () => {
+  module.hot.accept('./components/App', () => {
     ReactDOM.render(
       App,
       document.getElementById('root')
