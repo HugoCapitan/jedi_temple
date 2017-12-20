@@ -17,13 +17,13 @@ module.exports = {
   devtool: 'cheap-module-source-map',
   module: {
     rules: [{
-      test: /\.(js|jsx)?$/,
-      exclude: [/node_modules/, path.resolve(__dirname, 'src', 'index.jsx')],
+      test: /\.(js|jsx)$/,
+      exclude: /node_modules/,
       use: [{
         loader: 'babel-loader',
-        options: {
+        query: {
           presets: [
-            'env',
+            ['env', {loose: true, modules: false}],
             'react',
             'react-hmre'
           ],
