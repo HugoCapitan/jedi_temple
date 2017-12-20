@@ -2,7 +2,7 @@ import React from 'react'
 
 const App = () => (
   <div>
-    <p>Ho!</p>
+    <p>Hello!</p>
   </div>
 )
 

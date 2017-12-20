@@ -9,8 +9,10 @@ render(
 )
 
 if (module.hot) {
-  module.hot.accept(App, () => {
-    <App />,
-    document.getElementById('root')
+  module.hot.accept('./components/App', () => {
+    render(
+      <App />,
+      document.getElementById('root')
+    )
   })
 }
