@@ -1,3 +1,9 @@
-const greating = 'Hello'
+import React from 'react'
 
-export default greating
+const App = () => (
+  <div>
+    <p>Hello</p>
+  </div>
+)
+
+export default App
