@@ -5,6 +5,11 @@ const environment = process.env.NODE_ENV
 const port = (environment === 'production') ? 80 : 3000
 const server = express()
 
+const api = require('./app/api')
+
+api(server)
+
+// Setup webpack hot middleware
 if (environment === 'development') {
   const webpack = require('webpack')
   const webpackDevMiddleware = require('webpack-dev-middleware')

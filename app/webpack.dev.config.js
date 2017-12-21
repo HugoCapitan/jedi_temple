@@ -7,7 +7,7 @@ module.exports = {
   },
   entry: [
     'webpack-hot-middleware/client', 
-    path.resolve(__dirname, 'src', 'index.jsx')
+    path.resolve(__dirname, 'web', 'index.jsx')
   ],
   output: {
     path: path.resolve(__dirname, '../dist/js'),
