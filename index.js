@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 
 const environment = process.env.NODE_ENV
-const port = (environment === 'production') ? 80 : 3000
+const port = (environment === 'production') ? 80 : 8080
 const server = express()
 
 const api = require('./app/api')
