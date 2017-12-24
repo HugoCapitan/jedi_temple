@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const utils = require('../utils')
+const slugify = utils.slugify
+
 const HMMaterialSchema = new Schema({
   name: {
     type: String,
@@ -9,7 +12,6 @@ const HMMaterialSchema = new Schema({
   },
   slug: {
     type: String,
-    required: true,
     unique: true
   },
   price: {
@@ -19,23 +21,31 @@ const HMMaterialSchema = new Schema({
 })
 
 const HMProductSchema = new Schema({
-  Name: {
+  name: {
     type: String,
     required: true,
     unique: true
   },
   slug: {
     type: String,
-    required: true,
     unique: true
   },
   materials: {
-    type: []
-  }
+    type: [HMMaterialSchema]
+  },
+  created_at: Date,
+  updated_at: Date
 })
 
-HMProductSchema.pre('save', () => {
-  
+HMProductSchema.pre('save', (next) => {
+  const currentDate = new Date
+
+  this.updated_at = currentDate
+  if (!this.created_at) this.created_at = currentDate
+
+  this.slug = slugify(this.name)
+
+  next()
 })
 
 const HMProduct = mongoose.model('HMProduct', HMProductSchema)
