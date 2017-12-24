@@ -1,24 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const utils = require('../utils')
-const slugify = utils.slugify
-
-const HMMaterialSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  slug: {
-    type: String,
-    unique: true
-  },
-  price: {
-    type: Number,
-    required: true
-  }
-})
+const slugify = require('../utils').slugify
 
 const HMProductSchema = new Schema({
   name: {
@@ -29,9 +12,6 @@ const HMProductSchema = new Schema({
   slug: {
     type: String,
     unique: true
-  },
-  materials: {
-    type: [HMMaterialSchema]
   },
   created_at: Date,
   updated_at: Date
