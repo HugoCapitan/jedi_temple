@@ -1,9 +1,5 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
-// const { String, ObjectId } = ...Schema.Types
-
-const HMProduct = require('./HMProduct') 
-const HMMaterial = require('./HMMaterial')
 
 const ImageSchema = new Schema ({
   url: {
@@ -25,13 +21,13 @@ const HandmadeSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
     unique: true,
-    ref: HMProduct
+    ref: 'HMProduct'
   },
   materialID: {
     type: Schema.Types.ObjectId,
     required: true,
     unique: true,
-    ref: HMMaterial
+    ref: 'HMMaterial'
   }
 })
 
@@ -53,22 +49,11 @@ const ProductSchema = new Schema({
     type: String,
     required: false
   },
-  images: {
-    type: [ImageSchema],
-    required: false
-  },
-  handmade: {
-    type: HandmadeSchema,
-    required: false
-  },
-  created_at: {
-    type: Date,
-    required: true
-  },
-  updated_at: {
-    type: Date,
-    required: true
-  }
+  images: [ImageSchema],
+  customs: mongoose.SchemaTypes.Mixed,
+  handmade: HandmadeSchema,
+  created_at: Date,
+  updated_at: Date
 })
 
 Product.prependListener('save', () => {
