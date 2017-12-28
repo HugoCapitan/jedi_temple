@@ -1,12 +1,11 @@
 const HMProduct = require('../HMProduct')
-const HMMaterial = require('../HMMaterial')
 
 describe('HMProduct Model', () => {
   let correctHMProduct
 
   beforeEach(() => { setupTest() })
 
-  test('Should be invalid if empty: name, materials name, materials price', () => {
+  test('Should be invalid if empty: name', () => {
     const m = new HMProduct({})
     const v = m.validateSync()
 
