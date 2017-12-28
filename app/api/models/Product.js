@@ -1,16 +1,13 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 
-const ImageSchema = new Schema ({
-  url: {
-    type: String,
-    required: true
+const CustomSchema = new Schema({
+  custom_id: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    unique: true
   },
-  position_x: {
-    type: String,
-    required: true
-  },
-  position_y: {
+  value: {
     type: String,
     required: true
   }
@@ -31,6 +28,21 @@ const HandmadeSchema = new Schema({
   }
 })
 
+const ImageSchema = new Schema ({
+  url: {
+    type: String,
+    required: true
+  },
+  x: {
+    type: String,
+    required: true
+  },
+  y: {
+    type: String,
+    required: true
+  }
+})
+
 const ProductSchema = new Schema({
   name: {
     type: String,
@@ -45,18 +57,15 @@ const ProductSchema = new Schema({
     type: Number,
     required: true
   },
-  description: {
-    type: String,
-    required: false
-  },
+  description: String,
   images: [ImageSchema],
-  customs: mongoose.SchemaTypes.Mixed,
+  customs: [CustomSchema],
   handmade: HandmadeSchema,
   created_at: Date,
   updated_at: Date
 })
 
-Product.prependListener('save', () => {
+ProductSchema.pre('save', () => {
 
 })
 
