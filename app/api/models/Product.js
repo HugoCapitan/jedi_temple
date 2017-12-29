@@ -13,20 +13,6 @@ const CustomSchema = new Schema({
   }
 })
 
-const HandmadeSchema = new Schema({
-  handmadeID: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    unique: true,
-    ref: 'HMProduct'
-  },
-  materialID: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    unique: true,
-    ref: 'HMMaterial'
-  }
-})
 
 const ImageSchema = new Schema ({
   url: {
@@ -46,8 +32,7 @@ const ImageSchema = new Schema ({
 const ProductSchema = new Schema({
   name: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   slug: {
     type: String,
@@ -60,13 +45,17 @@ const ProductSchema = new Schema({
   description: String,
   images: [ImageSchema],
   customs: [CustomSchema],
-  handmade: HandmadeSchema,
+  handmade_id: {
+    type: Schema.Types.ObjectId,
+    unique: false,
+    ref: 'HMMaterial'
+  },
   created_at: Date,
   updated_at: Date
 })
 
-ProductSchema.pre('save', () => {
-
+ProductSchema.pre('save', (next) => {
+  next()
 })
 
 const Product = mongoose.model('Product', ProductSchema)
