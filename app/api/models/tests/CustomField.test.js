@@ -1,4 +1,5 @@
 const CustomField = require('../CustomField')
+const howManyKeys = require('../../utils').howManyKeys
 
 describe('CustomField Model', () => {
   let correctNumberCustom, correctStringCustom
@@ -19,7 +20,7 @@ describe('CustomField Model', () => {
     const m = new CustomField({ })
     const v = m.validateSync()
 
-    expect(Object.keys(v['errors']).length).toBe(3)
+    expect(howManyKeys(v['errors'])).toBe(3)
 
     expect(v.errors.name).toBeTruthy()
     expect(v.errors.type).toBeTruthy()
@@ -30,7 +31,7 @@ describe('CustomField Model', () => {
     const m = new CustomField({ name: 'Some name', type: 'number', show: false })
     const v = m.validateSync()
 
-    expect(Object.keys(v['errors']).length).toBe(4)
+    expect(howManyKeys(v['errors'])).toBe(4)
 
     expect(v.errors.min).toBeTruthy()
     expect(v.errors.max).toBeTruthy()
@@ -50,7 +51,7 @@ describe('CustomField Model', () => {
     })
     const v = m.validateSync()
 
-    expect(Object.keys(v['errors']).length).toBe(3)
+    expect(howManyKeys(v['errors'])).toBe(3)
 
     expect(v.errors.min).toBeTruthy()
     expect(v.errors.max).toBeTruthy()
@@ -63,7 +64,7 @@ describe('CustomField Model', () => {
     const m = new CustomField(wrongMaxMinCF)
     const v = m.validateSync()
 
-    expect(Object.keys(v['errors']).length).toBe(2)
+    expect(howManyKeys(v['errors'])).toBe(2)
 
     expect(v.errors.min).toBeTruthy()
     expect(v.errors.max).toBeTruthy()
@@ -87,8 +88,8 @@ describe('CustomField Model', () => {
     const vv = mv.validateSync()
     const vs = ms.validateSync()
 
-    expect(Object.keys(vv['errors']).length).toBe(1)
-    expect(Object.keys(vs['errors']).length).toBe(1)
+    expect(howManyKeys(vv['errors'])).toBe(1)
+    expect(howManyKeys(vs['errors'])).toBe(1)
 
     expect(vv.errors.values).toBeTruthy()
     expect(vs.errors['values.0']).toBeTruthy()
