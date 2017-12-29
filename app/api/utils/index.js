@@ -7,4 +7,8 @@ const slugify = (name) => {
   });
 }
 
-module.exports = { slugify }
+const howManyKeys = (obj) => {
+  return Object.keys(obj).length
+}
+
+module.exports = { slugify, howManyKeys }
