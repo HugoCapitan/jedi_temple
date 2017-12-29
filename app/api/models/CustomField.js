@@ -18,32 +18,43 @@ const CustomFieldSchema = new Schema({
   type: {
     type: String,
     required: true,
-    validate: function (val) {
-      return isNumber(val) || isString(val);
+    validate(val) {
+      return val === 'number' || val === 'string'
     }
   },
   values: {
-    type: Array,
-    required: isString.bind(this)
+    type: [{
+      type: String,
+      validate(val) { return val != '' }
+    }],
+    required() { return saysString.call(this) },
+    validate(val) { return saysString.call(this) && val.length },
+    default: undefined
   },
   min: {
     type: String,
-    required: isNumber.bind(this)
+    required() { return saysNumber.call(this) },
+    validate(val) {
+      return saysNumber.call(this) && (isNumeric(val) || val === 'auto') && isMaxBigger(val, this.max)
+    }
   },
   max: {
     type: String,
-    required: isNumber.bind(this)
+    required() { return saysNumber.call(this) },
+    validate(val) { 
+      return saysNumber.call(this) && (isNumeric(val) || val === 'auto') && isMaxBigger(this.min, val)
+    } 
   },
   unit: {
     type: String,
-    required: isNumber.bind(this),
-    validate: isNumber.bind(this)
+    required() { return saysNumber.call(this) },
+    validate(val) { return saysNumber.call(this) }
   },
   unit_place: {
     type: String,
-    required: isNumber.bind(this),
+    required() { return saysNumber.call(this) },
     validate(val) {
-      return isNumber(this.type) && (val === 'before' || val === 'after')
+      return saysNumber.call(this) && (val === 'before' || val === 'after')
     }
   },
   created_at: Date,
@@ -58,14 +69,18 @@ const CustomField = mongoose.model('CustomField', CustomFieldSchema)
 
 module.exports = CustomField
 
-function isNumber(val) {
-  if (val) return val === 'number'
-  
+function isMaxBigger(min, max) {
+  return parseFloat(min) < parseFloat(max) || min === 'auto' || max === 'auto'
+}
+
+function saysNumber() {
   return this.type === 'number'
 }
 
-function isString(val) {
-  if (val) return val === 'string'
-  
+function saysString() {
   return this.type === 'string'
+}
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
 }
