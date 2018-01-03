@@ -27,44 +27,88 @@ describe('Normal Product Model', () => {
     const m = new Product(wrongProduct)
     const v = m.validateSync()
 
-    expect(howManyKeys(v['errors'])).toBe(2)
+    expect(howManyKeys(v.errors)).toBe(2)
 
     expect(v.errors.name).toBeTruthy()
     expect(v.errors.stock).toBeTruthy()
   })
 
   test('Should be invalid if no handmade and no description', () => {
+    const noDescription = Object.assign({}, correctProduct, {description: undefined})
 
+    const m = new Product(noDescription)
+    const v = m.validateSync()
+
+    expect(howManyKeys(v.errors)).toBe(1)
+    expect(v.errors.description).toBeTruthy()
   })
 
-  test('Should be invalid if no handmade and no custom for price', () => {
+  // test('Should be invalid if no handmade and no custom for price', () => {
+  //   const noPrice = Object.assign({}, correctProduct, { customs: [] })
 
-  })
+  //   const m = new Product(noPrice)
+  //   const v = m.validateSync()
+
+  //   expect(howManyKeys(v.errors)).toBe(1)
+  //   expect(v.errors.customs).toBeTruthy()
+  // })
 
   test('Should be invalid if Handmade and customs at same time', () => {
+    const hmAndCustoms = Object.assign({}, correctHandmadeProduct, correctProduct)
 
+    const m = new Product(hmAndCustoms)
+    const v = m.validateSync()
+
+    expect(howManyKeys(v.errors)).toBe(1)
+    expect(v.errors.customs).toBeTruthy()
   })
 
   test('Should be invalid if wrong images', () => {
+    const malformedImage = {
+      url: 999.99,
+      x: 50,
+      y: 50
+    }
+    const malformedProduct = Object.assign({}, correctProduct, { images: [malformedImage] })
 
+    const m = new Product(malformedProduct)
+    const v = m.validateSync()
+
+    expect(howManyKeys(v.errors)).toBe(3)
+    expect(v.errors['images.0.url']).toBeTruthy()
+    expect(v.errors['images.0.x']).toBeTruthy()
+    expect(v.errors['images.0.y']).toBeTruthy()
   })
 
   test('Should be invalid if wrong handmade', () => {
+    const wrongHandmadeProduct = Object.assign({}, correctHandmadeProduct, { handmade_id: 'anonexistingid' })
 
+    const m = new Product(wrongHandmadeProduct)
+    const v = m.validateSync()
+
+    console.log(v.errors)
+
+    expect(howManyKeys(v.errors)).toBe(3)
+    expect(v.errors.handmade_id).toBeTruthy()
+    expect(v.errors.description).toBeTruthy()
+    expect(v.errors.customs).toBeTruthy()
   })
 
   function setupTest() {
     correctCustom = new CustomField({
-      name: 'String CustomField',
+      name: 'Price',
       show: true,
-      type: 'string',
-      values: ['A value', 'Another Value']
+      type: 'number',
+      min: 'auto',
+      max: 'auto',
+      unit: 'US$ ',
+      unit_place: 'before'
     })
 
     correctImage = {
       url: 'someurl.com/image.png',
       x: '50%',
-      y: '20%'
+      y: '2px'
     }
 
     correctHMProduct = new HMProduct({
@@ -81,6 +125,7 @@ describe('Normal Product Model', () => {
       name: 'Some product',
       stock: '20',
       description: 'Some product description',
+      images: [correctImage],
       customs: [{
         custom_id: correctCustom._id,
         value: 'A value'

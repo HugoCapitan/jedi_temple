@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
+const HMMaterial = require('./HMMaterial')
 
 const CustomSchema = new Schema({
   custom_id: {
@@ -17,15 +18,18 @@ const CustomSchema = new Schema({
 const ImageSchema = new Schema ({
   url: {
     type: String,
-    required: true
+    required: true,
+    validate(val) { return hasValidFormat(val) }
   },
   x: {
     type: String,
-    required: true
+    required: true,
+    validate(val) { return hasValidUnits(val) }
   },
   y: {
     type: String,
-    required: true
+    required: true,
+    validate(val) { return hasValidUnits(val) }
   }
 })
 
@@ -42,12 +46,25 @@ const ProductSchema = new Schema({
     type: Number,
     required: true
   },
-  description: String,
+  description: {
+    type: String,
+    required() {
+      return !this.handmade
+    }
+  },
   images: [ImageSchema],
-  customs: [CustomSchema],
+  customs: {
+    type: [CustomSchema],
+    required() {
+      return !this.handmade_id
+    },
+    validate(val) {
+      return !this.handmade_id
+    }
+  },
   handmade_id: {
     type: Schema.Types.ObjectId,
-    unique: false,
+    unique: true,
     ref: 'HMMaterial'
   },
   created_at: Date,
@@ -61,3 +78,20 @@ ProductSchema.pre('save', (next) => {
 const Product = mongoose.model('Product', ProductSchema)
 
 module.exports = Product
+
+function hasValidUnits(val) {
+  const units = [val.substr(val.length - 1), val.substr(val.length - 2)]
+  const isValid = units.find((unit) => {
+    return unit === '%' || unit === 'px' || unit === 'pt'
+  })
+  return !!isValid
+}
+
+function hasValidFormat(val) {
+  const valFormat = val.split('.').pop()
+  const validFormats = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG']
+  const isValid = validFormats.find((format) => {
+    return format === valFormat
+  })
+  return !!isValid
+}
