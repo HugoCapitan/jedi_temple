@@ -86,8 +86,6 @@ describe('Normal Product Model', () => {
     const m = new Product(wrongHandmadeProduct)
     const v = m.validateSync()
 
-    console.log(v.errors)
-
     expect(howManyKeys(v.errors)).toBe(3)
     expect(v.errors.handmade_id).toBeTruthy()
     expect(v.errors.description).toBeTruthy()
