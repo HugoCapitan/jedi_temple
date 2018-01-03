@@ -2,36 +2,8 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 const HMMaterial = require('./HMMaterial')
 
-const CustomSchema = new Schema({
-  custom_id: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    unique: true
-  },
-  value: {
-    type: String,
-    required: true
-  }
-})
-
-
-const ImageSchema = new Schema ({
-  url: {
-    type: String,
-    required: true,
-    validate(val) { return hasValidFormat(val) }
-  },
-  x: {
-    type: String,
-    required: true,
-    validate(val) { return hasValidUnits(val) }
-  },
-  y: {
-    type: String,
-    required: true,
-    validate(val) { return hasValidUnits(val) }
-  }
-})
+const CustomSchema = require('./schemas/CustomSchema')
+const ImageSchema = require('./schemas/ImageSchema')
 
 const ProductSchema = new Schema({
   name: {
@@ -78,20 +50,3 @@ ProductSchema.pre('save', (next) => {
 const Product = mongoose.model('Product', ProductSchema)
 
 module.exports = Product
-
-function hasValidUnits(val) {
-  const units = [val.substr(val.length - 1), val.substr(val.length - 2)]
-  const isValid = units.find((unit) => {
-    return unit === '%' || unit === 'px' || unit === 'pt'
-  })
-  return !!isValid
-}
-
-function hasValidFormat(val) {
-  const valFormat = val.split('.').pop()
-  const validFormats = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG']
-  const isValid = validFormats.find((format) => {
-    return format === valFormat
-  })
-  return !!isValid
-}
