@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const { saysString, saysNumber, isNumeric, areMinMax } = require('../utils/validators')
 
 const CustomFieldSchema = new Schema({
   name: {
@@ -27,34 +28,34 @@ const CustomFieldSchema = new Schema({
       type: String,
       validate(val) { return val != '' }
     }],
-    required() { return saysString.call(this) },
-    validate(val) { return saysString.call(this) && val.length },
+    required() { return saysString(this.type) },
+    validate(val) { return saysString(this.type) && val.length },
     default: undefined
   },
   min: {
     type: String,
-    required() { return saysNumber.call(this) },
+    required() { return saysNumber(this.type) },
     validate(val) {
-      return saysNumber.call(this) && (isNumeric(val) || val === 'auto') && isMaxBigger(val, this.max)
+      return saysNumber(this.type) && (isNumeric(val) || val === 'auto') && areMinMax(val, this.max)
     }
   },
   max: {
     type: String,
-    required() { return saysNumber.call(this) },
+    required() { return saysNumber(this.type) },
     validate(val) { 
-      return saysNumber.call(this) && (isNumeric(val) || val === 'auto') && isMaxBigger(this.min, val)
+      return saysNumber(this.type) && (isNumeric(val) || val === 'auto') && areMinMax(this.min, val)
     } 
   },
   unit: {
     type: String,
-    required() { return saysNumber.call(this) },
-    validate(val) { return saysNumber.call(this) }
+    required() { return saysNumber(this.type) },
+    validate(val) { return saysNumber(this.type) }
   },
   unit_place: {
     type: String,
-    required() { return saysNumber.call(this) },
+    required() { return saysNumber(this.type) },
     validate(val) {
-      return saysNumber.call(this) && (val === 'before' || val === 'after')
+      return saysNumber(this.type) && (val === 'before' || val === 'after')
     }
   },
   created_at: Date,
@@ -68,19 +69,3 @@ CustomFieldSchema.pre('save', (next) => {
 const CustomField = mongoose.model('CustomField', CustomFieldSchema)
 
 module.exports = CustomField
-
-function isMaxBigger(min, max) {
-  return parseFloat(min) < parseFloat(max) || min === 'auto' || max === 'auto'
-}
-
-function saysNumber() {
-  return this.type === 'number'
-}
-
-function saysString() {
-  return this.type === 'string'
-}
-
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
