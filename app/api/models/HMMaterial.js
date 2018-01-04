@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const slugify = require('../utils').slugify
+const { slugify } = require('../utils')
 
 const HMMaterialSchema = new Schema({
   name: {
@@ -24,6 +24,15 @@ const HMMaterialSchema = new Schema({
 })
 
 HMMaterialSchema.pre('save', (next) => {
+  var currentDate = new Date()
+
+  this.updated_at = currentDate
+
+  if (!this.created_at) 
+    this.created_at = currentDate
+
+  this.slug = slugify(`${this.product}-${this.name}`)
+
   next()
 })
 

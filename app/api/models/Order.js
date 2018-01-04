@@ -4,6 +4,8 @@ const Schema = mongoose.Schema
 const AddressSchema = require('./schemas/AddressSchema')
 const OrderProductSchema = require('./schemas/OrderProductSchema')
 
+const { createOrdercode } = require('../utils/models')
+
 const OrderSchema = new Schema({
   email: {
     type: String,
@@ -46,8 +48,15 @@ const OrderSchema = new Schema({
 })
 
 OrderSchema.pre('save', (next) => {
-  
-  
+  var currentDate = new Date()
+
+  this.updated_at = currentDate
+
+  if (!this.created_at) 
+    this.created_at = currentDate
+
+  if (!this.order_code)
+    this.order_code = createOrdercode(currentDate)
 
   next()
 })

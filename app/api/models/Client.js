@@ -5,8 +5,15 @@ const AddressSchema = require('./schemas/AddressSchema')
 const WishProductSchema = require('./schemas/WishProductSchema')
 
 const ClientSchema = new Schema({
-  name: String,
-  mail: String,
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
   addresses: [AddressSchema],
   orders:[{
     type: Schema.Types.ObjectId,
@@ -18,6 +25,13 @@ const ClientSchema = new Schema({
 })
 
 ClientSchema.pre('save', (next) => {
+  var currentDate = new Date()
+
+  this.updated_at = currentDate
+
+  if (!this.created_at) 
+    this.created_at = currentDate
+
   next()
 })
 

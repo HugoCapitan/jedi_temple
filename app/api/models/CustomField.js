@@ -63,6 +63,13 @@ const CustomFieldSchema = new Schema({
 })
 
 CustomFieldSchema.pre('save', (next) => {
+  var currentDate = new Date()
+
+  this.updated_at = currentDate
+
+  if (!this.created_at) 
+    this.created_at = currentDate
+
   next()
 })
 
