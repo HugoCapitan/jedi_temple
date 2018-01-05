@@ -1,5 +1,7 @@
 const HMProduct = require('../HMProduct')
 
+const { getValidHMProduct } = require('../../utils/models')
+
 describe('HMProduct Model', () => {
   let correctHMProduct
 
@@ -20,8 +22,6 @@ describe('HMProduct Model', () => {
   })
 
   function setupTest() {
-    correctHMProduct = {
-      name: 'Bracelet'
-    }
+    correctHMProduct = getValidHMProduct()
   }
 })

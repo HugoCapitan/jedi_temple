@@ -2,6 +2,7 @@ const shortUniqueId = require('short-unique-id')
 const suid = new shortUniqueId()
 
 const CustomField = require('../models/CustomField')
+const HMProduct = require('../models/HMProduct')
 
 module.exports = {
   createOrdercode(date) {
@@ -9,6 +10,8 @@ module.exports = {
   },
   getValidAddress: getValidAddress,
   getValidFilter: getValidFilter,
+  getValidHMMatterial: getValidHMMatterial,
+  getValidHMProduct: getValidHMProduct,
   getValidNumberCustom: getValidNumberCustom,
   getValidStringCustom: getValidStringCustom
 }
@@ -32,6 +35,20 @@ function getValidFilter() {
   return {
     custom_id: validCustom._id
   }
+}
+
+function getValidHMMatterial() {
+  const validHMPRoduct = new HMProduct( getValidHMProduct() )
+  
+  return {
+    name: 'Gold',
+    price: 599.99,
+    product: validHMPRoduct._id
+  }
+}
+
+function getValidHMProduct() {
+  return { name: 'Bracelet' }
 }
 
 function getValidNumberCustom() {

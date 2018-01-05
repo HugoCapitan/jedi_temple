@@ -1,10 +1,10 @@
 const HMMaterial = require('../HMMaterial')
 const HMProduct = require('../HMProduct')
 
+const { getValidHMMaterial } = require('../../utils/models')
+
 describe('HMMaterial Model', () => {
-  let correctHMMaterial, 
-      correctHMProduct, 
-      p
+  let correctHMMaterial
 
   beforeEach(() => { setupTest() })
 
@@ -34,15 +34,6 @@ describe('HMMaterial Model', () => {
   })
 
   function setupTest () {
-    correctHMProduct = {
-      name: 'Bracelet'
-    }
-    p = new HMProduct(correctHMProduct)
-
-    correctHMMaterial = {
-      name: 'Gold',
-      price: 599.99,
-      product: p._id
-    }
+    correctHMMaterial = getValidHMMaterial()
   }
 })
