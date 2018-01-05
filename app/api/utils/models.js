@@ -13,6 +13,8 @@ module.exports = {
   getValidHMMatterial: getValidHMMatterial,
   getValidHMProduct: getValidHMProduct,
   getValidNumberCustom: getValidNumberCustom,
+  getValidProduct: getValidProduct,
+  getValidProductHandmade: getValidProductHandmade,
   getValidStringCustom: getValidStringCustom
 }
 
@@ -39,7 +41,7 @@ function getValidFilter() {
 
 function getValidHMMatterial() {
   const validHMPRoduct = new HMProduct( getValidHMProduct() )
-  
+
   return {
     name: 'Gold',
     price: 599.99,
@@ -61,6 +63,14 @@ function getValidNumberCustom() {
     unit: 'cm',
     unit_place: 'after'
   }
+}
+
+function getValidProduct() {
+
+}
+
+function getValidHandmadeProduct() {
+  
 }
 
 function getValidStringCustom() {
