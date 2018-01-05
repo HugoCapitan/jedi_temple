@@ -2,8 +2,10 @@ const CustomField = require('../CustomField')
 const Filter = require('../Filter')
 const howManyKeys = require('../../utils').howManyKeys
 
+const { getValidFilter } = require('../../utils/models')
+
 describe('Filter Model', () => {
-  let validFilter, validCustomField
+  let validFilter
   
   beforeEach(() => { setupTest() })
   
@@ -31,15 +33,6 @@ describe('Filter Model', () => {
   })
 
   function setupTest() {
-    validCustomField = new CustomField({
-      name: 'String CustomField',
-      show: true,
-      type: 'string',
-      values: ['A value', 'Another Value']
-    })
-
-    validFilter = {
-      custom_id: validCustomField._id
-    }
+    validFilter = getValidFilter()
   }
 })

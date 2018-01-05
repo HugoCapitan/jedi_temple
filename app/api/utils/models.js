@@ -1,11 +1,14 @@
 const shortUniqueId = require('short-unique-id')
 const suid = new shortUniqueId()
 
+const CustomField = require('../models/CustomField')
+
 module.exports = {
   createOrdercode(date) {
     return `${date.getDate}-${date.getMonth}-${date.getFullYear}-${suid.randomUUID(8)}`
   },
   getValidAddress: getValidAddress,
+  getValidFilter: getValidFilter,
   getValidNumberCustom: getValidNumberCustom,
   getValidStringCustom: getValidStringCustom
 }
@@ -20,6 +23,14 @@ function getValidAddress () {
     state: 'Who cares',
     country: 'PR',
     zip: '89231'
+  }
+}
+
+function getValidFilter() {
+  const validCustom = new CustomField( getValidStringCustom() )
+
+  return {
+    custom_id: validCustom._id
   }
 }
 
