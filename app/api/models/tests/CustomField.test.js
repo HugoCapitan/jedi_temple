@@ -1,14 +1,16 @@
 const CustomField = require('../CustomField')
 const howManyKeys = require('../../utils').howManyKeys
 
+const { getValidNumberCustom, getValidStringCustom } = require('../../utils/models')
+
 describe('CustomField Model', () => {
-  let correctNumberCustom, correctStringCustom
+  let validNumberCustom, validStringCustom
 
   beforeEach(() => { setupTest() })
 
   test('Should be fine', () => {
-    const mn = new CustomField(correctNumberCustom)
-    const ms = new CustomField(correctStringCustom)
+    const mn = new CustomField(validNumberCustom)
+    const ms = new CustomField(validStringCustom)
     const vn = mn.validateSync()
     const vs = ms.validateSync()
 
@@ -59,7 +61,7 @@ describe('CustomField Model', () => {
   })
 
   test('Number should be invalid if min > max', () => {
-    const wrongMaxMinCF = Object.assign(correctNumberCustom, { min: '500', max: '400' })
+    const wrongMaxMinCF = Object.assign(validNumberCustom, { min: '500', max: '400' })
     
     const m = new CustomField(wrongMaxMinCF)
     const v = m.validateSync()
@@ -71,7 +73,7 @@ describe('CustomField Model', () => {
   })
 
   test('Number should be valid if max > min', () => {
-    const wrongMaxMinCF = Object.assign(correctNumberCustom, { min: '-500', max: '-400' })
+    const wrongMaxMinCF = Object.assign(validNumberCustom, { min: '-500', max: '-400' })
     
     const m = new CustomField(wrongMaxMinCF)
     const v = m.validateSync()
@@ -80,8 +82,8 @@ describe('CustomField Model', () => {
   }) 
 
   test('String should be invalid if values empty or empty string as value', () => {
-    const emptyVals = Object.assign({}, correctStringCustom, { values: [] })
-    const emptyString = Object.assign({}, correctStringCustom, { values: [''] })
+    const emptyVals = Object.assign({}, validStringCustom, { values: [] })
+    const emptyString = Object.assign({}, validStringCustom, { values: [''] })
 
     const mv = new CustomField(emptyVals)
     const ms = new CustomField(emptyString)
@@ -96,20 +98,7 @@ describe('CustomField Model', () => {
   })
 
   function setupTest () {
-    correctNumberCustom = {
-      name: 'Number CustomField',
-      show: true,
-      type: 'number',
-      min: 'auto',
-      max: '500',
-      unit: 'cm',
-      unit_place: 'after'
-    }
-    correctStringCustom = {
-      name: 'String CustomField',
-      show: true,
-      type: 'string',
-      values: ['A value', 'Another Value']
-    }
+    validNumberCustom = getValidNumberCustom()
+    validStringCustom = getValidStringCustom()
   }
 })
