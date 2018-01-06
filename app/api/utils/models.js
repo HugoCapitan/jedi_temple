@@ -10,8 +10,8 @@ module.exports = {
   },
   getValidAddress: getValidAddress,
   getValidFilter: getValidFilter,
-  getValidHMMatterial: getValidHMMatterial,
   getValidHMProduct: getValidHMProduct,
+  getValidImage: getValidImage,
   getValidNumberCustom: getValidNumberCustom,
   getValidProduct: getValidProduct,
   getValidProductHandmade: getValidProductHandmade,
@@ -39,18 +39,16 @@ function getValidFilter() {
   }
 }
 
-function getValidHMMatterial() {
-  const validHMPRoduct = new HMProduct( getValidHMProduct() )
-
-  return {
-    name: 'Gold',
-    price: 599.99,
-    product: validHMPRoduct._id
-  }
-}
-
 function getValidHMProduct() {
   return { name: 'Bracelet' }
+}
+
+function getValidImage() {
+  return {
+    url: 'someurl.com/image.png',
+    x: '50%',
+    y: '2px'
+  }
 }
 
 function getValidNumberCustom() {
@@ -66,11 +64,22 @@ function getValidNumberCustom() {
 }
 
 function getValidProduct() {
+  const validCustom = new CustomField( getValidNumberCustom() )
 
+  return {
+    name: 'Some product',
+    stock: '20',
+    description: 'Some product description',
+    images: [ getValidImage() ],
+    customs: [{
+      custom_id: validCustom._id,
+      value: 'A value'
+    }]
+  }
 }
 
 function getValidHandmadeProduct() {
-  
+
 }
 
 function getValidStringCustom() {

@@ -3,6 +3,8 @@ const Schema = mongoose.Schema
 
 const { slugify } = require('../utils')
 
+const HandmadeMaterialSchema = require('./schemas/HandmadeMaterialSchema')
+
 const HMProductSchema = new Schema({
   name: {
     type: String,
@@ -13,6 +15,7 @@ const HMProductSchema = new Schema({
     type: String,
     unique: true
   },
+  materials: [HandmadeMaterialSchema],
   created_at: Date,
   updated_at: Date
 })

@@ -36,11 +36,6 @@ const ProductSchema = new Schema({
       return !this.handmade_id
     }
   },
-  handmade_id: {
-    type: Schema.Types.ObjectId,
-    unique: true,
-    ref: 'HMMaterial'
-  },
   created_at: Date,
   updated_at: Date
 })
