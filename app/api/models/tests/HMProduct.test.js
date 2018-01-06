@@ -7,19 +7,18 @@ describe('HMProduct Model', () => {
 
   beforeEach(() => { setupTest() })
 
-  test('Should be invalid if empty: name', () => {
-    const m = new HMProduct({})
-    const v = m.validateSync()
-
-    expect(v.errors['name']).toBeTruthy()
-  })
-
-  test('Should be fine', () => {
+  test('Should be valid', () => {
     const m = new HMProduct(correctHMProduct)
     const v = m.validateSync()
 
     expect(v).toBeFalsy()
   })
+
+  test('Should be invalid if empty name')
+
+  test('Should be invalid if product missing important customs: model, material')
+
+  test('Should be invalid if material missing price or name')
 
   function setupTest() {
     correctHMProduct = getValidHMProduct()

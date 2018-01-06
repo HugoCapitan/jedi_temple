@@ -40,7 +40,13 @@ function getValidFilter() {
 }
 
 function getValidHMProduct() {
-  return { name: 'Bracelet' }
+  const validProduct1 = new Product( 
+    Object.assign(getValidHMProduct, { name: '24K Gold Bracelet' } )
+  )
+  
+  return { 
+    name: 'Bracelet' 
+  }
 }
 
 function getValidImage() {
