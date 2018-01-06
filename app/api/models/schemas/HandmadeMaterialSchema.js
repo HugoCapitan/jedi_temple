@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const { Schema } = mongoose
 
 module.exports = new Schema({
-  material: {
+  material_name: {
     type: String,
     required: true,
     unique: true
