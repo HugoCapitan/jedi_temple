@@ -14,12 +14,20 @@ const ClientSchema = new Schema({
     required: true,
     unique: true
   },
+  password: {
+    type: String,
+    required: true,
+    set(val) {
+      // Encript
+      return val
+    }
+  },
   addresses: [AddressSchema],
   orders:[{
     type: Schema.Types.ObjectId,
     rel: 'Order'
   }],
-  wishlist: [WishedProductSchema],
+  wishlist: [WishProductSchema],
   created_at: Date,
   updated_at: Date
 })

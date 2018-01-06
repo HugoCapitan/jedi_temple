@@ -5,6 +5,16 @@ describe('Client model', () => {
 
   beforeEach(() => { setupTest() })
 
+  test('Should be valid')
+
+  test('Should be invalid if missing: name, email, password')
+
+  test('Should be invalid if malformed address')
+
+  test('Should be invalid if Wishlist Product id missing')
+  
+  test('Should be invalid if Wishlist Product Malformed')
+
   function setupTest() {
     validAddress = {
       name: 'Some Name',
