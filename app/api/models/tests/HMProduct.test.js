@@ -16,7 +16,7 @@ describe('HMProduct Model', () => {
 
   test('Should be invalid if empty name')
 
-  test('Should be invalid if product missing important customs: model, material')
+  test('Should be invalid if product missing required customs: model, material')
 
   test('Should be invalid if material missing price or name')
 

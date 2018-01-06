@@ -20,21 +20,9 @@ const ProductSchema = new Schema({
     type: Number,
     required: true
   },
-  description: {
-    type: String,
-    required() {
-      return !this.handmade
-    }
-  },
   images: [ImageSchema],
   customs: {
-    type: [CustomSchema],
-    required() {
-      return !this.handmade_id
-    },
-    validate(val) {
-      return !this.handmade_id
-    }
+    type: [CustomSchema]
   },
   created_at: Date,
   updated_at: Date

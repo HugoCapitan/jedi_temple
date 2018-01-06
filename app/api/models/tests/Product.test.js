@@ -5,12 +5,7 @@ const Product     = require('../Product')
 const howManyKeys = require('../../utils').howManyKeys
 
 describe('Normal Product Model', () => {
-  let correctCustom
-  let correctImage
-  let correctHMMaterial
-  let correctHMProduct
-  let correctProduct
-  let correctHandmadeProduct
+  let validProduct
 
   beforeEach(() => { setupTest() })
 
@@ -33,35 +28,6 @@ describe('Normal Product Model', () => {
     expect(v.errors.stock).toBeTruthy()
   })
 
-  test('Should be invalid if no handmade and no description', () => {
-    const noDescription = Object.assign({}, correctProduct, {description: undefined})
-
-    const m = new Product(noDescription)
-    const v = m.validateSync()
-
-    expect(howManyKeys(v.errors)).toBe(1)
-    expect(v.errors.description).toBeTruthy()
-  })
-
-  // test('Should be invalid if no handmade and no custom for price', () => {
-  //   const noPrice = Object.assign({}, correctProduct, { customs: [] })
-
-  //   const m = new Product(noPrice)
-  //   const v = m.validateSync()
-
-  //   expect(howManyKeys(v.errors)).toBe(1)
-  //   expect(v.errors.customs).toBeTruthy()
-  // })
-
-  test('Should be invalid if Handmade and customs at same time', () => {
-    const hmAndCustoms = Object.assign({}, correctHandmadeProduct, correctProduct)
-
-    const m = new Product(hmAndCustoms)
-    const v = m.validateSync()
-
-    expect(howManyKeys(v.errors)).toBe(1)
-    expect(v.errors.customs).toBeTruthy()
-  })
 
   test('Should be invalid if wrong images', () => {
     const malformedImage = {
@@ -80,17 +46,7 @@ describe('Normal Product Model', () => {
     expect(v.errors['images.0.y']).toBeTruthy()
   })
 
-  test('Should be invalid if wrong handmade', () => {
-    const wrongHandmadeProduct = Object.assign({}, correctHandmadeProduct, { handmade_id: 'anonexistingid' })
-
-    const m = new Product(wrongHandmadeProduct)
-    const v = m.validateSync()
-
-    expect(howManyKeys(v.errors)).toBe(3)
-    expect(v.errors.handmade_id).toBeTruthy()
-    expect(v.errors.description).toBeTruthy()
-    expect(v.errors.customs).toBeTruthy()
-  })
+  test('Should be invalid if required customs missing: price, description')
 
   function setupTest() {
     correctCustom = new CustomField({
