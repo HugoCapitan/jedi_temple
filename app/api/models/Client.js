@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const AddressSchema = require('./schemas/AddressSchema')
 const WishSchema = require('./schemas/WishSchema')
 
 const ClientSchema = new Schema({

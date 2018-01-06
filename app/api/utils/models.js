@@ -2,6 +2,7 @@ const shortUniqueId = require('short-unique-id')
 const suid = new shortUniqueId()
 
 const Address = require('../models/Address')
+const Client = require('../models/Client')
 const CustomField = require('../models/CustomField')
 const HMProduct = require('../models/HMProduct')
 const Product = require('../models/Product')
@@ -16,6 +17,7 @@ module.exports = {
   getValidHMProduct: getValidHMProduct,
   getValidImage: getValidImage,
   getValidNumberCustom: getValidNumberCustom,
+  getValidOrder: getValidOrder,
   getValidProduct: getValidProduct,
   getValidStringCustom: getValidStringCustom
 }
@@ -34,14 +36,14 @@ function getValidAddress () {
 }
 
 function getValidClient() {
-  const address1 = getValidAddress()
+  const address1 = new Address( getValidAddress() )
   const product = new Product( getValidProduct() )
 
   return {
     name: 'Some Name',
     email: 'some@email.com',
     password: 'arealhardpassword',
-    // addresses: [address1],
+    addresses: [address1],
     // orders
     wishlist: [product._id]
   }
@@ -85,6 +87,25 @@ function getValidNumberCustom() {
   }
 }
 
+function getValidOrder() {
+  const address = new Address( getValidAddress() )
+  const client  = new Client( getValidClient() )
+  const product = new Product( getValidProduct() )
+
+  return {
+    email: 'some@mail.com',
+    client: client._id,
+    status: 1,
+    products: [{ 
+      product_id: product._id,
+      quantity: 5
+    }],
+    shipping: 15,
+    billing_address: address._id,
+    shipping_address: address._id
+  }
+}
+
 function getValidProduct() {
   const validCustom = new CustomField( getValidNumberCustom() )
 
@@ -98,10 +119,6 @@ function getValidProduct() {
       value: 'A value'
     }]
   }
-}
-
-function getValidHandmadeProduct() {
-
 }
 
 function getValidStringCustom() {

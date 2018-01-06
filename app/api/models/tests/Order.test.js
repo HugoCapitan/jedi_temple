@@ -1,12 +1,17 @@
 const Order = require('../Order')
 
+const { getValidOrder } = require('../../utils/models')
+
 describe('Order model', () => {
-  let validOrder, validAddress, validProduct
+  let validOrder
 
   beforeEach(() => { setupTest() })
 
   test('Should be valid', () => {
+    const m = new Order( getValidOrder() )
+    const v = m.validateSync()
 
+    expect(v).toBeFalsy()
   })
 
   test('Should be invalid if no: email, products, status, shipping, shipping_address, billing_address')
@@ -18,14 +23,7 @@ describe('Order model', () => {
   test('Should be invalid if malformed product')
 
   function setupTest() {
-    validProduct = {
-      
-    }
-
-
-    validOrder = {
-      email: 'some@mail.com',
-      products: 
-    }
+    validOrder = getValidOrder()
   }
 })
+ 

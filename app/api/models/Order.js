@@ -1,16 +1,16 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const AddressSchema = require('./schemas/AddressSchema')
 const OrderProductSchema = require('./schemas/OrderProductSchema')
 
 const { createOrdercode } = require('../utils/models')
+const { isEmail } = require('../utils/validators') 
 
 const OrderSchema = new Schema({
   email: {
     type: String,
     required: true,
-    validate: utils.isAnEmail
+    validate: isEmail
   },
   order_code: {
     type: String,

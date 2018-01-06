@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 module.exports = new Schema({
-  products_id: {
+  product_id: {
     type: Schema.Types.ObjectId,
     rel: 'Product',
     required: true
