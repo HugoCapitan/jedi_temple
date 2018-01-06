@@ -14,7 +14,6 @@ module.exports = {
   getValidImage: getValidImage,
   getValidNumberCustom: getValidNumberCustom,
   getValidProduct: getValidProduct,
-  getValidProductHandmade: getValidProductHandmade,
   getValidStringCustom: getValidStringCustom
 }
 
