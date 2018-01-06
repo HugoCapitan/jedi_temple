@@ -3,6 +3,7 @@ const suid = new shortUniqueId()
 
 const CustomField = require('../models/CustomField')
 const HMProduct = require('../models/HMProduct')
+const Product = require('../models/Product')
 
 module.exports = {
   createOrdercode(date) {
@@ -40,7 +41,7 @@ function getValidFilter() {
 
 function getValidHMProduct() {
   const validProduct1 = new Product( 
-    Object.assign(getValidHMProduct, { name: '24K Gold Bracelet' } )
+    Object.assign(getValidProduct(), { name: '24K Gold Bracelet' } )
   )
   
   return { 

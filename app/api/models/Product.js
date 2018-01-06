@@ -2,8 +2,6 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 const { slugify } = require('../utils')
 
-const HMMaterial = require('./HMMaterial')
-
 const CustomSchema = require('./schemas/CustomSchema')
 const ImageSchema = require('./schemas/ImageSchema')
 
