@@ -10,6 +10,7 @@ module.exports = {
     return `${date.getDate}-${date.getMonth}-${date.getFullYear}-${suid.randomUUID(8)}`
   },
   getValidAddress: getValidAddress,
+  getValidClient: getValidClient,
   getValidFilter: getValidFilter,
   getValidHMProduct: getValidHMProduct,
   getValidImage: getValidImage,
@@ -28,6 +29,20 @@ function getValidAddress () {
     state: 'Who cares',
     country: 'PR',
     zip: '89231'
+  }
+}
+
+function getValidClient() {
+  const address1 = getValidAddress()
+  const product = new Product( getValidProduct() )
+
+  return {
+    name: 'Some Name',
+    email: 'some@email.com',
+    password: 'arealhardpassword',
+    // addresses: [address1],
+    // orders
+    wishlist: [product._id]
   }
 }
 

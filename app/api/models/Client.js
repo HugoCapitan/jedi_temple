@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const AddressSchema = require('./schemas/AddressSchema')
-const WishProductSchema = require('./schemas/WishProductSchema')
+const WishSchema = require('./schemas/WishSchema')
 
 const ClientSchema = new Schema({
   name: {
@@ -22,12 +22,18 @@ const ClientSchema = new Schema({
       return val
     }
   },
-  addresses: [AddressSchema],
+  // addresses: [{
+  //   type: Schema.Types.ObjectId,
+  //   rel: 'Address'
+  // }],
   orders:[{
     type: Schema.Types.ObjectId,
     rel: 'Order'
   }],
-  wishlist: [WishProductSchema],
+  wishlist: [{
+    type: Schema.Types.ObjectId,
+    rel: 'Product'
+  }],
   created_at: Date,
   updated_at: Date
 })
