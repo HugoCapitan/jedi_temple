@@ -35,11 +35,13 @@ const OrderSchema = new Schema({
     required: true
   },
   billing_address: {
-    type: AddressSchema,
+    type: Schema.Types.ObjectId,
+    rel: 'Address',
     required: true
   },
   shipping_address: {
-    type: AddressSchema,
+    type: Schema.Types.ObjectId,
+    rel: 'Address',
     required: true
   },
   tracking_code: String,

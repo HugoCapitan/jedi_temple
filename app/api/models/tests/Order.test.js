@@ -9,11 +9,13 @@ describe('Order model', () => {
 
   })
 
-  test('Should be invalid if no: email || products || status || shipping || shipping_address || billing_address')
+  test('Should be invalid if no: email, products, status, shipping, shipping_address, billing_address')
+
+  test('Should be invalid if email wrong format')
+
+  test('Should be invalid if wrong address if for billing or shipping')
 
   test('Should be invalid if malformed product')
-
-  test('Should be invalid if malformed address')
 
   function setupTest() {
     validProduct = {

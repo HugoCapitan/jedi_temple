@@ -22,10 +22,10 @@ const ClientSchema = new Schema({
       return val
     }
   },
-  // addresses: [{
-  //   type: Schema.Types.ObjectId,
-  //   rel: 'Address'
-  // }],
+  addresses: [{
+    type: Schema.Types.ObjectId,
+    rel: 'Address'
+  }],
   orders:[{
     type: Schema.Types.ObjectId,
     rel: 'Order'

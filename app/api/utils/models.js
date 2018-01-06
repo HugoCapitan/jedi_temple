@@ -1,6 +1,7 @@
 const shortUniqueId = require('short-unique-id')
 const suid = new shortUniqueId()
 
+const Address = require('../models/Address')
 const CustomField = require('../models/CustomField')
 const HMProduct = require('../models/HMProduct')
 const Product = require('../models/Product')
