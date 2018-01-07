@@ -16,10 +16,6 @@ const OrderSchema = new Schema({
     type: String,
     unique: true
   },
-  client: {
-    type: Schema.Types.ObjectId,
-    rel: 'Client'
-  },
   status: {
     type: Number,
     required: true

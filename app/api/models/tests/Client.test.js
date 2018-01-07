@@ -6,7 +6,7 @@ const { getValidClient } = require('../../utils/models')
 describe('Client model', () => {
   let validClient
 
-  beforeEach(() => { setupTest() })
+  beforeEach(() => { validClient = getValidClient() })
 
   test('Should be valid', () => {
     const m = new Client(validClient)
@@ -26,7 +26,7 @@ describe('Client model', () => {
   })
 
   test('Should be invalid if Wishlist Product id is empty', () => {
-    const m = new Client( Object.assign({}, validClient, { wishlist: [ '' ] }) )
+    const m = new Client( Object.assign(validClient, { wishlist: [ '' ] }) )
     const v = m.validateSync()
 
     expect(howManyKeys(v.errors)).toBe(1)
@@ -34,20 +34,43 @@ describe('Client model', () => {
   })
   
   test('Should be invalid if Wishlist Product id is wrong', () => {
-    const m = new Client( Object.assign({}, validClient, { wishlist: [ 'somewrongid' ] }) )
+    const m = new Client( Object.assign(validClient, { wishlist: [ 'somewrongid' ] }) )
     const v = m.validateSync()
 
     expect(howManyKeys(v.errors)).toBe(1)
     expect(v.errors['wishlist']).toBeTruthy()
   })
 
-  test('Should be invalid if address id is empty')
+  test('Should be invalid if address id is empty', () => {
+    const m = new Client( Object.assign(validClient, { addresses: [ '' ] }) )
+    const v = m.validateSync()
 
-  test('Should be invalid if address id is wrong')
+    expect(howManyKeys(v.errors)).toBe(1)
+    expect(v.errors.addresses).toBeTruthy()
+  })
 
-  test('Should be invalid if related order id is wrong')
+  test('Should be invalid if address id is malformed', () => {
+    const m = new Client( Object.assign(validClient, { addresses: [ 'supbabe' ] }) )
+    const v = m.validateSync()
 
-  function setupTest() {
-    validClient = getValidClient()
-  }
+    expect(howManyKeys(v.errors)).toBe(1)
+    expect(v.errors.addresses).toBeTruthy()
+  })
+
+  test('Should be invalid if order id is empty', () => {
+    const m = new Client( Object.assign(validClient, { orders: [ '' ] }) )
+    const v = m.validateSync()
+
+    expect(howManyKeys(v.errors)).toBe(1)
+    expect(v.errors.orders).toBeTruthy()
+  })
+
+  test('Should be invalid if order id is malformed', () => {
+    const m = new Client( Object.assign(validClient, { orders: [ 'supbabe' ] }) )
+    const v = m.validateSync()
+
+    expect(howManyKeys(v.errors)).toBe(1)
+    expect(v.errors.orders).toBeTruthy()
+  })
+
 })

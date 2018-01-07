@@ -5,6 +5,7 @@ const Address = require('../models/Address')
 const Client = require('../models/Client')
 const CustomField = require('../models/CustomField')
 const HMProduct = require('../models/HMProduct')
+const Order = require('../models/Order')
 const Product = require('../models/Product')
 
 module.exports = {
@@ -38,13 +39,14 @@ function getValidAddress () {
 function getValidClient() {
   const address1 = new Address( getValidAddress() )
   const product = new Product( getValidProduct() )
+  const order = new Order( getValidOrder() )
 
   return {
     name: 'Some Name',
     email: 'some@email.com',
     password: 'arealhardpassword',
-    addresses: [address1],
-    // orders
+    addresses: [address1._id],
+    orders: [order._id],
     wishlist: [product._id]
   }
 }
@@ -89,12 +91,10 @@ function getValidNumberCustom() {
 
 function getValidOrder() {
   const address = new Address( getValidAddress() )
-  const client  = new Client( getValidClient() )
   const product = new Product( getValidProduct() )
 
   return {
     email: 'some@mail.com',
-    client: client._id,
     status: 1,
     products: [{ 
       product_id: product._id,
