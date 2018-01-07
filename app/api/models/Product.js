@@ -19,6 +19,7 @@ const ProductSchema = new Schema({
     required: true
   },
   images: [ImageSchema],
+  description: String,
   customs: {
     type: [CustomSchema]
   },
