@@ -42,15 +42,16 @@ describe('CustomField Model', () => {
   })
 
   test('Number should be invalid if wrong values for: min, max, unit_place', () => {
-    const m = new CustomField({ 
-      name: 'Some name', 
-      type: 'number',
-      show: false,
-      min: 'something else',
-      max: 'heyhey',
-      unit: 'cm',
-      unit_place: 'whaaat'
-    })
+    const m = new CustomField( 
+      Object.assign(
+        validNumberCustom, 
+        {
+          min: 'something else',
+          max: 'heyhey',
+          unit_place: 'whaaat'
+        }
+      )
+    ) 
     const v = m.validateSync()
 
     expect(howManyKeys(v['errors'])).toBe(3)
