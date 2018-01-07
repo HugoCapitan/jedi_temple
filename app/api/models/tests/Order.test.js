@@ -45,16 +45,26 @@ describe('Order model', () => {
     expect(v.errors.shipping_address).toBeTruthy()
   })
 
-  test('Should be invalid if malformed product', () => {
+  test('Should be invalid if wrong quantity in product', () => {
     const malformed = getValidOrder()
     malformed.products[0].quantity = 'whatup'
-    
+
     const m = new Order(malformed)
     const v = m.validateSync()
 
-    console.log(v.errors)
+    expect(howManyKeys(v.errors)).toBe(1)
+    expect(v.errors['products.0.quantity']).toBeTruthy()
+  })
+
+  test('Should be invalid if wrong product_id in product', () => {
+    const malformed = getValidOrder()
+    malformed.products[0].product_id = 'heyhey'
+
+    const m = new Order(malformed)
+    const v = m.validateSync()
 
     expect(howManyKeys(v.errors)).toBe(1)
+    expect(v.errors['products.0.product_id']).toBeTruthy()
   })
 
   function setupTest() {
