@@ -60,12 +60,17 @@ function getValidFilter() {
 }
 
 function getValidHMProduct() {
-  const validProduct1 = new Product( 
-    Object.assign(getValidProduct(), { name: '24K Gold Bracelet' } )
-  )
-  
+  const product = new Product( getValidProduct() )
+
   return { 
-    name: 'Bracelet' 
+    name: 'Bracelet',
+    materials: [{
+      material: '24K Gold',
+      price: 999.99,
+      models: [
+        product._id
+      ]
+    }]
   }
 }
 

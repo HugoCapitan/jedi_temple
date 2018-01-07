@@ -1,26 +1,36 @@
 const HMProduct = require('../HMProduct')
 
+const { howManyKeys } = require('../../utils')
 const { getValidHMProduct } = require('../../utils/models')
 
 describe('HMProduct Model', () => {
-  let correctHMProduct
+  let validHMProduct
 
-  beforeEach(() => { setupTest() })
+  beforeEach(() => { validHMProduct = getValidHMProduct() })
 
   test('Should be valid', () => {
-    const m = new HMProduct(correctHMProduct)
+    const m = new HMProduct(validHMProduct)
     const v = m.validateSync()
 
     expect(v).toBeFalsy()
   })
 
-  test('Should be invalid if empty name')
+  test('Should be invalid if empty name', () => {
+    const m = new HMProduct( Object.assign(validHMProduct, { name: undefined }) )
+    const v = m.validateSync()
 
-  test('Should be invalid if product missing required customs: model, material')
+    expect(howManyKeys(v.errors)).toBe(1)
+    expect(v.errors.name).toBeTruthy()
+  })
 
-  test('Should be invalid if material missing price or name')
+  describe('Material subschema', () => {
 
-  function setupTest() {
-    correctHMProduct = getValidHMProduct()
-  }
+    test('Should be invalid if material missing price or name')  
+
+    test('Should be invalid if product missing required customs: hmmodel, material')
+
+    test('Should be invalid if model price different from material price')
+
+  })
+
 })

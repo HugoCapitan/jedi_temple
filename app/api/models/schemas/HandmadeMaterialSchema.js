@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const { Schema } = mongoose
 
 module.exports = new Schema({
-  material_name: {
+  material: {
     type: String,
     required: true,
     unique: true
@@ -11,7 +11,7 @@ module.exports = new Schema({
     type: Number,
     required: true
   },
-  products: [{
+  models: [{
     type: Schema.Types.ObjectId,
     rel: 'Product',
     required: true,
