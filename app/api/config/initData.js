@@ -1,7 +1,8 @@
 const CustomField = require('../models/CustomField')
+const CustomFieldCtrl = require('../controllers/customFieldCtrl')
 
 module.exports = async () => {
-  const PriceCustom = await CustomField.findOne({ slug: 'price' })
+  const PriceCustom   = await CustomField.findOne({ slug: 'price' })
   const HMModelCustom = await CustomField.findOne({ slug: 'hmmodel' })
 
   try {
@@ -18,6 +19,14 @@ function saveHMModelCustom () {
   console.log('Saving HMModelCustom')
 }
 
-function savePriceCustom () {
-  console.log('Saving PriceCustom')  
+async function savePriceCustom () {
+  const PriceCustom = await CustomFieldCtrl.create({
+    name: 'Price',
+    type: 'number',
+    show: false,
+    min: 'auto',
+    max: 'auto',
+    unit: 'US$ ',
+    unit_place: 'before'    
+  })
 }

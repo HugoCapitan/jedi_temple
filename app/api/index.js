@@ -3,6 +3,8 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const session = require('express-session')
 const genuuid = require('uuid')
+
+const routes = require('./routes')
 const initData = require('./config/initData')
 
 module.exports = server => {
@@ -27,6 +29,8 @@ module.exports = server => {
   const connection = mongoose.connect('mongodb://localhost/test', {
     useMongoClient: true
   })
+
+  routes(server)
 
   initData()
 
