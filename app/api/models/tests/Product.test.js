@@ -45,7 +45,7 @@ describe('Normal Product Model', () => {
     expect(v.errors['images.0.y']).toBeTruthy()
   })
 
-  test('Should be invalid if required customs missing: price, description')
+  test('Should be invalid if required customs missing: price')
 
   function setupTest() {
 

@@ -1,3 +1,4 @@
+const CustomField = require('../models/CustomField')
 
 module.exports = {
   areMinMax(min, max) {
@@ -15,5 +16,12 @@ module.exports = {
   isEmail(val) {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return re.test(val)
+  },
+  async hasProductRequiredCustoms(val) {
+    const PriceCustom = CustomField.findOne({ slug: 'price' })
+
+    const hasPrice = val.find( (custom) => custom.custom_id === PriceCustom._id )    
+
+    return !!hasPrice
   }
 }

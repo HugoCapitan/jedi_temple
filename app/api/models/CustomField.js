@@ -2,6 +2,8 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const { saysString, saysNumber, isNumeric, areMinMax } = require('../utils/validators')
 
+const { slugify } =  require('../utils')
+
 const CustomFieldSchema = new Schema({
   name: {
     type: String,
@@ -62,8 +64,10 @@ const CustomFieldSchema = new Schema({
   updated_at: Date
 })
 
-CustomFieldSchema.pre('save', (next) => {
-  var currentDate = new Date()
+CustomFieldSchema.pre('save', function (next) {
+  const currentDate = new Date()
+
+  this.slug = slugify(this.name)
 
   this.updated_at = currentDate
 

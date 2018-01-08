@@ -15,8 +15,13 @@ module.exports = async () => {
   }
 }
 
-function saveHMModelCustom () {
-  console.log('Saving HMModelCustom')
+async function saveHMModelCustom () {
+  const HMModelCustom = await CustomFieldCtrl.create({ 
+    name: 'HMModel',
+    type: 'string',
+    show: false,
+    values: ['Niño, Niña']
+  })
 }
 
 async function savePriceCustom () {

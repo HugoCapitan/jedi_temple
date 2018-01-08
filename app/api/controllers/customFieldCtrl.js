@@ -7,8 +7,8 @@ module.exports = {
 
 async function create(fieldToAdd) {
   try {
-    const newCustomField = await new CustomField(fieldToAdd).save();
-    return newCustomField;
+    const newCustomField = await new CustomField(fieldToAdd).save()
+    return newCustomField
   } catch (e) {
     e.customOrigin = 'Field';
     if (e.name === 'ValidationError')
