@@ -10,15 +10,13 @@ async function create(fieldToAdd) {
     const newCustomField = await new CustomField(fieldToAdd).save()
     return newCustomField
   } catch (e) {
-    e.customOrigin = 'Field';
+    e.customOrigin = 'Field'
     if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error';
+      e.customMessage = 'Validation Error'
     else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name';
+      e.customMessage = 'Duplicated Name'
     else
-      e.customMessage = 'Unexpected Error';
-    
-    console.log('usup ', e)
+      e.customMessage = 'Unexpected Error'
 
     throw e;
   }
@@ -26,9 +24,9 @@ async function create(fieldToAdd) {
 
 async function apiAll(req, res) {
   try {
-    let customFields = await CustomField.find();
-    res.status(200).json(customFields);
+    let customFields = await CustomField.find()
+    res.status(200).json(customFields)
   } catch (e) {
-    utils.sendError(500, 'Unexpected Error', e, res);
+    utils.sendError(500, 'Unexpected Error', e, res)
   }
 }
