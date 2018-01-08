@@ -1,7 +1,7 @@
 const Address = require('../Address')
 
 const { howManyKeys } = require('../../utils')
-const { getValidAddress } = require('../../utils/models')
+const { getValidAddress } = require('../../utils/validSchemas')
 
 describe('Address model', () => {
   

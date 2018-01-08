@@ -1,7 +1,7 @@
 const HMProduct = require('../HMProduct')
 
 const { howManyKeys } = require('../../utils')
-const { getValidHMProduct } = require('../../utils/models')
+const { getValidHMProduct } = require('../../utils/validSchemas')
 
 describe('HMProduct Model', () => {
   let validHMProduct

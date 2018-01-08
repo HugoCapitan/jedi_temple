@@ -1,7 +1,7 @@
 const Product     = require('../Product')
 
 const { howManyKeys } = require('../../utils')
-const { getValidProduct } = require('../../utils/models')
+const { getValidProduct } = require('../../utils/validSchemas')
 
 describe('Normal Product Model', () => {
   let validProduct

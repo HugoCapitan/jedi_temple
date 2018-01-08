@@ -1,7 +1,7 @@
 const Client = require('../Client')
 
 const { howManyKeys } = require('../../utils')
-const { getValidClient } = require('../../utils/models')
+const { getValidClient } = require('../../utils/validSchemas')
 
 describe('Client model', () => {
   let validClient

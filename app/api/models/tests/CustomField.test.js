@@ -1,7 +1,7 @@
 const CustomField = require('../CustomField')
 const howManyKeys = require('../../utils').howManyKeys
 
-const { getValidNumberCustom, getValidStringCustom } = require('../../utils/models')
+const { getValidNumberCustom, getValidStringCustom } = require('../../utils/validSchemas')
 
 describe('CustomField Model', () => {
   let validNumberCustom, validStringCustom

@@ -2,7 +2,7 @@ const CustomField = require('../CustomField')
 const Filter = require('../Filter')
 const howManyKeys = require('../../utils').howManyKeys
 
-const { getValidFilter } = require('../../utils/models')
+const { getValidFilter } = require('../../utils/validSchemas')
 
 describe('Filter Model', () => {
   let validFilter

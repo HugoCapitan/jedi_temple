@@ -1,7 +1,7 @@
 const Order = require('../Order')
 
 const { howManyKeys } = require('../../utils')
-const { getValidOrder } = require('../../utils/models')
+const { getValidOrder } = require('../../utils/validSchemas')
 
 describe('Order model', () => {
   let validOrder
