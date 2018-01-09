@@ -17,6 +17,14 @@ module.exports = {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return re.test(val)
   },
+  isPicture(val) {
+    const valFormat = val.split('.').pop()
+    const validFormats = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG']
+    const isValid = validFormats.find((format) => {
+      return format === valFormat
+    })
+    return !!isValid
+  },
   async hasRequiredCustoms(val) {
     const PriceCustom = await CustomField.findOne({ slug: 'price' })
 

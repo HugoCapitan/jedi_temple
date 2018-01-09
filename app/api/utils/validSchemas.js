@@ -13,6 +13,7 @@ module.exports = {
   getValidImage: getValidImage,
   getValidNumberCustom: getValidNumberCustom,
   getValidOrder: getValidOrder,
+  getValidPicture: getValidPicture,
   getValidProduct: getValidProduct,
   getValidStringCustom: getValidStringCustom
 }
@@ -102,6 +103,12 @@ function getValidOrder() {
     shipping: 15,
     billing_address: address._id,
     shipping_address: address._id
+  }
+}
+
+function getValidPicture() {
+  return {
+    url: '/dist/picture.png'
   }
 }
 

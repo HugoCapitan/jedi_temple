@@ -1,11 +1,13 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const { isPicture } = require('../../utils/validators')
+
 module.exports = new Schema({
   url: {
     type: String,
     required: true,
-    validate(val) { return hasValidFormat(val) }
+    validate: isPicture
   },
   x: {
     type: String,
@@ -23,15 +25,6 @@ function hasValidUnits(val) {
   const units = [val.substr(val.length - 1), val.substr(val.length - 2)]
   const isValid = units.find((unit) => {
     return unit === '%' || unit === 'px' || unit === 'pt'
-  })
-  return !!isValid
-}
-
-function hasValidFormat(val) {
-  const valFormat = val.split('.').pop()
-  const validFormats = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG']
-  const isValid = validFormats.find((format) => {
-    return format === valFormat
   })
   return !!isValid
 }
