@@ -18,7 +18,9 @@ module.exports = {
   getValidPicture: getValidPicture,
   getValidProduct: getValidProduct,
   getValidReservation: getValidReservation,
-  getValidStringCustom: getValidStringCustom
+  getValidStringCustom: getValidStringCustom,
+  getValidStore: getValidStore,
+  getValidText: getValidText
 }
 
 function getValidAddress () {
@@ -140,11 +142,23 @@ function getValidReservation() {
   }
 }
 
+function getValidStore() {
+  return {
+
+  }
+}
+
 function getValidStringCustom() {
   return {
     name: 'String CustomField',
     show: true, 
     type: 'string',
     values: ['A value', 'Another Value']
+  }
+}
+
+function getValidText() {
+  return {
+    text: 'This is some random text'
   }
 }
