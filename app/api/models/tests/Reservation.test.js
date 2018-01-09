@@ -26,7 +26,7 @@ describe('Reservation model', () => {
   })
 
   test('Should be invalid if arriving or departure not dates', () => {
-    const m = new Reservation( Object.assign( getValidReservation(), { arrive_date: 'what', departure_date: 99 } ) )
+    const m = new Reservation( Object.assign( getValidReservation(), { arrive_date: 'wrong', departure_date: 'alsowrong' } ) )
     const v = m.validateSync()
 
     expect( howManyKeys(v.errors) ).toBe(2)
