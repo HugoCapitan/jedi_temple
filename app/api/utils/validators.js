@@ -1,6 +1,10 @@
+const moment = require('moment')
 const CustomField = require('../models/CustomField')
 
 module.exports = {
+  areBeforeAfter(before, after) {
+    return moment(before).isBefore(after, 'day')
+  },
   areMinMax(min, max) {
     return parseFloat(min) < parseFloat(max) || min === 'auto' || max === 'auto'
   },
@@ -10,12 +14,15 @@ module.exports = {
   saysString(val) {
     return val === 'string'
   },
-  isNumeric(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
+  isDate(val) {
+    return moment(val).isValid()
   },
   isEmail(val) {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return re.test(val)
+  },
+  isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
   },
   isPicture(val) {
     const valFormat = val.split('.').pop()
