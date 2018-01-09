@@ -2,7 +2,7 @@ const _ = require('lodash')
 
 jest.mock('../../../models/CustomField')
 const CustomField     = require('../../../models/CustomField')
-const customFieldCtrl = require('../../customField')
+const customFieldCtrl = require('../../customFieldCtrl')
 
 describe('CustomField Controller -> create()', () => {
   let fieldToSend
