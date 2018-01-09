@@ -1,6 +1,8 @@
 const CustomField = require('../models/CustomField')
 const productCtrl = require('./productCtrl')
 
+const { sendError } = require('../utils/http')
+
 module.exports = {
   create,
   remove,
@@ -76,7 +78,7 @@ async function apiAll(req, res) {
     let customFields = await CustomField.find()
     res.status(200).json(customFields)
   } catch (e) {
-    utils.sendError(500, 'Unexpected Error', e, res)
+    sendError(500, 'Unexpected Error', e, res)
   }
 }
 
@@ -86,11 +88,11 @@ async function apiCreate (req, res) {
     res.status(200).json(newCustomField)
   } catch (e) {
     if (e.name === 'ValidationError')
-      utils.sendError(403, 'Validation Error', e, res)
+      sendError(403, 'Validation Error', e, res)
     else if (e.code === 11000)
-      utils.sendError(409, 'Duplicated Name', e, res)
+      sendError(409, 'Duplicated Name', e, res)
     else
-      utils.sendError(500, 'Unexpected Error', e, res)
+      sendError(500, 'Unexpected Error', e, res)
   }
 }
 
@@ -106,9 +108,9 @@ async function apiRead (req, res) {
     res.status(200).json(foundCustomField);   
   } catch(e) {
     if (e.name === 'NotFoundError')
-      utils.sendError(404, `CustomField ${req.params.id} not found`, e, res)
+      sendError(404, `CustomField ${req.params.id} not found`, e, res)
     else
-      utils.sendError(500, 'Unexpected Error', e, res)
+      sendError(500, 'Unexpected Error', e, res)
   }
 }
 
@@ -127,11 +129,11 @@ async function apiRemove (req, res) {
     res.status(200).send(`CustomField ${removedCustomField._id} deleted`)
   } catch (e) {
     if (e.customOrigin === 'Product')
-      utils.sendError(500, 'Products Update Error', e, res)
+      sendError(500, 'Products Update Error', e, res)
     else if (e.name === 'CastError' || e.name === 'NotFoundError')
-      utils.sendError(404, `CustomField ${req.params.id} not found`, e, res)
+      sendError(404, `CustomField ${req.params.id} not found`, e, res)
     else
-      utils.sendError(500, 'Unexpected Error', e, res)
+      sendError(500, 'Unexpected Error', e, res)
   }
 }
 
@@ -146,15 +148,15 @@ async function apiUpdate (req, res) {
   } catch (e) {
 
     if (e.customOrigin === 'Product') 
-      utils.sendError(500, 'Products Update Error', e, res);
+      sendError(500, 'Products Update Error', e, res);
     else if (e.name === 'ValidationError')
-      utils.sendError(403, 'Validation Error', e, res);
+      sendError(403, 'Validation Error', e, res);
     else if (e.name === 'CastError')
-      utils.sendError(404, `CustomField ${req.params.id} not found`, e, res);
+      sendError(404, `CustomField ${req.params.id} not found`, e, res);
     else if (e.code === 11000)
-      utils.sendError(409, 'Duplicated Name', e, res);
+      sendError(409, 'Duplicated Name', e, res);
     else
-      utils.sendError(500, 'Unexpected Error', e, res);
+      sendError(500, 'Unexpected Error', e, res);
 
   }
 }
