@@ -5,6 +5,8 @@ const HMProduct = require('../models/HMProduct')
 const Order = require('../models/Order')
 const Product = require('../models/Product')
 
+const moment = require('moment')
+
 module.exports = {
   getValidAddress: getValidAddress,
   getValidClient: getValidClient,
@@ -15,6 +17,7 @@ module.exports = {
   getValidOrder: getValidOrder,
   getValidPicture: getValidPicture,
   getValidProduct: getValidProduct,
+  getValidReservation: getValidReservation,
   getValidStringCustom: getValidStringCustom
 }
 
@@ -124,6 +127,16 @@ function getValidProduct() {
       custom_id: validCustom._id,
       value: 'A value'
     }]
+  }
+}
+
+function getValidReservation() {
+  return {
+    email: 'some@mail.com',
+    plan: 'short',
+    status: 1,
+    arrive_date: moment().add('1', 'days').toDate(),
+    departure_date: moment().add('1', 'weeks').toDate()
   }
 }
 
