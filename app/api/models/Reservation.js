@@ -10,16 +10,16 @@ const ReservationSchema = new Schema({
     type: String,
     required: true
   },
+  status: {
+    type: Number,
+    required: true
+  },
   arrive_date: {
     type: Date,
     required: true
   },
   departure_date: {
     type: Date,
-    required: true
-  },
-  status: {
-    type: Number,
     required: true
   },
   created_at: Date,
