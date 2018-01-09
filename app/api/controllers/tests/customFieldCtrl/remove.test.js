@@ -6,13 +6,13 @@ const customFieldCtrl = require('../../customFieldCtrl')
 
 const productCtrl = require('../../productCtrl')
 
-describe('CustomField Controller -> remove()', () => {
+describe('CustomFieldCtrl -> remove()', () => {
   let expectedId
   let deletedField
 
   beforeEach(() => { setupTest() })
 
-  test('Should call Product.findByIdAndRemove() with the sent id', async () => {
+  test('Should call CustomField.findByIdAndRemove() with the sent id', async () => {
     await customFieldCtrl.remove(expectedId)
 
     expect(CustomField.findByIdAndRemove.mock.calls.length).toBe(1)
