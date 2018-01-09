@@ -64,8 +64,9 @@ const CustomFieldSchema = new Schema({
   updated_at: Date
 })
 
-CustomFieldSchema.pre('save', function (next) {
-  const currentDate = new Date()
+CustomFieldSchema._middlewareFunctions = {
+  preSave(next) {
+    const currentDate = new Date()
 
   this.slug = slugify(this.name)
 
@@ -75,7 +76,10 @@ CustomFieldSchema.pre('save', function (next) {
     this.created_at = currentDate
 
   next()
-})
+  }
+}
+
+CustomFieldSchema.pre('save', CustomFieldSchema._middlewareFunctions.preSave)
 
 const CustomField = mongoose.model('CustomField', CustomFieldSchema)
 

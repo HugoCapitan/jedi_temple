@@ -1,6 +1,7 @@
 const CustomField = require('../CustomField')
 const howManyKeys = require('../../utils').howManyKeys
 
+const { isThisMinute } = require('../../utils/validators')
 const { getValidNumberCustom, getValidStringCustom } = require('../../utils/validSchemas')
 
 describe('CustomField Model', () => {
@@ -97,6 +98,21 @@ describe('CustomField Model', () => {
     expect(vv.errors.values).toBeTruthy()
     expect(vs.errors['values.0']).toBeTruthy()
   })
+
+  describe('Pre Save Middleware', () => {
+    test('Should sluggify name and add updated and created dates', () => {
+      const context = validNumberCustom
+
+      const boundMiddlewareFunc = CustomField.schema._middlewareFunctions.preSave.bind(context)
+      const next = jest.fn()
+
+      boundMiddlewareFunc(next)
+
+      expect(validNumberCustom.slug).toBe('number_customfield')
+      expect( isThisMinute(validNumberCustom.created_at) ).toBeTruthy()
+      expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
+    })
+  }) 
 
   function setupTest () {
     validNumberCustom = getValidNumberCustom()
