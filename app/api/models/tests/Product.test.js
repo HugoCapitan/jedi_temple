@@ -7,7 +7,7 @@ const { getValidProduct, getValidNumberCustom } = require('../../utils/validSche
 describe('Normal Product Model', () => {
   let validProduct
 
-  beforeEach(() => { setupTest() })
+  beforeEach(() => { validProduct = getValidProduct() })
 
   test('Should be fine', () => {
     const m = new Product(validProduct)
@@ -46,25 +46,19 @@ describe('Normal Product Model', () => {
     expect(v.errors['images.0.y']).toBeTruthy()
   })
 
-  test('Should be invalid if required customs missing: price', async () => {
-    const notPriceCustom = new CustomField( getValidNumberCustom() )
-    const malformedProduct = getValidProduct()
-    malformedProduct.customs = [{
-      custom_id: notPriceCustom._id,
-      value: 99
-    }]
+  // test('Should be invalid if required customs missing: price', async () => {
+  //   const notPriceCustom = new CustomField( getValidNumberCustom() )
+  //   const malformedProduct = getValidProduct()
+  //   malformedProduct.customs = [{
+  //     custom_id: notPriceCustom._id,
+  //     value: 99
+  //   }]
 
-    const m = new Product( malformedProduct )
-    try { await m.validate() } 
-    catch (v) {
-      expect(howManyKeys(v.errors)).toBe(1)
-      expect(v.errors.customs).toBeTruthy()
-     }
-  })
-
-  function setupTest() {
-
-    validProduct = getValidProduct()
-
-  }
+  //   const m = new Product( malformedProduct )
+  //   try { await m.validate() } 
+  //   catch (v) {
+  //     expect(howManyKeys(v.errors)).toBe(1)
+  //     expect(v.errors.customs).toBeTruthy()
+  //    }
+  // })
 })

@@ -18,7 +18,7 @@ module.exports = {
     return re.test(val)
   },
   async hasRequiredCustoms(val) {
-    const PriceCustom = CustomField.findOne({ slug: 'price' })
+    const PriceCustom = await CustomField.findOne({ slug: 'price' })
 
     const hasPrice = val.find( (custom) => custom.custom_id === PriceCustom._id )    
 
