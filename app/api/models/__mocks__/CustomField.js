@@ -1,6 +1,6 @@
-const CustomField = require.requireActual('../CustomField');
+const CustomField = require.requireActual('../CustomField')
 
-const MockedCustomField = jest.fn();
-MockedCustomField.bind(CustomField);
+const MockedCustomField = jest.fn()
+MockedCustomField.bind(CustomField)
 
-module.exports = MockedCustomField;
+module.exports = MockedCustomField
