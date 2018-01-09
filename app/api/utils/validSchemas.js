@@ -1,9 +1,13 @@
-const Address = require('../models/Address')
-const Client = require('../models/Client')
+const Address     = require('../models/Address')
+const Client      = require('../models/Client')
 const CustomField = require('../models/CustomField')
-const HMProduct = require('../models/HMProduct')
-const Order = require('../models/Order')
-const Product = require('../models/Product')
+const Filter      = require('../models/Filter')
+const HMProduct   = require('../models/HMProduct')
+const Order       = require('../models/Order')
+const Picture     = require('../models/Picture')
+const Product     = require('../models/Product')
+const Reservation = require('../models/Reservation')
+const Text        = require('../models/Text')
 
 const moment = require('moment')
 
@@ -143,8 +147,30 @@ function getValidReservation() {
 }
 
 function getValidStore() {
-  return {
+  const product     = new Product( getValidProduct() )
+  const text        = new Text( getValidText() )
+  const picture     = new Picture( getValidPicture() )
+  const customField = new CustomField( getValidNumberCustom() )
+  const filter      = new Filter( getValidFilter() )
+  const order       = new Order( getValidOrder() )
+  const client      = new Client( getValidClient() )
+  const reservation = new Reservation( getValidReservation() )
 
+  return {
+    name: 'The Store Baby',
+    products: [ product._id ],
+    texts: [ text._id ],
+    pictures: [ picture._id ],
+    customs: [ customField._id ],
+    filters: [ filter._id ],
+    orders: [ order._id ],
+    clients: [ client._id ],
+    reservations: [ reservation._id ],
+    calendar: {
+      nearest_available_date: 7,
+      furthest_available_date: 120,
+      maximum_reservation: 45
+    }
   }
 }
 
