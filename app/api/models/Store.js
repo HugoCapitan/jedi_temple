@@ -11,45 +11,45 @@ const StoreSchema = new Schema({
   },
   products: [{
     type: Schema.Types.ObjectId,
-    defauñt: undefined,
+    default: undefined,
     rel: 'Product'
   }],
   texts: [{
     type: Schema.Types.ObjectId,
-    defauñt: undefined,
+    default: undefined,
     rel: 'Text'
   }],
   pictures: [{
     type: Schema.Types.ObjectId,
-    defauñt: undefined,
+    default: undefined,
     rel: 'Picture'
   }],
-  Customs: [{
+  customs: [{
     type: Schema.Types.ObjectId,
-    defauñt: undefined,
+    default: undefined,
     rel: 'CustomField'
   }],
-  Filters: [{
+  filters: [{
     type: Schema.Types.ObjectId,
-    defauñt: undefined,
+    default: undefined,
     rel: 'Filter'
   }],
-  Orders: [{
+  orders: [{
     type: Schema.Types.ObjectId,
-    defauñt: undefined,
+    default: undefined,
     rel: 'Order'
   }],
-  Clients: [{
+  clients: [{
     type: Schema.Types.ObjectId,
-    defauñt: undefined,
+    default: undefined,
     rel: 'Client'
   }],
-  Reservations: [{
+  reservations: [{
     type: Schema.Types.ObjectId,
-    defauñt: undefined,
+    default: undefined,
     rel: 'Reservation'
   }],
-  Calendar: CalendarConfigSchema
+  calendar: CalendarConfigSchema
 })
 
 StoreSchema.pre('save', (next) => {
