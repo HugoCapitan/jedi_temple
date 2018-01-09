@@ -1,14 +1,18 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const { areBeforeAfter, isEmail, isDate } = require('../utils/validators')
+
 const ReservationSchema = new Schema({
   email: {
     type: String,
-    required: true
+    required: true,
+    validate: isEmail
   },
   plan: { // Short or Long
     type: String,
-    required: true
+    required: true,
+    enum: ['short', 'long']
   },
   status: {
     type: Number,
@@ -16,11 +20,13 @@ const ReservationSchema = new Schema({
   },
   arrive_date: {
     type: Date,
-    required: true
+    required: true,
+    validate(val) { return isDate(val) && areBeforeAfter(val, this.departure_date) },
   },
   departure_date: {
     type: Date,
-    required: true
+    required: true,
+    validate(val) { return isDate(val) && areBeforeAfter(this.arrive_date, val) }
   },
   created_at: Date,
   updated_at: Date
