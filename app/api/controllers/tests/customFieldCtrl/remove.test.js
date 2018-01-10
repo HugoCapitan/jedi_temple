@@ -19,13 +19,6 @@ describe('CustomFieldCtrl -> remove()', () => {
     expect(CustomField.findByIdAndRemove.mock.calls[0][0]).toBe(expectedId)
   })
 
-  test('Should call productCtrl.removeAllProductsCustom() with the deletedField id', async () => {
-    await customFieldCtrl.remove(expectedId)
-
-    expect(productCtrl.removeAllProductsCustom.mock.calls.length).toBe(1)
-    expect(productCtrl.removeAllProductsCustom.mock.calls[0][0]).toBe('expected_id')
-  })
-
   test('Should throw an Error with customOrigin == "Product"', async () => {
     productCtrl.removeAllProductsCustom = jest.fn(() => {
       let prodsErr = new Error('Faked Error')
@@ -74,11 +67,6 @@ describe('CustomFieldCtrl -> remove()', () => {
     }
 
     CustomField.findByIdAndRemove = jest.fn(id => _.clone(deletedField))
-    productCtrl.removeAllProductsCustom = jest.fn(() => {
-      return new Promise((resolve, reject) => {
-        resolve()
-      })
-    })
   }
 
 })
