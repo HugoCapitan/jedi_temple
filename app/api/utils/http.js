@@ -10,7 +10,7 @@ module.exports = { sendError }
 */
 function sendError(status, msg, err, res) {
   if (err.message != 'Faked Error')
-    winston.error(err);
+    console.log(err);
 
   res.status(status).send(msg);
 }
