@@ -18,6 +18,11 @@ const CustomFieldSchema = new Schema({
     type: Boolean,
     required: true
   },
+  filter: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   type: {
     type: String,
     required: true,
