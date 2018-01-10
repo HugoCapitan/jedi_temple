@@ -27,7 +27,7 @@ async function create(fieldObj) {
     else
       e.customMessage = 'Unexpected Error'
 
-    throw e;
+    throw e
   }
 }
 
@@ -52,9 +52,9 @@ async function remove(id) {
 async function update(id, newFieldObj) {
   // Type is not modifyiable
   try {
-    const updatedCustomField = await CustomField.findOneAndUpdate({slug: slug}, newFieldObj)
+    await CustomField.findByIdAndUpdate(id, newFieldObj)
+    const updatedCustomField = await CustomField.findById(id)
     // Update Products with thit custom if necessary
-    Object.assign({}, updatedCustomField, newField);
     return updatedCustomField
   } catch (e) {
     if (e.customOrigin) throw e
@@ -105,7 +105,7 @@ async function apiRead (req, res) {
       throw notFoundError
     }
 
-    res.status(200).json(foundCustomField);   
+    res.status(200).json(foundCustomField)
   } catch(e) {
     if (e.name === 'NotFoundError')
       sendError(404, `CustomField ${req.params.id} not found`, e, res)
@@ -139,24 +139,24 @@ async function apiRemove (req, res) {
 
 async function apiUpdate (req, res) {
   try {
-    const updatedCustomField = await CustomField.findByIdAndUpdate(req.params.id, req.body)
+    await CustomField.findByIdAndUpdate(req.params.id, req.body)
 
     // Update all products
     
-    Object.assign({}, updatedCustomField, req.body);
-    res.status(200).json(updatedCustomField);
+    const updatedCustomField = await CustomField.findById(req.params.id)
+    res.status(200).json(updatedCustomField)
   } catch (e) {
 
     if (e.customOrigin === 'Product') 
-      sendError(500, 'Products Update Error', e, res);
+      sendError(500, 'Products Update Error', e, res)
     else if (e.name === 'ValidationError')
-      sendError(403, 'Validation Error', e, res);
+      sendError(403, 'Validation Error', e, res)
     else if (e.name === 'CastError')
-      sendError(404, `CustomField ${req.params.id} not found`, e, res);
+      sendError(404, `CustomField ${req.params.id} not found`, e, res)
     else if (e.code === 11000)
-      sendError(409, 'Duplicated Name', e, res);
+      sendError(409, 'Duplicated Name', e, res)
     else
-      sendError(500, 'Unexpected Error', e, res);
+      sendError(500, 'Unexpected Error', e, res)
 
   }
 }
