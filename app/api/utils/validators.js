@@ -18,7 +18,6 @@ module.exports = {
     return moment(val).isValid()
   },
   isThisMinute(val) {
-    console.log(val)
     return moment(val).isSame(moment(), 'minute')
   },
   isEmail(val) {
