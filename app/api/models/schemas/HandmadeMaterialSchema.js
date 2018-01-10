@@ -12,9 +12,7 @@ module.exports = new Schema({
     required: true
   },
   models: [{
-    type: Schema.Types.ObjectId,
-    rel: 'Product',
-    required: true,
+    type: String,
     unique: true
   }]
 })
