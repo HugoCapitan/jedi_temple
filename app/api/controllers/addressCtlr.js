@@ -127,19 +127,19 @@ async function apiRemove(req, res) {
 
 async function apiUpdate(req, res) {
   try {
-    await CustomField.findByIdAndUpdate(req.params.id, req.body)
-    const updatedCustomField = await CustomField.findById(req.params.id)
+    await INSERTMODEL.findByIdAndUpdate(req.params.id, req.body)
+    const updatedINSERTMODEL = await INSERTMODEL.findById(req.params.id)
 
-    res.status(200).json(updatedCustomField);
+    res.status(200).json(updatedINSERTMODEL)
   } catch (e) {
     if (e.name === 'ValidationError')
-      sendError(403, 'Validation Error', e, res);
+      sendError(403, 'Validation Error', e, res)
     else if (e.name === 'CastError')
-      sendError(404, `CustomField ${req.params.id} not found`, e, res);
+      sendError(404, `INSERTMODEL ${req.params.id} not found`, e, res)
     else if (e.code === 11000)
-      sendError(409, 'Duplicated Name', e, res);
+      sendError(409, 'Duplicated Name', e, res)
     else
-      sendError(500, 'Unexpected Error', e, res);
+      sendError(500, 'Unexpected Error', e, res)
 
   }
 }
