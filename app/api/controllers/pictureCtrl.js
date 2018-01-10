@@ -1,4 +1,4 @@
-const INSERTMODEL = require('../models/INSERTMODEL')
+const Picture = require('../models/Picture')
 
 const { sendError } = require('../utils/http')
 
@@ -13,12 +13,12 @@ module.exports = {
   apiUpdate
 }
 
-async function create(newINSERTMODEL) {
+async function create(newPicture) {
   try {
-    const addedINSERTMODEL = await new INSERTMODEL(newINSERTMODEL).save()
-    return addedINSERTMODEL
+    const addedPicture = await new Picture(newPicture).save()
+    return addedPicture
   } catch (e) {
-    e.customOrigin = 'INSERTMODEL'
+    e.customOrigin = 'Picture'
     if (e.name === 'ValidationError')
       e.customMessage = 'Validation Error'
     else if (e.code === 11000)
@@ -32,12 +32,12 @@ async function create(newINSERTMODEL) {
 
 async function remove(id) {
   try {
-    const deletedINSERTMODEL = await INSERTMODEL.findByIdAndRemove(id)
-    return deletedINSERTMODEL
+    const deletedPicture = await Picture.findByIdAndRemove(id)
+    return deletedPicture
   } catch (e) {
-    e.customOrigin = 'INSERTMODEL'
+    e.customOrigin = 'Picture'
     if (e.name === 'CastError')
-      e.customMessage = `INSERTMODEL ${id} not found`
+      e.customMessage = `Picture ${id} not found`
     else
       e.customMessage = 'Unexpected Error'
 
@@ -45,17 +45,17 @@ async function remove(id) {
   }
 }
 
-async function update(id, newINSERTMODEL) {
+async function update(id, newPicture) {
   try {
-    await INSERTMODEL.find ({_id: slug}, newINSERTMODEL)
-    const updatedINSERTMODEL = await INSERTMODEL.findById(id)
-    return updatedINSERTMODEL
+    await Picture.find ({_id: slug}, newPicture)
+    const updatedPicture = await Picture.findById(id)
+    return updatedPicture
   } catch (e) {
-    e.customOrigin = 'INSERTMODEL'
+    e.customOrigin = 'Picture'
     if (e.name === 'ValidationError')
       e.customMessage = 'Validation Error'
     else if (e.name === "CastError")
-      e.customMessage = `INSERTMODEL ${id} not found`
+      e.customMessage = `Picture ${id} not found`
     else if (e.code === 11000)
       e.customMessage = 'Duplicated Name'
     else
@@ -67,7 +67,7 @@ async function update(id, newINSERTMODEL) {
 
 async function apiAll(req, res) {
   try {
-    let all = await INSERTMODEL.find()
+    let all = await Picture.find()
     res.status(200).json(all)
   } catch (e) {
     sendError(500, 'Unexpected Error', e, res)
@@ -76,8 +76,8 @@ async function apiAll(req, res) {
 
 async function apiCreate(req, res) {
   try {
-    let newINSERTMODEL = await new INSERTMODEL(req.body).save()
-    res.status(200).json(newINSERTMODEL)
+    let newPicture = await new Picture(req.body).save()
+    res.status(200).json(newPicture)
   } catch (e) {
     if (e.name === 'ValidationError')
       sendError(403, 'Validation Error', e, res)
@@ -90,17 +90,17 @@ async function apiCreate(req, res) {
 
 async function apiRead(req, res) {
   try {
-    const foundINSERTMODEL = await INSERTMODEL.findById(req.params.id)
-    if (!foundINSERTMODEL) {
-      let notFoundError = new Error(`INSERTMODEL ${req.params.id} not found`)
+    const foundPicture = await Picture.findById(req.params.id)
+    if (!foundPicture) {
+      let notFoundError = new Error(`Picture ${req.params.id} not found`)
       notFoundError.name = 'NotFoundError'
       throw notFoundError
     }
 
-    res.status(200).json(foundINSERTMODEL)
+    res.status(200).json(foundPicture)
   } catch(e) {
     if (e.name === 'NotFoundError')
-      sendError(404, `INSERTMODEL ${req.params.id} not found`, e, res)
+      sendError(404, `Picture ${req.params.id} not found`, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
@@ -108,18 +108,18 @@ async function apiRead(req, res) {
 
 async function apiRemove(req, res) {
   try {
-    const removedINSERTMODEL = await INSERTMODEL.findByIdAndRemove(req.params.id)
+    const removedPicture = await Picture.findByIdAndRemove(req.params.id)
 
-    if (!removedINSERTMODEL) {
-      let notFoundError = new Error(`INSERTMODEL ${req.params.id} not found`)
+    if (!removedPicture) {
+      let notFoundError = new Error(`Picture ${req.params.id} not found`)
       notFoundError.name = "NotFoundError"
       throw notFoundError
     }
 
-    res.status(200).send(`INSERTMODEL ${removedINSERTMODEL._id} deleted`)
+    res.status(200).send(`Picture ${removedPicture._id} deleted`)
   } catch (e) {
     if (e.name === 'CastError' || e.name === 'NotFoundError')
-      sendError(404, `INSERTMODEL ${req.params.id} not found`, e, res)
+      sendError(404, `Picture ${req.params.id} not found`, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
@@ -127,15 +127,15 @@ async function apiRemove(req, res) {
 
 async function apiUpdate(req, res) {
   try {
-    await INSERTMODEL.findByIdAndUpdate(req.params.id, req.body)
-    const updatedINSERTMODEL = await INSERTMODEL.findById(req.params.id)
+    await Picture.findByIdAndUpdate(req.params.id, req.body)
+    const updatedPicture = await Picture.findById(req.params.id)
 
-    res.status(200).json(updatedINSERTMODEL)
+    res.status(200).json(updatedPicture)
   } catch (e) {
     if (e.name === 'ValidationError')
       sendError(403, 'Validation Error', e, res)
     else if (e.name === 'CastError')
-      sendError(404, `INSERTMODEL ${req.params.id} not found`, e, res)
+      sendError(404, `Picture ${req.params.id} not found`, e, res)
     else if (e.code === 11000)
       sendError(409, 'Duplicated Name', e, res)
     else
