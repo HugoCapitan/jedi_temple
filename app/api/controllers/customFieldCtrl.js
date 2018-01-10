@@ -34,7 +34,6 @@ async function create(fieldObj) {
 async function remove(id) {
   try {
     const delCustomField = await CustomField.findByIdAndRemove(id)
-    await productCtrl.removeAllProductsCustom(id)
     return delCustomField
   } catch (e) {
     if (e.customOrigin) throw e // <- error from product
@@ -123,8 +122,6 @@ async function apiRemove (req, res) {
       notFoundError.name = "NotFoundError"
       throw notFoundError
     }
-
-    await productCtrl.removeAllProductsCustom(removedCustomField.slug)
 
     res.status(200).send(`CustomField ${removedCustomField._id} deleted`)
   } catch (e) {
