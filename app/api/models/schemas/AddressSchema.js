@@ -33,21 +33,7 @@ const AddressSchema = new Schema({
   zip: {
     type: Number,
     required: true
-  },
-  created_at: Date,
-  updated_at: Date
+  }
 })
 
-AddressSchema.pre('save', (next) => {
-  const currentDate = new Date()
-
-  this.updated_at = currentDate
-
-  if (!this.created_at) this.created_at = currentDate
-
-  next()
-})
-
-const Address = mongoose.model('Address', AddressSchema)
-
-module.exports = Address
+module.exports = AddressSchema

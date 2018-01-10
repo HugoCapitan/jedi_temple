@@ -1,9 +1,11 @@
-const Address = require('../Address')
+const mongoose = require('mongoose')
+const AddressSchema = require('../AddressSchema')
 
-const { howManyKeys } = require('../../utils')
-const { getValidAddress } = require('../../utils/validSchemas')
+const { howManyKeys } = require('../../../utils')
+const { getValidAddress } = require('../../../utils/validSchemas')
 
 describe('Address model', () => {
+  const Address = mongoose.model('Address', AddressSchema)
   
   test('Should be valid', () => {
     const m = new Address( getValidAddress() )
