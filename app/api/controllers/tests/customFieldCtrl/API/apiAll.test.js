@@ -4,7 +4,7 @@ jest.mock('../../../../models/CustomField')
 const CustomField = require('../../../../models/CustomField')
 const customFieldCtrl = require('../../../customFieldCtrl')
 
-describe('CustomField Controller -> apiAll()', () => {
+describe('CustomFieldCtrl -> apiAll()', () => {
   let req, res, fields
 
   beforeEach(() => {setupTest()})
