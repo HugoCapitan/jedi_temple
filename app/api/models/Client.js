@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const AddressSchema = require('./schemas/AddressSchema')
-const WishSchema = require('./schemas/WishSchema')
 
 const ClientSchema = new Schema({
   name: {
@@ -16,24 +15,23 @@ const ClientSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
-    set(val) {
-      // Encript
-      return val
-    }
+    required: true
   },
   addresses: [AddressSchema],
   orders:[{
     type: Schema.Types.ObjectId,
-    rel: 'Order'
+    rel: 'Order',
+    default: []
   }],
   reservations: [{
     type: Schema.Types.ObjectId,
-    rel: 'Reservation'
+    rel: 'Reservation',
+    default: []
   }],
   wishlist: [{
     type: Schema.Types.ObjectId,
-    rel: 'Product'
+    rel: 'Product',
+    default: []
   }],
   created_at: Date,
   updated_at: Date

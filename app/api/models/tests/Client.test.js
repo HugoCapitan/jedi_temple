@@ -41,15 +41,7 @@ describe('Client model', () => {
     expect(v.errors['wishlist']).toBeTruthy()
   })
 
-  test('Should be invalid if address id is empty', () => {
-    const m = new Client( Object.assign(validClient, { addresses: [ '' ] }) )
-    const v = m.validateSync()
-
-    expect(howManyKeys(v.errors)).toBe(1)
-    expect(v.errors.addresses).toBeTruthy()
-  })
-
-  test('Should be invalid if address id is malformed', () => {
+  test('Should be invalid if address is malformed', () => {
     const m = new Client( Object.assign(validClient, { addresses: [ 'supbabe' ] }) )
     const v = m.validateSync()
 
@@ -71,6 +63,24 @@ describe('Client model', () => {
 
     expect(howManyKeys(v.errors)).toBe(1)
     expect(v.errors.orders).toBeTruthy()
+  })
+
+  describe('preSave Middleware', () => {
+
+    test('Should encript password before saving it')
+    
+    test('Should add created_at and updated_at')
+
+    test('Shouldnt modify created_at')
+
+  })
+
+  describe('preUpdate Middleware', () => {
+
+    test('Should modify updated_at date')
+
+    test('Should encript password before saving')
+
   })
 
 })
