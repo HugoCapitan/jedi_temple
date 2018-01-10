@@ -7,42 +7,33 @@ const customFieldCtrl = require('../../customFieldCtrl')
 const productCtrl = require('../../productCtrl')
 const utils = require('../../../utils')
 
-describe('CustomFieldCtrl -> updateNameOrType()', () => {
-  let fieldToSend
-  let updatedField
-  let expectedField
-  let slugToSend
+describe('CustomFieldCtrl -> update()', () => {
+  let fieldToSend, oldField, updatedField,
+      idToSend
 
-  beforeEach(() => {setupTest()})
+  beforeEach(() => { setupTest() })
 
-  test('Should add a slug to the sent field', async () => {
-    await customFieldCtrl.updateNameOrType(slugToSend, fieldToSend)
+  test('Should call CustomField.findByIdAndUpdate() using the sent id and field', async () => {
+    updatedField = _.clone(fieldToSend)
 
-    expect(utils.slugify).toHaveBeenCalled()
-    expect(fieldToSend.slug).toBe('new_name')
+    await customFieldCtrl.update(idToSend, fieldToSend)    
+
+    expect(CustomField.findByIdAndUpdate.mock.calls.length).toBe(1)
+    expect(CustomField.findByIdAndUpdate.mock.calls[0][0]).toEqual('expected_id')
+    expect(CustomField.findByIdAndUpdate.mock.calls[0][1]).toEqual(updatedField)
   })
 
-  test('Should call CustomField.findByOneAndUpdate() using the sent id and field', async () => {
-    expectedField = _.clone(fieldToSend)
-    expectedField.slug = 'new_name'
+  test('Should call CustomField.findById with the sent id', async () => {
+    await customFieldCtrl.update(idToSend, fieldToSend)
 
-    await customFieldCtrl.updateNameOrType(slugToSend, fieldToSend)    
-
-    expect(CustomField.findOneAndUpdate.mock.calls.length).toBe(1)
-    expect(CustomField.findOneAndUpdate.mock.calls[0][0]).toEqual({slug: slugToSend})
-    expect(CustomField.findOneAndUpdate.mock.calls[0][1]).toEqual(expectedField)
-  })
-
-  test('Should call productCtrl.updateAllProductsCustom using the old field slug', async () => {
-    await customFieldCtrl.updateNameOrType(slugToSend, fieldToSend)
-
-    expect(productCtrl.updateAllProductsCustom.mock.calls.length).toBe(1)
-    expect(productCtrl.updateAllProductsCustom.mock.calls[0][0]).toBe('old_name')
+    expect(CustomField.findById.mock.calls.length).toBe(1)
+    expect(CustomField.findById.mock.calls[0][0]).toBe('expected_id')
   })
 
   test('Should return the updated field', async () => {
-    const returnedField = await customFieldCtrl.updateNameOrType(slugToSend, fieldToSend)
-    expect(returnedField).toEqual(expectedField)
+    const returnedField = await customFieldCtrl.update(idToSend, fieldToSend)
+
+    expect(returnedField).toEqual(updatedField)
   })
 
   test('Should throw a Error with customOrigin == "Product"', async () => {
@@ -53,7 +44,7 @@ describe('CustomFieldCtrl -> updateNameOrType()', () => {
     })
 
     try {
-      await customFieldCtrl.updateNameOrType(slugToSend, fieldToSend)
+      await customFieldCtrl.update(idToSend, fieldToSend)
     } catch (e) {
       expect(e.customOrigin).toBe('Product')
     }
@@ -67,10 +58,10 @@ describe('CustomFieldCtrl -> updateNameOrType()', () => {
     })
 
     try {
-      await customFieldCtrl.updateNameOrType(slugToSend, fieldToSend)
+      await customFieldCtrl.update(idToSend, fieldToSend)
     } catch (e) {
       expect(e.customOrigin).toBe('Field')
-      expect(e.customMessage).toBe(`CustomField ${slugToSend} not found`)
+      expect(e.customMessage).toBe(`CustomField ${idToSend} not found`)
     }
   })
 
@@ -82,7 +73,7 @@ describe('CustomFieldCtrl -> updateNameOrType()', () => {
     })
 
     try {
-      await customFieldCtrl.updateNameOrType(slugToSend, fieldToSend)
+      await customFieldCtrl.update(idToSend, fieldToSend)
     } catch (e) {
       expect(e.customOrigin).toBe('Field')
       expect(e.customMessage).toBe('Validation Error')
@@ -97,7 +88,7 @@ describe('CustomFieldCtrl -> updateNameOrType()', () => {
     })
 
     try {
-      await customFieldCtrl.updateNameOrType(slugToSend, fieldToSend)
+      await customFieldCtrl.update(idToSend, fieldToSend)
     } catch (e) {
       expect(e.customOrigin).toBe('Field')
       expect(e.customMessage).toBe('Duplicated Name')
@@ -108,7 +99,7 @@ describe('CustomFieldCtrl -> updateNameOrType()', () => {
     CustomField.findByIdAndUpdate = jest.fn(() => {throw new Error('Faked Error')})
 
     try {
-      await customFieldCtrl.updateNameOrType(slugToSend, fieldToSend)
+      await customFieldCtrl.update(idToSend, fieldToSend)
     } catch (e) {
       expect(e.customOrigin).toBe('Field')
       expect(e.customMessage).toBe('Unexpected Error')
@@ -120,20 +111,21 @@ describe('CustomFieldCtrl -> updateNameOrType()', () => {
       name: 'New Name',
       show: true
     }
-    updatedField = {
+    oldField = {
       name: 'Old Name',
       slug: 'old_name',
       show: false
     }
-    expectedField = {
+    updatedField = {
       name: 'New Name',
       slug: 'new_name',
       show: true
     }
 
-    slugToSend = 'expected_id'
+    idToSend = 'expected_id'
 
-    CustomField.findOneAndUpdate = jest.fn(() => _.clone(updatedField))
+    CustomField.findByIdAndUpdate = jest.fn(() => _.clone(oldField))
+    CustomField.findById = jest.fn(() => _.clone(updatedField))
 
     productCtrl.updateAllProductsCustom = jest.fn(() => {
       return new Promise((resolve, reject) => {

@@ -49,11 +49,9 @@ async function remove(id) {
 }
 
 async function update(id, newFieldObj) {
-  // Type is not modifyiable
   try {
     await CustomField.findByIdAndUpdate(id, newFieldObj)
     const updatedCustomField = await CustomField.findById(id)
-    // Update Products with thit custom if necessary
     return updatedCustomField
   } catch (e) {
     if (e.customOrigin) throw e
@@ -61,8 +59,8 @@ async function update(id, newFieldObj) {
     e.customOrigin = 'Field'
     if (e.name === 'ValidationError')
       e.customMessage = 'Validation Error'
-    else if (e.name === "CastError")
-      e.customMessage = `CustomField ${slug} not found`
+    else if (e.name === 'CastError')
+      e.customMessage = `CustomField ${id} not found`
     else if (e.code === 11000)
       e.customMessage = 'Duplicated Name'
     else
