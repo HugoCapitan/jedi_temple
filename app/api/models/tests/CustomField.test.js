@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const CustomField = require('../CustomField')
 const howManyKeys = require('../../utils').howManyKeys
 
@@ -110,6 +112,20 @@ describe('CustomField Model', () => {
 
       expect(validNumberCustom.slug).toBe('number_customfield')
       expect( isThisMinute(validNumberCustom.created_at) ).toBeTruthy()
+      expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
+    })
+
+    test('Should not update created_at date', () => {
+      const yesterday = moment().subtract(1, 'days').toDate()
+      const context = Object.assign(validNumberCustom, { created_at: yesterday })
+
+      const boundMiddlewareFunc = CustomField.schema._middlewareFunctions.preSave.bind(context)
+      const next = jest.fn()
+
+      boundMiddlewareFunc(next)
+
+      expect(validNumberCustom.slug).toBe('number_customfield')
+      expect(validNumberCustom.created_at).toBe(yesterday)
       expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
     })
   }) 
