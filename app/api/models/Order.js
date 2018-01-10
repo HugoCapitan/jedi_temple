@@ -5,7 +5,7 @@ const AddressSchema      = require('./schemas/AddressSchema')
 const OrderProductSchema = require('./schemas/OrderProductSchema')
 
 const { createOrdercode } = require('../utils/models')
-const { isEmail }m        = require('../utils/validators') 
+const { isEmail }         = require('../utils/validators') 
 
 const OrderSchema = new Schema({
   email: {
