@@ -1,6 +1,9 @@
+const moment = require('moment')
+
 const Client = require('../Client')
 
 const { howManyKeys } = require('../../utils')
+const { isThisMinute } = require('../../utils/validators')
 const { getValidClient } = require('../../utils/validSchemas')
 
 describe('Client model', () => {
@@ -67,17 +70,38 @@ describe('Client model', () => {
 
   describe('preSave Middleware', () => {
 
-    test('Should encript password before saving it')
-    
-    test('Should add created_at and updated_at')
+    test('Should add created_at and updated_at', () => {
+      const context = validClient
 
-    test('Shouldnt modify created_at')
+      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
+      const next = jest.fn()
+
+      boundMiddlewareFunc(next)
+
+      expect( isThisMinute(validClient.created_at) ).toBeTruthy()
+      expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
+    })
+
+    test('Should modify updated_at but not created_at', () => {
+      const creationDate = moment().subtract(1, 'weeks').toDate()
+      Object.assign( validClient, { created_at: creationDate, updated_at: creationDate } )
+
+      const context = validClient
+
+      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
+      const next = jest.fn()
+
+      boundMiddlewareFunc(next)
+      
+      expect( validClient.created_at ).toBe(creationDate)
+      expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
+    })
+
+    test('Should encript password before saving it')
 
   })
 
-  describe('preUpdate Middleware', () => {
-
-    test('Should modify updated_at date')
+  describe('preUpdate Middleware')
 
     test('Should encript password before saving')
 
