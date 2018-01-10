@@ -37,16 +37,21 @@ const ClientSchema = new Schema({
   updated_at: Date
 })
 
-ClientSchema.pre('save', (next) => {
-  var currentDate = new Date()
+ClientSchema._middlewareFuncs = {
+  preSave(next) {
+    const currentDate = new Date()
 
-  this.updated_at = currentDate
+    this.updated_at = currentDate
+    if (!this.created_at) this.created_at = currentDate
+  },
+  preUpdate(next) {
+    this.updated_at = new Date()
+  }
+}
 
-  if (!this.created_at) 
-    this.created_at = currentDate
-
-  next()
-})
+ClientSchema.pre('save', ClientSchema._middlewareFuncs.preSave)
+ClientSchema.pre('udpate', ClientSchema._middlewareFuncs.preUpdate)
+ClientSchema.pre('findOneAndUpdate', ClientSchema._middlewareFuncs.preUpdate)
 
 const Client = mongoose.model('Client', ClientSchema)
 
