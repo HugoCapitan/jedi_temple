@@ -14,6 +14,11 @@ const StoreSchema = new Schema({
     default: undefined,
     rel: 'Product'
   }],
+  hm_products: [{
+    type: Schema.Types.ObjectId,
+    default: undefined,
+    rel: 'HMProduct'
+  }],
   texts: [{
     type: Schema.Types.ObjectId,
     default: undefined,
