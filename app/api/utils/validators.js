@@ -1,5 +1,5 @@
 const moment = require('moment')
-const CustomField = require('../models/CustomField')
+// const CustomField = require('../models/CustomField')
 
 module.exports = {
   areBeforeAfter(before, after) {
@@ -35,12 +35,12 @@ module.exports = {
     })
     return !!isValid
   },
-  async hasRequiredCustoms(val) {
-    console.log('Original')
-    const PriceCustom = await CustomField.findOne({ slug: 'price' })
+  // async hasRequiredCustoms(val) {
+  //   console.log('Original')
+  //   const PriceCustom = await CustomField.findOne({ slug: 'price' })
 
-    const hasPrice = val.find( (custom) => custom.custom_id === PriceCustom._id )    
+  //   const hasPrice = val.find( (custom) => custom.custom_id === PriceCustom._id )    
 
-    return !!hasPrice
-  }
+  //   return !!hasPrice
+  // }
 }

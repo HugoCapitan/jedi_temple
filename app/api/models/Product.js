@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 const { slugify } = require('../utils')
-const { hasRequiredCustoms } = require('../utils/validators')
+// const { hasRequiredCustoms } = require('../utils/validators')
 
 const CustomSchema = require('./schemas/CustomSchema')
 const ImageSchema = require('./schemas/ImageSchema')
@@ -23,7 +23,7 @@ const ProductSchema = new Schema({
   description: String,
   customs: {
     type: [CustomSchema],
-    validate: hasRequiredCustoms
+    // validate: hasRequiredCustoms
   },
   created_at: Date,
   updated_at: Date
