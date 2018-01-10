@@ -29,11 +29,6 @@ const StoreSchema = new Schema({
     default: undefined,
     rel: 'CustomField'
   }],
-  filters: [{
-    type: Schema.Types.ObjectId,
-    default: undefined,
-    rel: 'Filter'
-  }],
   orders: [{
     type: Schema.Types.ObjectId,
     default: undefined,
