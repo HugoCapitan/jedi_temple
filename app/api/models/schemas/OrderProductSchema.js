@@ -2,9 +2,13 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 module.exports = new Schema({
-  product_id: {
-    type: Schema.Types.ObjectId,
-    rel: 'Product',
+  product_code: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  product_price: {
+    type: Number,
     required: true
   },
   quantity: {
