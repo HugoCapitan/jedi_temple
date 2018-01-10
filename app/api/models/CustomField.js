@@ -31,6 +31,7 @@ const CustomFieldSchema = new Schema({
   values: {
     type: [{
       type: String,
+      unique: true,
       validate(val) { return val != '' }
     }],
     required() { return saysString(this.type) },
