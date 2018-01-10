@@ -4,7 +4,7 @@ const AddressSchema = require('../AddressSchema')
 const { howManyKeys } = require('../../../utils')
 const { getValidAddress } = require('../../../utils/validSchemas')
 
-describe('Address model', () => {
+describe('AddressSchema', () => {
   const Address = mongoose.model('Address', AddressSchema)
   
   test('Should be valid', () => {

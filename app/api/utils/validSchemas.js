@@ -1,7 +1,5 @@
-const Address     = require('../models/Address')
 const Client      = require('../models/Client')
 const CustomField = require('../models/CustomField')
-const Filter      = require('../models/Filter')
 const HMProduct   = require('../models/HMProduct')
 const Order       = require('../models/Order')
 const Picture     = require('../models/Picture')
@@ -14,7 +12,6 @@ const moment = require('moment')
 module.exports = {
   getValidAddress: getValidAddress,
   getValidClient: getValidClient,
-  getValidFilter: getValidFilter,
   getValidHMProduct: getValidHMProduct,
   getValidImage: getValidImage,
   getValidNumberCustom: getValidNumberCustom,
@@ -41,7 +38,6 @@ function getValidAddress () {
 }
 
 function getValidClient() {
-  const address1 = new Address( getValidAddress() )
   const product = new Product( getValidProduct() )
   const order = new Order( getValidOrder() )
 
@@ -49,17 +45,9 @@ function getValidClient() {
     name: 'Some Name',
     email: 'some@email.com',
     password: 'arealhardpassword',
-    addresses: [address1._id],
+    addresses: [getValidAddress()],
     orders: [order._id],
     wishlist: [product._id]
-  }
-}
-
-function getValidFilter() {
-  const validCustom = new CustomField( getValidStringCustom() )
-
-  return {
-    custom_id: validCustom._id
   }
 }
 
@@ -99,7 +87,6 @@ function getValidNumberCustom() {
 }
 
 function getValidOrder() {
-  const address = new Address( getValidAddress() )
   const product = new Product( getValidProduct() )
 
   return {
@@ -110,8 +97,8 @@ function getValidOrder() {
       quantity: 5
     }],
     shipping: 15,
-    billing_address: address._id,
-    shipping_address: address._id
+    billing_address: getValidAddress(),
+    shipping_address: getValidAddress()
   }
 }
 
@@ -151,7 +138,6 @@ function getValidStore() {
   const text        = new Text( getValidText() )
   const picture     = new Picture( getValidPicture() )
   const customField = new CustomField( getValidNumberCustom() )
-  const filter      = new Filter( getValidFilter() )
   const order       = new Order( getValidOrder() )
   const client      = new Client( getValidClient() )
   const reservation = new Reservation( getValidReservation() )
@@ -162,7 +148,6 @@ function getValidStore() {
     texts: [ text._id ],
     pictures: [ picture._id ],
     customs: [ customField._id ],
-    filters: [ filter._id ],
     orders: [ order._id ],
     clients: [ client._id ],
     reservations: [ reservation._id ],

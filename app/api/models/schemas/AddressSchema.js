@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const { isEmail } = require('../utils/validators')
+const { isEmail } = require('../../utils/validators')
 
 const AddressSchema = new Schema({
   name: {
