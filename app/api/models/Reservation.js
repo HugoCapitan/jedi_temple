@@ -9,11 +9,6 @@ const ReservationSchema = new Schema({
     required: true,
     validate: isEmail
   },
-  plan: { // Short or Long
-    type: String,
-    required: true,
-    enum: ['short', 'long']
-  },
   status: {
     type: Number,
     required: true
@@ -28,9 +23,13 @@ const ReservationSchema = new Schema({
     required: true,
     validate(val) { return isDate(val) && areBeforeAfter(this.arrive_date, val) }
   },
-  billing_address:{
+  billing_address: {
     type: Schema.Types.ObjectId,
     rel: 'Address'
+  },
+  total: {
+    type: Number,
+    // set
   },
   created_at: Date,
   updated_at: Date
