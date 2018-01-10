@@ -62,7 +62,7 @@ const CustomFieldSchema = new Schema({
   updated_at: Date
 })
 
-CustomFieldSchema._middlewareFunctions = {
+CustomFieldSchema._middlewareFuncs = {
   preSave(next) {
     const currentDate = new Date()
 
@@ -78,13 +78,21 @@ CustomFieldSchema._middlewareFunctions = {
     this._update.updated_at = currentDate
 
     if (this._update.name) this._update.slug = slugify(this._update.name)
+
     next()
+  },
+  preRemove(next) {
+    const productError = new Error('prod')
+    productError.customOrigin = ('Product')
+    next(productError)
   }
 }
 
-CustomFieldSchema.pre('save', CustomFieldSchema._middlewareFunctions.preSave)
-CustomFieldSchema.pre('update', CustomFieldSchema._middlewareFunctions.preUpdate)
-CustomFieldSchema.pre('findOneAndUpdate', CustomFieldSchema._middlewareFunctions.preUpdate)
+CustomFieldSchema.pre('save', CustomFieldSchema._middlewareFuncs.preSave)
+CustomFieldSchema.pre('update', CustomFieldSchema._middlewareFuncs.preUpdate)
+CustomFieldSchema.pre('findOneAndUpdate', CustomFieldSchema._middlewareFuncs.preUpdate)
+CustomFieldSchema.pre('remove', CustomFieldSchema._middlewareFuncs.preRemove)
+CustomFieldSchema.pre('findOneAndRemove', CustomFieldSchema._middlewareFuncs.preRemove)
 
 const CustomField = mongoose.model('CustomField', CustomFieldSchema)
 
