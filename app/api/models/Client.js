@@ -29,6 +29,10 @@ const ClientSchema = new Schema({
     type: Schema.Types.ObjectId,
     rel: 'Order'
   }],
+  reservations: [{
+    type: Schema.Types.ObjectId,
+    rel: 'Reservation'
+  }],
   wishlist: [{
     type: Schema.Types.ObjectId,
     rel: 'Product'
