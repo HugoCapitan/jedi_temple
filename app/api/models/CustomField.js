@@ -21,9 +21,7 @@ const CustomFieldSchema = new Schema({
   type: {
     type: String,
     required: true,
-    validate(val) {
-      return val === 'number' || val === 'string'
-    }
+    enum: ['number', 'string']
   },
   values: {
     type: [{
@@ -68,18 +66,34 @@ CustomFieldSchema._middlewareFunctions = {
   preSave(next) {
     const currentDate = new Date()
 
-  this.slug = slugify(this.name)
+    this.slug       = slugify(this.name)    
+    this.updated_at = currentDate
+    if (!this.created_at)
+      this.created_at = currentDate
 
-  this.updated_at = currentDate
+    next()
+  },
+  preUpdate(next) {
+    console.log('update', this)
+    const currentDate = new Date()
+    this._update.updated_at = currentDate
 
-  if (!this.created_at) 
-    this.created_at = currentDate
+    if (this._update.name) this._update.slug = slugify(this._update.name)
+    next()
+  },
+  preFindOneAndUpdate(next) {
+    console.log('find & update', this)
+    const currentDate = new Date()
+    this._update.updated_at = currentDate
 
-  next()
+    if (this._update.name) this._update.slug = slugify(this._update.name)
+    next()
   }
 }
 
 CustomFieldSchema.pre('save', CustomFieldSchema._middlewareFunctions.preSave)
+CustomFieldSchema.pre('update', CustomFieldSchema._middlewareFunctions.preUpdate)
+CustomFieldSchema.pre('findOneAndUpdate', CustomFieldSchema._middlewareFunctions.preFindOneAndUpdate)
 
 const CustomField = mongoose.model('CustomField', CustomFieldSchema)
 
