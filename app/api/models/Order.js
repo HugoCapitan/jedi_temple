@@ -1,10 +1,11 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const AddressSchema      = require('./schemas/AddressSchema')
 const OrderProductSchema = require('./schemas/OrderProductSchema')
 
 const { createOrdercode } = require('../utils/models')
-const { isEmail } = require('../utils/validators') 
+const { isEmail }m        = require('../utils/validators') 
 
 const OrderSchema = new Schema({
   email: {
@@ -31,13 +32,11 @@ const OrderSchema = new Schema({
     required: true
   },
   billing_address: {
-    type: Schema.Types.ObjectId,
-    rel: 'Address',
+    type: AddressSchema,
     required: true
   },
   shipping_address: {
-    type: Schema.Types.ObjectId,
-    rel: 'Address',
+    type: AddressSchema,
     required: true
   },
   tracking_code: String,

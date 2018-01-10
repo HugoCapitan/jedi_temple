@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const AddressSchema = require('./schemas/AddressSchema')
 const WishSchema = require('./schemas/WishSchema')
 
 const ClientSchema = new Schema({
@@ -21,10 +22,7 @@ const ClientSchema = new Schema({
       return val
     }
   },
-  addresses: [{
-    type: Schema.Types.ObjectId,
-    rel: 'Address'
-  }],
+  addresses: [AddressSchema],
   orders:[{
     type: Schema.Types.ObjectId,
     rel: 'Order'

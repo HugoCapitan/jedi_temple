@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const AddressSchema = require('./schemas/AddressSchema')
+
 const { areBeforeAfter, isEmail, isDate } = require('../utils/validators')
 
 const ReservationSchema = new Schema({
@@ -24,8 +26,7 @@ const ReservationSchema = new Schema({
     validate(val) { return isDate(val) && areBeforeAfter(this.arrive_date, val) }
   },
   billing_address: {
-    type: Schema.Types.ObjectId,
-    rel: 'Address'
+    type: AddressSchema
   },
   total: {
     type: Number,
