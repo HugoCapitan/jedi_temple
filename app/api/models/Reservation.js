@@ -28,6 +28,10 @@ const ReservationSchema = new Schema({
     required: true,
     validate(val) { return isDate(val) && areBeforeAfter(this.arrive_date, val) }
   },
+  billing_address:{
+    type: Schema.Types.ObjectId,
+    rel: 'Address'
+  },
   created_at: Date,
   updated_at: Date
 })
