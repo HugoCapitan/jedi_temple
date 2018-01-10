@@ -1,11 +1,11 @@
-const CONTROLLER = require('../controllers/CONTROLLER')
+const clientCtrl = require('../controllers/clientCtrl')
 
 module.exports = app => {
-  app.route('/ROUTE/')
-    .get(CONTROLLER.apiAll)
-    .post(CONTROLLER.apiCreate)
-  app.route('/ROUTE/:id')
-    .get(CONTROLLER.apiRead)
-    .put(CONTROLLER.apiUpdate)
-    .delete(CONTROLLER.apiRemove)
+  app.route('/client/')
+    .get(clientCtrl.apiAll)
+    .post(clientCtrl.apiCreate)
+  app.route('/client/:id')
+    .get(clientCtrl.apiRead)
+    .put(clientCtrl.apiUpdate)
+    .delete(clientCtrl.apiRemove)
 }
