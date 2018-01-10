@@ -74,15 +74,6 @@ CustomFieldSchema._middlewareFunctions = {
     next()
   },
   preUpdate(next) {
-    console.log('update', this)
-    const currentDate = new Date()
-    this._update.updated_at = currentDate
-
-    if (this._update.name) this._update.slug = slugify(this._update.name)
-    next()
-  },
-  preFindOneAndUpdate(next) {
-    console.log('find & update', this)
     const currentDate = new Date()
     this._update.updated_at = currentDate
 
@@ -93,7 +84,7 @@ CustomFieldSchema._middlewareFunctions = {
 
 CustomFieldSchema.pre('save', CustomFieldSchema._middlewareFunctions.preSave)
 CustomFieldSchema.pre('update', CustomFieldSchema._middlewareFunctions.preUpdate)
-CustomFieldSchema.pre('findOneAndUpdate', CustomFieldSchema._middlewareFunctions.preFindOneAndUpdate)
+CustomFieldSchema.pre('findOneAndUpdate', CustomFieldSchema._middlewareFunctions.preUpdate)
 
 const CustomField = mongoose.model('CustomField', CustomFieldSchema)
 

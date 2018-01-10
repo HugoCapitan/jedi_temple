@@ -4,14 +4,14 @@ jest.mock('../../../models/CustomField')
 const CustomField     = require('../../../models/CustomField')
 const customFieldCtrl = require('../../customFieldCtrl')
 
+const { getValidNumberCustom } = require('../../../utils/validSchemas')
+
 describe('CustomFieldCtrl -> create()', () => {
   let fieldToSend
   let savedField
 
   beforeEach(() => {
-    fieldToSend = {
-      name: 'Field Name'
-    }
+    fieldToSend = getValidNumberCustom()
     savedField = _.clone(fieldToSend)
     CustomField.prototype.save = jest.fn(() => savedField)
   })
