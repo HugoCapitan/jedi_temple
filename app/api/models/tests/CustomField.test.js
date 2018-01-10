@@ -102,10 +102,11 @@ describe('CustomField Model', () => {
   })
 
   describe('Pre Save Middleware', () => {
+    
     test('Should sluggify name and add updated and created dates', () => {
       const context = validNumberCustom
 
-      const boundMiddlewareFunc = CustomField.schema._middlewareFunctions.preSave.bind(context)
+      const boundMiddlewareFunc = CustomField.schema._middlewareFuncs.preSave.bind(context)
       const next = jest.fn()
 
       boundMiddlewareFunc(next)
@@ -119,7 +120,7 @@ describe('CustomField Model', () => {
       const yesterday = moment().subtract(1, 'days').toDate()
       const context = Object.assign(validNumberCustom, { created_at: yesterday })
 
-      const boundMiddlewareFunc = CustomField.schema._middlewareFunctions.preSave.bind(context)
+      const boundMiddlewareFunc = CustomField.schema._middlewareFuncs.preSave.bind(context)
       const next = jest.fn()
 
       boundMiddlewareFunc(next)
@@ -128,6 +129,7 @@ describe('CustomField Model', () => {
       expect(validNumberCustom.created_at).toBe(yesterday)
       expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
     })
+
   }) 
 
   function setupTest () {
