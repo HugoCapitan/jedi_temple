@@ -70,6 +70,17 @@ describe('Client model', () => {
 
   describe('preSave Middleware', () => {
 
+    test('Should call next', () => {
+      const context = validClient
+
+      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
+      const next = jest.fn()
+
+      boundMiddlewareFunc(next)
+
+      expect( next.mock.calls.length ).toBe(1)
+    })
+
     test('Should add created_at and updated_at', () => {
       const context = validClient
 
@@ -101,7 +112,33 @@ describe('Client model', () => {
 
   })
 
-  describe('preUpdate Middleware')
+  describe('preUpdate Middleware', () => {
+
+    test('Should call next', () => {
+      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preUpdate
+      .bind({ _update: validClient })
+      const next = jest.fn()
+
+      boundMiddlewareFunc(next)
+
+      expect( next.mock.calls.length ).toBe(1)
+    })
+
+    test('Should update updated_at date', () => {
+      const creationDate = moment().subtract(1, 'weeks').toDate()
+      Object.assign( validClient, { created_at: creationDate, updated_at: creationDate } )
+
+      const updateObj = validClient
+
+      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preUpdate
+      .bind({ _update: updateObj })
+      const next = jest.fn()
+
+      boundMiddlewareFunc(next)
+
+      expect( validClient.created_at ).toBe(creationDate)
+      expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
+    })  
 
     test('Should encript password before saving')
 

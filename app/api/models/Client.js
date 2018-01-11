@@ -43,9 +43,13 @@ ClientSchema._middlewareFuncs = {
 
     this.updated_at = currentDate
     if (!this.created_at) this.created_at = currentDate
+
+    next()
   },
   preUpdate(next) {
-    this.updated_at = new Date()
+    this._update.updated_at = new Date()
+    
+    next()
   }
 }
 
