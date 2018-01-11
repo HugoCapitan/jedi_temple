@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 const CustomField = require('../models/CustomField')
 const productCtrl = require('./productCtrl')
 
@@ -134,11 +136,26 @@ async function apiRemove (req, res) {
 
 async function apiUpdate (req, res) {
   try {
-    await CustomField.findByIdAndUpdate(req.params.id, req.body)
+    let valuesToUpdate = []
+    
+    if (req.body.values) {
+      valuesToUpdate = _.cloneDeep(req.body.values)
+      delete req.body.values
+    }
 
-    // Update all products
+    await CustomField.findByIdAndUpdate(req.params.id, req.body)
     
     const updatedCustomField = await CustomField.findById(req.params.id)
+
+    valuesToUpdate.forEach(async (newValue) => {
+      const id = newValue.id
+      const newVal = newValue.value
+      
+      const oldVal = updatedCustomField.values.id(id)
+      oldVal.value = newVal
+      updatedCustomField.save()
+    })
+
     res.status(200).json(updatedCustomField)
   } catch (e) {
 
