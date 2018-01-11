@@ -136,25 +136,21 @@ async function apiRemove (req, res) {
 
 async function apiUpdate (req, res) {
   try {
-    let valuesToUpdate = []
+    const oldCustomField = await CustomField.findById(req.params.id)    
     
     if (req.body.values) {
-      valuesToUpdate = _.cloneDeep(req.body.values)
+      req.body.values.forEach((newVal) => {
+        !!newVal.id 
+        ? oldCustomField.values.id(newVal.id).value = newVal.value
+        : oldCustomField.values.push({ value: newVal.value })
+      })
+
       delete req.body.values
     }
-
-    await CustomField.findByIdAndUpdate(req.params.id, req.body)
     
-    const updatedCustomField = await CustomField.findById(req.params.id)
+    Object.assign( oldCustomField, req.body )
 
-    valuesToUpdate.forEach(async (newValue) => {
-      const id = newValue.id
-      const newVal = newValue.value
-      
-      const oldVal = updatedCustomField.values.id(id)
-      oldVal.value = newVal
-      updatedCustomField.save()
-    })
+    const updatedCustomField = await oldCustomField.save()
 
     res.status(200).json(updatedCustomField)
   } catch (e) {
