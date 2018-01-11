@@ -69,14 +69,29 @@ const CustomFieldSchema = new Schema({
 CustomFieldSchema._middlewareFuncs = {
   preSave(next) {
     if (!this.isNew && this.isModified('slug')) {
-      err = new Error('Slug is not updatable')
+      let err = new Error('Slug is not updatable')
       err.name = 'ValidationError'
       next(err)
     }
     if (!this.isNew && this.isModified('type')) {
-      err = new Error('Type is not updatable')
+      let err = new Error('Type is not updatable')
       err.name = 'ValidationError'
       next(err)
+    }
+
+    if (this.values) {
+      let valCount = this.values.reduce((acc, val) => {
+        !!acc[val.value] ? ++acc[val.value] : acc[val.value] = 1
+        return acc
+      }, {})
+      valCount = Object.values(valCount)
+
+      if ( valCount.find(val => val > 1) ) {
+        let err = new Error('Duplicated value for CustomField.values')
+        err.name = 'ValidationError'
+        next(err)
+      }
+
     }
 
     const currentDate = new Date()

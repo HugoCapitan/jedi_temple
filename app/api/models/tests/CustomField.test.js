@@ -96,7 +96,7 @@ describe('CustomField Model', () => {
     expect(v.errors['values.0.value']).toBeTruthy()
   })
 
-  test('Number should be invalid if values', () => {
+  test('Number should be invalid if wrong values', () => {
     const invalidNumber = Object.assign( validNumberCustom, { values: ['avalue'] } )
 
     const m = new CustomField(invalidNumber)
@@ -132,7 +132,6 @@ describe('CustomField Model', () => {
       if (!context.isModified) isModified = jest.fn((prop) => false)
       return CustomField.schema._middlewareFuncs.preSave.bind( context )
     }
-      
 
     test('Should call next', () => {
       const context = validNumberCustom
@@ -191,7 +190,20 @@ describe('CustomField Model', () => {
       expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
     })
 
-    test('Should iterate over customs to check for duplications')
+    test('Should iterate over customs and call next with a ValidationError if duplications foun', () => {
+      const context = validStringCustom
+      context.values.push({ value: 'A value' })
+      context.isNew = true
+
+      const boundMiddleware = bindMiddleware(context)
+      const next = jest.fn()
+
+      boundMiddleware(next)
+      
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Duplicated value for CustomField.values')
+    })
     
     test('Should sluggify name and add updated and created dates', () => {
       const context = validNumberCustom
