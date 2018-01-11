@@ -101,7 +101,11 @@ describe('CustomField Model', () => {
     expect(vs.errors['values.0']).toBeTruthy()
   })
 
-  describe('Pre Save Middleware', () => {
+  describe('preSave Middleware', () => {
+
+    test('Should call next', () => {
+
+    })
     
     test('Should sluggify name and add updated and created dates', () => {
       const context = validNumberCustom
@@ -130,7 +134,33 @@ describe('CustomField Model', () => {
       expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
     })
 
-  }) 
+  })
+
+  describe('preUpdate Middleware', () => {
+    
+    test('Should call next')
+
+    test('Should update the slug if name is passed')
+
+    test('Should prevent modification of the slug and return a ValidationError')
+
+    test('Should prevent modification of type and return a ValidationError')
+
+    test('Should update updated_at date')
+
+    test('Should iterate and update products if values modified')
+
+    test('Should iterate and update products if min or max modified')
+
+  })
+
+  describe('preRemove Middleware', () => {
+    
+    test('Should call next')
+
+    test('Should iterate and update products')
+
+  })
 
   function setupTest () {
     validNumberCustom = getValidNumberCustom()
