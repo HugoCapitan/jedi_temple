@@ -29,7 +29,7 @@ const ProductSchema = new Schema({
   updated_at: Date
 })
 
-ProductSchema.pre('save', (next) => {
+ProductSchema.pre('save', function(next) {
   var currentDate = new Date()
 
   this.updated_at = currentDate
