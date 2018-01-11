@@ -68,6 +68,17 @@ const CustomFieldSchema = new Schema({
 
 CustomFieldSchema._middlewareFuncs = {
   preSave(next) {
+    if (!this.isNew && this.isModified('slug')) {
+      err = new Error('Slug is not updatable')
+      err.name = 'ValidationError'
+      next(err)
+    }
+    if (!this.isNew && this.isModified('type')) {
+      err = new Error('Type is not updatable')
+      err.name = 'ValidationError'
+      next(err)
+    }
+
     const currentDate = new Date()
 
     this.slug       = slugify(this.name)    

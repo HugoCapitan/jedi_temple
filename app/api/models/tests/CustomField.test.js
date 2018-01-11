@@ -92,7 +92,6 @@ describe('CustomField Model', () => {
     const v = m.validateSync()
 
     expect(howManyKeys(v['errors'])).toBe(1)
-    console.log(v.errors)
 
     expect(v.errors['values.0.value']).toBeTruthy()
   })
@@ -129,24 +128,74 @@ describe('CustomField Model', () => {
   })
 
   describe('preSave Middleware', () => {
-
-    test('Should call is modified with the Type and Slug', () => {
-
-    })
+    const bindMiddleware = (context) => {
+      if (!context.isModified) isModified = jest.fn((prop) => false)
+      return CustomField.schema._middlewareFuncs.preSave.bind( context )
+    }
+      
 
     test('Should call next', () => {
       const context = validNumberCustom
-
-      const boundMiddleware = CustomField.schema._middlewareFuncs.preSave.bind(context)
+      context.isNew = true
+      
+      const boundMiddleware = bindMiddleware(context)
       const next = jest.fn()
 
       boundMiddleware(next)
 
       expect( next.mock.calls.length ).toBe(1)
     })
+
+    test('Should call is modified with the Type and Slug', () => {
+      const context = validNumberCustom
+      context.isModified = jest.fn((prop) => true)
+      context.isNew      = false
+      
+      const boundMiddleware = bindMiddleware(context)
+      const next = jest.fn()
+
+      boundMiddleware(next)
+
+      expect( context.isModified.mock.calls.length ).toBe(2)
+      expect( context.isModified.mock.calls[0][0] ).toBe('slug')
+      expect( context.isModified.mock.calls[1][0] ).toBe('type')
+    })
+
+    test('Should call next with slug error', () => {
+      const context = validNumberCustom
+      context.isModified = jest.fn( (prop) => prop == 'slug' ? true : false )
+      context.isNew      = false
+      
+      const boundMiddleware = bindMiddleware(context)
+      const next = jest.fn()
+
+      boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
+    })
+
+    test('Should call next with type error', () => {
+      const context = validNumberCustom
+      context.isModified = jest.fn( (prop) => prop == 'type' ? true : false )
+      context.isNew      = false
+      
+      const boundMiddleware = bindMiddleware(context)
+      const next = jest.fn()
+
+      boundMiddleware(next)      
+
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
+    })
+
+    test('Should iterate over customs to check for duplications')
     
     test('Should sluggify name and add updated and created dates', () => {
       const context = validNumberCustom
+      context.isNew = true
 
       const boundMiddleware = CustomField.schema._middlewareFuncs.preSave.bind(context)
       const next = jest.fn()
@@ -161,6 +210,7 @@ describe('CustomField Model', () => {
     test('Should not update created_at date', () => {
       const yesterday = moment().subtract(1, 'days').toDate()
       const context = Object.assign(validNumberCustom, { created_at: yesterday })
+      context.isNew = true
 
       const boundMiddleware = CustomField.schema._middlewareFuncs.preSave.bind(context)
       const next = jest.fn()
