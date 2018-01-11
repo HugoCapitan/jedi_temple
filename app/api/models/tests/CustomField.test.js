@@ -130,6 +130,10 @@ describe('CustomField Model', () => {
 
   describe('preSave Middleware', () => {
 
+    test('Should call is modified with the Type and Slug', () => {
+
+    })
+
     test('Should call next', () => {
       const context = validNumberCustom
 
