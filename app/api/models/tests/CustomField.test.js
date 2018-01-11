@@ -1,8 +1,8 @@
 const moment = require('moment')
 
 const CustomField = require('../CustomField')
-const howManyKeys = require('../../utils').howManyKeys
 
+const { howManyKeys } = require('../../utils')
 const { isThisMinute } = require('../../utils/validators')
 const { getValidNumberCustom, getValidStringCustom } = require('../../utils/validSchemas')
 
@@ -85,37 +85,71 @@ describe('CustomField Model', () => {
     expect(v).toBeFalsy()
   }) 
 
-  test('String should be invalid if values empty or empty string as value', () => {
-    const emptyVals = Object.assign({}, validStringCustom, { values: [] })
-    const emptyString = Object.assign({}, validStringCustom, { values: [''] })
+  test('String should be invalid if empty string as value', () => {
+    const emptyString = Object.assign({}, validStringCustom, { values: [ { value: '' } ] })
 
-    const mv = new CustomField(emptyVals)
-    const ms = new CustomField(emptyString)
-    const vv = mv.validateSync()
-    const vs = ms.validateSync()
+    const m = new CustomField(emptyString)
+    const v = m.validateSync()
 
-    expect(howManyKeys(vv['errors'])).toBe(1)
-    expect(howManyKeys(vs['errors'])).toBe(1)
+    expect(howManyKeys(v['errors'])).toBe(1)
+    console.log(v.errors)
 
-    expect(vv.errors.values).toBeTruthy()
-    expect(vs.errors['values.0']).toBeTruthy()
+    expect(v.errors['values.0.value']).toBeTruthy()
+  })
+
+  test('Number should be invalid if values', () => {
+    const invalidNumber = Object.assign( validNumberCustom, { values: ['avalue'] } )
+
+    const m = new CustomField(invalidNumber)
+    const v = m.validateSync()
+
+    expect( howManyKeys(v.errors) ).toBe(1)
+    expect( v.errors.values ).toBeTruthy()
+  })
+
+  test('String should be invalid if: min, max, unit, unit_place', () => {
+    const invalidString = 
+      Object.assign(
+        validStringCustom, 
+        {
+          min: 'auto',
+          max: 'auto',
+          unit: 'US $',
+          unit_place: 'before'
+        } )
+
+    const m = new CustomField( invalidString )
+    const v = m.validateSync()
+
+    expect( howManyKeys(v.errors) ).toBe(4)
+    expect( v.errors.min ).toBeTruthy()
+    expect( v.errors.max ).toBeTruthy()
+    expect( v.errors.unit ).toBeTruthy()
+    expect( v.errors.unit_place ).toBeTruthy()
   })
 
   describe('preSave Middleware', () => {
 
     test('Should call next', () => {
+      const context = validNumberCustom
 
+      const boundMiddleware = CustomField.schema._middlewareFuncs.preSave.bind(context)
+      const next = jest.fn()
+
+      boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(1)
     })
     
     test('Should sluggify name and add updated and created dates', () => {
       const context = validNumberCustom
 
-      const boundMiddlewareFunc = CustomField.schema._middlewareFuncs.preSave.bind(context)
+      const boundMiddleware = CustomField.schema._middlewareFuncs.preSave.bind(context)
       const next = jest.fn()
 
-      boundMiddlewareFunc(next)
+      boundMiddleware(next)
 
-      expect(validNumberCustom.slug).toBe('number_customfield')
+      expect( validNumberCustom.slug ).toBe('number_customfield')
       expect( isThisMinute(validNumberCustom.created_at) ).toBeTruthy()
       expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
     })
@@ -124,10 +158,10 @@ describe('CustomField Model', () => {
       const yesterday = moment().subtract(1, 'days').toDate()
       const context = Object.assign(validNumberCustom, { created_at: yesterday })
 
-      const boundMiddlewareFunc = CustomField.schema._middlewareFuncs.preSave.bind(context)
+      const boundMiddleware = CustomField.schema._middlewareFuncs.preSave.bind(context)
       const next = jest.fn()
 
-      boundMiddlewareFunc(next)
+      boundMiddleware(next)
 
       expect(validNumberCustom.slug).toBe('number_customfield')
       expect(validNumberCustom.created_at).toBe(yesterday)
@@ -137,20 +171,151 @@ describe('CustomField Model', () => {
   })
 
   describe('preUpdate Middleware', () => {
+    let next
+    const bindMiddleware = (context) => 
+      CustomField.schema._middlewareFuncs.preUpdate.bind(context) 
+
+    beforeEach(() => { next = jest.fn() })
     
-    test('Should call next')
+    test('Should call next', () => {
+      const _update = { name: 'new name' }
 
-    test('Should update the slug if name is passed')
+      const boundMiddleware = bindMiddleware({ _update })
 
-    test('Should prevent modification of the slug and return a ValidationError')
+      boundMiddleware(next)
 
-    test('Should prevent modification of type and return a ValidationError')
+      expect( next.mock.calls.length ).toBe(1)
+    })
 
-    test('Should update updated_at date')
+    test('Should update the slug if name is passed', () => {
+      const newField = { name: 'New Name' }
+      const _update = newField
 
-    test('Should iterate and update products if values modified')
+      const boundMiddleware = bindMiddleware({ _update })
+      
+      boundMiddleware(next)
 
-    test('Should iterate and update products if min or max modified')
+      expect( newField.slug ).toBe('new_name')
+    })
+
+    test('Should prevent modification of the slug and return a ValidationError', () => {
+      const newField  = { slug: 'what_a_slug' }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
+    })
+
+    test('Should prevent modification of the slug if undefined sent and return a ValidationError', () => {
+      const newField  = { slug: undefined }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
+    })
+
+    test('Should prevent modification of the slug if null sent and return a ValidationError', () => {
+      const newField  = { slug: null }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
+    })
+
+    test('Should prevent modification of the slug if false sent and return a ValidationError', () => {
+      const newField  = { slug: false }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
+    })
+
+    test('Should prevent modification of type and return a ValidationError', () => {
+      const newField  = { type: 'string' }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
+    })
+
+    test('Should prevent modification of type if undefined sent and return a ValidationError', () => {
+      const newField  = { type: undefined }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
+    })
+
+    test('Should prevent modification of type if null sent and return a ValidationError', () => {
+      const newField  = { type: null }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
+    })
+
+    test('Should prevent modification of type if false sent and return a ValidationError', () => {
+      const newField  = { type: false }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(2)
+      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+      expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
+    })
+
+    test('Should update updated_at date', () => {
+      const newField = { name: 'new name' }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      boundMiddleware(next)
+
+      expect( isThisMinute(newField.updated_at) ).toBeTruthy()
+    })
+
+    test('Should query and update necessary prodycts if min or max are updated', () => {
+
+    })
 
   })
 
