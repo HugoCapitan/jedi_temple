@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const { saysString, saysNumber, isNumeric, areMinMax } = require('../utils/validators')
 
+const CustomValueSchema = require('./schemas/CustomValueSchema')
+
+const { saysString, saysNumber, isNumeric, areMinMax } = require('../utils/validators')
 const { slugify } =  require('../utils')
 
 const CustomFieldSchema = new Schema({
@@ -29,11 +31,7 @@ const CustomFieldSchema = new Schema({
     enum: ['number', 'string']
   },
   values: {
-    type: [{
-      type: String,
-      unique: true,
-      validate(val) { return val != '' }
-    }],
+    type: [CustomValueSchema],
     required() { return saysString(this.type) },
     validate(val) { return saysString(this.type) && val.length },
     default: undefined
@@ -80,6 +78,17 @@ CustomFieldSchema._middlewareFuncs = {
     next()
   },
   preUpdate(next) {
+    if (this._update.hasOwnProperty('slug')) {
+      err = new Error('Slug is not updatable')
+      err.name = 'ValidationError'
+      next(err)
+    } 
+    if (this._update.hasOwnProperty('type')) {
+      err = new Error('Type is not updatable')
+      err.name = 'ValidationError'
+      next(err)
+    }
+
     const currentDate = new Date()
     this._update.updated_at = currentDate
 
