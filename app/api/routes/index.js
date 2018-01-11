@@ -1,4 +1,3 @@
-const addressRouter     = require('./address')
 const clientRouter      = require('./client')
 const customFieldRouter = require('./customField')
 const hmProductRouter   = require('./hmProduct')
@@ -10,7 +9,6 @@ const storeRouter       = require('./store')
 const textRouter        = require('./text')
 
 module.exports = app => {
-  addressRouter(app)
   clientRouter(app)
   customFieldRouter(app)
   hmProductRouter(app)
