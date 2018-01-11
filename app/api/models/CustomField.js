@@ -3,6 +3,8 @@ const Schema = mongoose.Schema
 
 const CustomValueSchema = require('./schemas/CustomValueSchema')
 
+const Product = require('./Product')
+
 const { saysString, saysNumber, isNumeric, areMinMax } = require('../utils/validators')
 const { slugify } =  require('../utils')
 
@@ -67,32 +69,8 @@ const CustomFieldSchema = new Schema({
 })
 
 CustomFieldSchema._middlewareFuncs = {
-  preSave(next) {
-    if (!this.isNew && this.isModified('slug')) {
-      let err = new Error('Slug is not updatable')
-      err.name = 'ValidationError'
-      next(err)
-    }
-    if (!this.isNew && this.isModified('type')) {
-      let err = new Error('Type is not updatable')
-      err.name = 'ValidationError'
-      next(err)
-    }
-
-    if (this.values) {
-      let valCount = this.values.reduce((acc, val) => {
-        !!acc[val.value] ? ++acc[val.value] : acc[val.value] = 1
-        return acc
-      }, {})
-      valCount = Object.values(valCount)
-
-      if ( valCount.find(val => val > 1) ) {
-        let err = new Error('Duplicated value for CustomField.values')
-        err.name = 'ValidationError'
-        next(err)
-      }
-
-    }
+  async preSave(next) {
+    await preSaveValidations.call(this, next)
 
     const currentDate = new Date()
 
@@ -104,16 +82,7 @@ CustomFieldSchema._middlewareFuncs = {
     next()
   },
   preUpdate(next) {
-    if (this._update.hasOwnProperty('slug')) {
-      err = new Error('Slug is not updatable')
-      err.name = 'ValidationError'
-      next(err)
-    } 
-    if (this._update.hasOwnProperty('type')) {
-      err = new Error('Type is not updatable')
-      err.name = 'ValidationError'
-      next(err)
-    }
+    preUpdateValidations.call(this, next)
 
     const currentDate = new Date()
     this._update.updated_at = currentDate
@@ -138,3 +107,48 @@ CustomFieldSchema.pre('findOneAndRemove', CustomFieldSchema._middlewareFuncs.pre
 const CustomField = mongoose.model('CustomField', CustomFieldSchema)
 
 module.exports = CustomField
+
+async function preSaveValidations(next) {
+  if (!this.isNew && this.isModified('slug')) {
+    let err = new Error('Slug is not updatable')
+    err.name = 'ValidationError'
+    next(err)
+  }
+  if (!this.isNew && this.isModified('type')) {
+    let err = new Error('Type is not updatable')
+    err.name = 'ValidationError'
+    next(err)
+  }
+  if (this.values) {
+    let valCount = this.values.reduce((acc, val) => {
+      !!acc[val.value] ? ++acc[val.value] : acc[val.value] = 1
+      return acc
+    }, {})
+    valCount = Object.values(valCount)
+
+    if ( valCount.find(val => val > 1) ) {
+      let err = new Error('Duplicated value for CustomField.values')
+      err.name = 'ValidationError'
+      next(err)
+    }
+
+    // if (!this.isNew) {
+    //   prods = await Product.find({ customs: { $elemMatch: { custom_id: '', value_id: '' } } })
+    //   console.log(prods)
+    // }
+
+  }
+}
+
+function preUpdateValidations(next) {
+  if (this._update.hasOwnProperty('slug')) {
+    err = new Error('Slug is not updatable')
+    err.name = 'ValidationError'
+    next(err)
+  } 
+  if (this._update.hasOwnProperty('type')) {
+    err = new Error('Type is not updatable')
+    err.name = 'ValidationError'
+    next(err)
+  }
+}
