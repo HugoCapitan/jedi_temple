@@ -4,10 +4,10 @@ const Schema = mongoose.Schema
 module.exports = new Schema({
   custom_id: {
     type: Schema.Types.ObjectId,
-    required: true,
-    unique: true
+    rel: 'CustomField',
+    required: true
   },
-  value: {
+  value_id: {
     type: String,
     required: true
   }
