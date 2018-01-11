@@ -164,7 +164,7 @@ function getValidStringCustom() {
     name: 'String CustomField',
     show: true, 
     type: 'string',
-    values: ['A value', 'Another Value']
+    values: [ { value: 'A value' }, { value: 'Another Value' } ]
   }
 }
 
