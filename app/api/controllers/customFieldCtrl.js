@@ -141,7 +141,7 @@ async function apiUpdate (req, res) {
     if (req.body.values) {
       req.body.values.forEach((newVal) => {
         !!newVal.id 
-        ? oldCustomField.values.id(newVal.id).value = newVal.value
+        ? oldCustomField.values.id(newVal._id).value = newVal.value
         : oldCustomField.values.push({ value: newVal.value })
       })
 
