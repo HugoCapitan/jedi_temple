@@ -1,5 +1,3 @@
-import { Error } from 'mongoose';
-
 const _ = require('lodash')
 
 const CustomField = require('../models/CustomField')
