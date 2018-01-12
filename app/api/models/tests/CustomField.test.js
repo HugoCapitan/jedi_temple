@@ -387,7 +387,7 @@ describe('CustomField Model', () => {
       expect( isThisMinute(newField.updated_at) ).toBeTruthy()
     })
 
-    test('Should query and update necessary prodycts if min or max are updated')
+    test('Should query and update necessary products if min or max are updated')
 
   })
 
