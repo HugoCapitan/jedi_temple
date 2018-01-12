@@ -119,6 +119,16 @@ async function preSaveValidations(next) {
     err.name = 'ValidationError'
     next(err)
   }
+  if (!this.isNew && this.isModified('min')) {
+    let err = new Error('Min should be modified via update, not save.')
+    err.name = 'ValidationError'
+    next(err)
+  }
+  if (!this.isNew && this.isModified('max')) {
+    let err = new Error('Max should be modified via update, not save.')
+    err.name = 'ValidationError'
+    next(err)
+  }
   if (this.values) {
     let valCount = this.values.reduce((acc, val) => {
       !!acc[val.value] ? ++acc[val.value] : acc[val.value] = 1
@@ -131,12 +141,6 @@ async function preSaveValidations(next) {
       err.name = 'ValidationError'
       next(err)
     }
-
-    // if (!this.isNew) {
-    //   prods = await Product.find({ customs: { $elemMatch: { custom_id: '', value_id: '' } } })
-    //   console.log(prods)
-    // }
-
   }
 }
 
