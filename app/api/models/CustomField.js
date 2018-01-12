@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const _ = require('lodash')
 const Schema = mongoose.Schema
 
 const CustomValueSchema = require('./schemas/CustomValueSchema')
@@ -38,6 +39,11 @@ const CustomFieldSchema = new Schema({
     validate(val) { return saysString(this.type) && val.length },
     default: undefined
   },
+  _values: {
+    type: [String],
+    validate(val) { return saysString(this.type) && val.length },
+    default: undefined
+  },
   min: {
     type: String,
     required() { return saysNumber(this.type) },
@@ -72,9 +78,21 @@ CustomFieldSchema._middlewareFuncs = {
   async preSave(next) {
     await preSaveValidations.call(this, next)
 
+    this.slug       = slugify(this.name)
+
+    if (this._values.length > this.values.length) {
+      const removed = this._values.find(cId => 
+        !this.values.find(cVal => cVal._id == cId)
+      )
+
+      const productsToMod = await Product.find({ 'custom_values.id':  removed})
+      console.log(productsToMod)
+    }
+
+    this._values    = this.values.map(val => val._id)    
+
     const currentDate = new Date()
 
-    this.slug       = slugify(this.name)    
     this.updated_at = currentDate
     if (!this.created_at)
       this.created_at = currentDate
