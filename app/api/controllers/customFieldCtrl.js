@@ -15,7 +15,10 @@ module.exports = {
   apiCreate,
   apiRead,
   apiRemove,
-  apiUpdate
+  apiUpdate,
+  apiCreateValue,
+  apiRemoveValue,
+  apiUpdateValue
 }
 
 async function create(fieldObj) {
