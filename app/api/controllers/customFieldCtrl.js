@@ -100,9 +100,9 @@ async function apiCreate (req, res) {
 
 async function apiCreateValue (req, res) {
   try {
-    const customFieldToUpdate = CustomField.findById(req.params.custom_id)
+    const customFieldToUpdate = await CustomField.findById(req.params.custom_id)
 
-    if (!foundCustomField) {
+    if (!customFieldToUpdate) {
       let notFoundError = new Error(`CustomField ${req.params.custom_id} not found`)
       notFoundError.name = 'NotFoundError'
       throw notFoundError
