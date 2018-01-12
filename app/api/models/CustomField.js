@@ -85,7 +85,7 @@ CustomFieldSchema._middlewareFuncs = {
         !this.values.find(cVal => cVal._id == cId)
       )
 
-      const productsToMod = await Product.find({ 'custom_values.id':  removed})
+      const productsToMod = await Product.find({ customs: { $elemMatch: { custom_id: this._id, value_id: removed } } })
       console.log(productsToMod)
     }
 
