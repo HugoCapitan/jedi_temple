@@ -96,8 +96,18 @@ describe('CustomField Model', () => {
     expect(v.errors['values.0.value']).toBeTruthy()
   })
 
-  test('Number should be invalid if wrong values', () => {
-    const invalidNumber = Object.assign( validNumberCustom, { values: ['avalue'] } )
+  test('String should be invald if malformed values', () => {
+    const invalidString = Object.assign( validStringCustom, { values: [ { value: 'fine' }, 'wrongval1' ] } )
+
+    const m = new CustomField( invalidString )
+    const v = m.validateSync()
+
+    expect( howManyKeys(v.errors) ).toBe(1)
+    expect( v.errors.values ).toBeTruthy()
+  })
+
+  test('Number should be invalid if values sent', () => {
+    const invalidNumber = Object.assign( validNumberCustom, { values: validStringCustom.values } )
 
     const m = new CustomField(invalidNumber)
     const v = m.validateSync()
@@ -130,12 +140,17 @@ describe('CustomField Model', () => {
   describe('preSave Middleware', () => {
     jest.mock('../Product')
     const Product = require('../Product')
+
+    let next
     beforeEach(() => {
       Product.find = jest.fn(() => [])
+      next = jest.fn((err) => {
+        if (err) throw err
+      })
     })
 
     const bindMiddleware = (context) => {
-      if (!context.isModified) isModified = jest.fn((prop) => false)
+      if (!context.isModified) context.isModified = jest.fn((prop) => false)
       return CustomField.schema._middlewareFuncs.preSave.bind( context )
     }
 
@@ -144,79 +159,18 @@ describe('CustomField Model', () => {
       context.isNew = true
       
       const boundMiddleware = bindMiddleware(context)
-      const next = jest.fn()
 
       await boundMiddleware(next)
 
       expect( next.mock.calls.length ).toBe(1)
+      expect( next.mock.calls[0][0] ).toBeFalsy()
     })
 
-    test('Should call is modified with the Type and Slug', async () => {
-      const context = validNumberCustom
-      context.isModified = jest.fn((prop) => true)
-      context.isNew      = false
-      
-      const boundMiddleware = bindMiddleware(context)
-      const next = jest.fn()
-
-      await boundMiddleware(next)
-
-      expect( context.isModified.mock.calls.length ).toBe(2)
-      expect( context.isModified.mock.calls[0][0] ).toBe('slug')
-      expect( context.isModified.mock.calls[1][0] ).toBe('type')
-    })
-
-    test('Should call next with slug error', async () => {
-      const context = validNumberCustom
-      context.isModified = jest.fn( (prop) => prop == 'slug' ? true : false )
-      context.isNew      = false
-      
-      const boundMiddleware = bindMiddleware(context)
-      const next = jest.fn()
-
-      await boundMiddleware(next)
-
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
-    })
-
-    test('Should call next with type error', async () => {
-      const context = validNumberCustom
-      context.isModified = jest.fn( (prop) => prop == 'type' ? true : false )
-      context.isNew      = false
-      
-      const boundMiddleware = bindMiddleware(context)
-      const next = jest.fn()
-
-      await boundMiddleware(next)      
-
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
-    })
-
-    test('Should iterate over customs and call next with a ValidationError if duplications foun', async () => {
-      const context = validStringCustom
-      context.values.push({ value: 'A value' })
-      context.isNew = true
-
-      const boundMiddleware = bindMiddleware(context)
-      const next = jest.fn()
-
-      await boundMiddleware(next)
-      
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Duplicated value for CustomField.values')
-    })
-    
     test('Should sluggify name and add updated and created dates', async () => {
       const context = validNumberCustom
       context.isNew = true
 
       const boundMiddleware = CustomField.schema._middlewareFuncs.preSave.bind(context)
-      const next = jest.fn()
 
       await boundMiddleware(next)
 
@@ -235,12 +189,91 @@ describe('CustomField Model', () => {
 
       await boundMiddleware(next)
 
-      expect(validNumberCustom.slug).toBe('number_customfield')
       expect(validNumberCustom.created_at).toBe(yesterday)
       expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
     })
 
-    test('Should query and update necessary prodycts if min or max are updated')    
+    test('Should call next with slug error', async () => {
+      const context = validNumberCustom
+      context.isModified = jest.fn( (prop) => prop === 'slug' )
+      context.isNew      = false
+      
+      const boundMiddleware = bindMiddleware(context)
+
+      try {
+        await boundMiddleware(next) 
+      } catch(e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
+      }
+    })
+
+    test('Should call next with type error', async () => {
+      const context = validNumberCustom
+      context.isModified = jest.fn( (prop) => prop == 'type' ? true : false )
+      context.isNew      = false
+      
+      const boundMiddleware = bindMiddleware(context)
+
+      try {
+        await boundMiddleware(next)      
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
+      }
+    })
+
+    test('Should iterate over customs and call next with a ValidationError if duplications found', async () => {
+      const context = validStringCustom
+      context.values.push({ value: 'A value' })
+      context.isNew = true
+
+      const boundMiddleware = bindMiddleware(context)
+
+      try {
+        await boundMiddleware(next)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('Duplicated value for CustomField.values')
+      }
+    })
+
+    test('Should call next with min error', async () => {
+      const context = { min: 'auto' }
+      context.isNew = false
+      context.isModified = jest.fn((prop) => prop === 'min')
+
+      const boundMiddleware = bindMiddleware(context)
+      const next = jest.fn()
+
+      try {
+        await boundMiddleware(next)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('Min should be modified via update, not save.')
+      }
+    })
+
+    test('Should call next with max error', async () => {
+      const context = { max: 'auto' }
+      context.isNew = false
+      context.isModified = jest.fn((prop) => prop === 'max')
+
+      const boundMiddleware = bindMiddleware(context)
+      const next = jest.fn()
+
+      try {
+        await boundMiddleware(next)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('Max should be modified via update, not save.')
+      }
+    })
 
   })
 
@@ -260,6 +293,8 @@ describe('CustomField Model', () => {
 
       expect( next.mock.calls.length ).toBe(1)
     })
+
+    test('Should call next with values error')
 
     test('Should update the slug if name is passed', () => {
       const newField = { name: 'New Name' }
@@ -396,6 +431,8 @@ describe('CustomField Model', () => {
     test('Should call next')
 
     test('Should iterate and update products')
+
+    test('Should iterate and update stores')
 
   })
 
