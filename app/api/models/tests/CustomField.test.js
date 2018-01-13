@@ -234,7 +234,25 @@ describe('CustomField Model', () => {
       expect( Product.find.mock.calls[0][0] ).toEqual(expectedQuery)
     })
 
-    test('Should iterate over found products and remove this custom, and call each product.save')
+    test('Should iterate over found products and remove this custom, and call each product.save', async () => {
+      let customWithRemovedVal = { name: 'heylisten', values: validStringCustom.values }
+      customWithRemovedVal = new CustomField( customWithRemovedVal )
+      customWithRemovedVal._values = customWithRemovedVal.values.map( val => val._id.toString() )
+      customWithRemovedVal._values.push('heylisten')
+
+      const context = customWithRemovedVal
+      context.isNew = false
+
+      const expectedProd = { customs: [{ _id: 'ajua', custom_id: customWithRemovedVal._id, value_id: 'heylisten' }], save: jest.fn() }
+      expectedProd.customs.pull = jest.fn(() => { expectedProd.customs = [] })
+      Product.find = jest.fn(() => [expectedProd])
+      const boundMiddleware = bindMiddleware(context)
+
+      await boundMiddleware(next)
+
+      expect( expectedProd.customs.length ).toBe(0)
+      expect( expectedProd.save.mock.calls.length ).toBe(1)
+    })
 
     test('Should call next with slug error', async () => {
       const context = validNumberCustom
