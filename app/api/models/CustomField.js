@@ -81,25 +81,23 @@ CustomFieldSchema._middlewareFuncs = {
 
     self.slug       = slugify(self.name)
 
-    if (self._values.length > self.values.length) {
-      const removedId = self._values.find(cId => 
-        !self.values.find(cVal => cVal._id == cId)
-      )
+    if (!self.isNew && self._values.length > self.values.length) {
+      const removedId = self._values.find( cId => !self.values.find(cVal => cVal._id == cId) )
 
       const productsToModify = await Product.find({ 
         customs: { $elemMatch: { custom_id: self._id, value_id: removedId } } 
       })
 
       productsToModify.forEach(async (product) => {
-        const customToRemove = product.customs.find(c => {
-          return _.isEqual(c.custom_id, self._id)
-        })
+        const customToRemove = product.customs.find( c => _.isEqual(c.custom_id, self._id) )
         product.customs.pull({ _id: customToRemove._id })
         await product.save()
       })
     }
 
-    self._values    = self.values.map(val => val._id)    
+    if (self.type === 'string') {
+      self._values = self.values.map( val => val._id.toString() )
+    }
 
     const currentDate = new Date()
 
@@ -175,6 +173,7 @@ async function preSaveValidations(next) {
 }
 
 function preUpdateValidations(next) {
+  const self = this
   if (self._update.hasOwnProperty('slug')) {
     err = new Error('Slug is not updatable')
     err.name = 'ValidationError'

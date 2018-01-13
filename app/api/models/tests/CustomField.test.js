@@ -1,5 +1,7 @@
 const moment = require('moment')
 
+jest.mock('../Product')
+const Product = require('../Product')
 const CustomField = require('../CustomField')
 
 const { howManyKeys } = require('../../utils')
@@ -138,12 +140,14 @@ describe('CustomField Model', () => {
   })
 
   describe('preSave Middleware', () => {
-    jest.mock('../Product')
-    const Product = require('../Product')
 
     let next
     beforeEach(() => {
+
       Product.find = jest.fn(() => [])
+
+      Product.prototype.save = jest.fn(() => true)
+
       next = jest.fn((err) => {
         if (err) throw err
       })
@@ -170,7 +174,7 @@ describe('CustomField Model', () => {
       const context = validNumberCustom
       context.isNew = true
 
-      const boundMiddleware = CustomField.schema._middlewareFuncs.preSave.bind(context)
+      const boundMiddleware = bindMiddleware(context)
 
       await boundMiddleware(next)
 
@@ -184,7 +188,7 @@ describe('CustomField Model', () => {
       const context = Object.assign(validNumberCustom, { created_at: yesterday })
       context.isNew = true
 
-      const boundMiddleware = CustomField.schema._middlewareFuncs.preSave.bind(context)
+      const boundMiddleware = bindMiddleware(context)
       const next = jest.fn()
 
       await boundMiddleware(next)
@@ -192,6 +196,45 @@ describe('CustomField Model', () => {
       expect(validNumberCustom.created_at).toBe(yesterday)
       expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
     })
+
+    test('Should update _values', async () => {
+      validStringCustom.values.push( { value: 'wazap wazap' } )
+      const context = new CustomField( validStringCustom )
+      context.isNew = true
+
+      const expectedValues = context.values.map( val => val._id.toString() )
+      const boundMiddleware = bindMiddleware(context)
+
+      await boundMiddleware(next)
+
+      expectedValues.forEach(value => {
+        expect( context._values ).toContain(value)
+      })
+
+    })    
+
+    test('Should call Product.find with custom query for products with removed value', async () => {
+      let customWithRemovedVal = { name: 'heylisten', values: validStringCustom.values }
+      customWithRemovedVal = new CustomField( customWithRemovedVal )
+      customWithRemovedVal._values = customWithRemovedVal.values.map( val => val._id.toString() )
+      customWithRemovedVal._values.push('heylisten')
+
+      const context = customWithRemovedVal
+      context.isNew = false
+
+      const expectedQuery = { 
+        customs: { $elemMatch: { custom_id: customWithRemovedVal._id, value_id: 'heylisten' } } 
+      }
+
+      const boundMiddleware = bindMiddleware(context)
+
+      await boundMiddleware(next)
+
+      expect( Product.find.mock.calls.length ).toBe(1)
+      expect( Product.find.mock.calls[0][0] ).toEqual(expectedQuery)
+    })
+
+    test('Should iterate over found products and remove this custom, and call each product.save')
 
     test('Should call next with slug error', async () => {
       const context = validNumberCustom
@@ -275,6 +318,10 @@ describe('CustomField Model', () => {
       }
     })
 
+    test('Should call next with products update error')
+
+    test('Should call next with _values error')
+
   })
 
   describe('preUpdate Middleware', () => {
@@ -295,6 +342,8 @@ describe('CustomField Model', () => {
     })
 
     test('Should call next with values error')
+
+    test('Should call next with _values error')
 
     test('Should update the slug if name is passed', () => {
       const newField = { name: 'New Name' }
@@ -422,8 +471,6 @@ describe('CustomField Model', () => {
       expect( isThisMinute(newField.updated_at) ).toBeTruthy()
     })
 
-    test('Should query and update necessary products if min or max are updated')
-
   })
 
   describe('preRemove Middleware', () => {
@@ -433,6 +480,10 @@ describe('CustomField Model', () => {
     test('Should iterate and update products')
 
     test('Should iterate and update stores')
+
+    test('Should call next with products error')
+
+    test('Should call next with stores error')
 
   })
 
