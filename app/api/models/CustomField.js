@@ -82,17 +82,20 @@ CustomFieldSchema._middlewareFuncs = {
     self.slug       = slugify(self.name)
 
     if (self._values.length > self.values.length) {
-      const removed = self._values.find(cId => 
+      const removedId = self._values.find(cId => 
         !self.values.find(cVal => cVal._id == cId)
       )
 
-      const productsToMod = await Product.find({ 
-        customs: { $elemMatch: { custom_id: self._id, value_id: removed } } 
+      const productsToModify = await Product.find({ 
+        customs: { $elemMatch: { custom_id: self._id, value_id: removedId } } 
       })
 
-      productsToMod.forEach(async (prod) => {
-        prod.customs.pull({ custom_id: self._id })
-        await prod.save()
+      productsToModify.forEach(async (product) => {
+        const customToRemove = product.customs.find(c => {
+          return _.isEqual(c.custom_id, self._id)
+        })
+        product.customs.pull({ _id: customToRemove._id })
+        await product.save()
       })
     }
 
