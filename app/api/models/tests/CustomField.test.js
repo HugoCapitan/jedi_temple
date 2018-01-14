@@ -1,4 +1,5 @@
 const moment = require('moment')
+const _ = require('lodash')
 
 jest.mock('../Product')
 const Product = require('../Product')
@@ -6,7 +7,7 @@ const CustomField = require('../CustomField')
 
 const { howManyKeys } = require('../../utils')
 const { isThisMinute } = require('../../utils/validators')
-const { getValidNumberCustom, getValidStringCustom } = require('../../utils/validSchemas')
+const { getValidNumberCustom, getValidStringCustom, getValidProduct } = require('../../utils/validSchemas')
 
 describe('CustomField Model', () => {
   let validNumberCustom, validStringCustom
@@ -143,7 +144,6 @@ describe('CustomField Model', () => {
 
     let next
     beforeEach(() => {
-
       Product.find = jest.fn(() => [])
 
       Product.prototype.save = jest.fn(() => true)
@@ -152,11 +152,6 @@ describe('CustomField Model', () => {
         if (err) throw err
       })
     })
-
-    const bindMiddleware = (context) => {
-      if (!context.isModified) context.isModified = jest.fn((prop) => false)
-      return CustomField.schema._middlewareFuncs.preSave.bind( context )
-    }
 
     test('Should call next', async () => {
       const context = validNumberCustom
@@ -214,16 +209,12 @@ describe('CustomField Model', () => {
     })    
 
     test('Should call Product.find with custom query for products with removed value', async () => {
-      let customWithRemovedVal = { name: 'heylisten', values: validStringCustom.values }
-      customWithRemovedVal = new CustomField( customWithRemovedVal )
-      customWithRemovedVal._values = customWithRemovedVal.values.map( val => val._id.toString() )
-      customWithRemovedVal._values.push('heylisten')
-
-      const context = customWithRemovedVal
+      const removedValueCustom = getRemovedValueCustom('heylisten')
+      const context = removedValueCustom
       context.isNew = false
 
       const expectedQuery = { 
-        customs: { $elemMatch: { custom_id: customWithRemovedVal._id, value_id: 'heylisten' } } 
+        customs: { $elemMatch: { custom_id: removedValueCustom._id, value_id: 'heylisten' } } 
       }
 
       const boundMiddleware = bindMiddleware(context)
@@ -235,23 +226,30 @@ describe('CustomField Model', () => {
     })
 
     test('Should iterate over found products and remove this custom, and call each product.save', async () => {
-      let customWithRemovedVal = { name: 'heylisten', values: validStringCustom.values }
-      customWithRemovedVal = new CustomField( customWithRemovedVal )
-      customWithRemovedVal._values = customWithRemovedVal.values.map( val => val._id.toString() )
-      customWithRemovedVal._values.push('heylisten')
-
-      const context = customWithRemovedVal
+      const removedValueCustom = getRemovedValueCustom('heylisten')
+      const context = removedValueCustom
       context.isNew = false
 
-      const expectedProd = { customs: [{ _id: 'ajua', custom_id: customWithRemovedVal._id, value_id: 'heylisten' }], save: jest.fn() }
-      expectedProd.customs.pull = jest.fn(() => { expectedProd.customs = [] })
-      Product.find = jest.fn(() => [expectedProd])
+      const foundProduct = Object.assign(
+        getValidProduct, { 
+          customs: [{ 
+          _id: 'ajua', 
+          custom_id: removedValueCustom._id, 
+          value_id: 'heylisten' 
+        }], 
+        save: jest.fn() 
+      })
+      foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+      Product.find = jest.fn(() => [foundProduct])
+      
       const boundMiddleware = bindMiddleware(context)
 
       await boundMiddleware(next)
 
-      expect( expectedProd.customs.length ).toBe(0)
-      expect( expectedProd.save.mock.calls.length ).toBe(1)
+      expect( foundProduct.customs.length ).toBe(0)
+      expect( foundProduct.customs.pull.mock.calls.length ).toBe(1)
+      expect( foundProduct.customs.pull.mock.calls[0][0] ).toEqual({ _id: 'ajua' })
+      expect( foundProduct.save.mock.calls.length ).toBe(1)
     })
 
     test('Should call next with slug error', async () => {
@@ -339,6 +337,22 @@ describe('CustomField Model', () => {
     test('Should call next with products update error')
 
     test('Should call next with _values error')
+
+    function bindMiddleware (context) {
+      if (!context.isModified) context.isModified = jest.fn((prop) => false)
+      return CustomField.schema._middlewareFuncs.preSave.bind( context )
+    }
+
+    function getRemovedValueCustom (removedValue) {
+      validStringCustom = _.omit(validStringCustom, ['type', 'slug'])
+      let removedValueCustom = new CustomField( 
+        _.cloneDeep(validStringCustom)
+      )
+      removedValueCustom._values = removedValueCustom.values.map( val => val._id.toString() )
+      removedValueCustom._values.push(removedValue)
+
+      return removedValueCustom
+    }
 
   })
 
