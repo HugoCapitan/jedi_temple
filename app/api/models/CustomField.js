@@ -77,22 +77,12 @@ const CustomFieldSchema = new Schema({
 CustomFieldSchema._middlewareFuncs = {
   async preSave(next) {
     const self = this
-    await preSaveValidations.call(self, next)
+    await preSaveValidations(self, next)
 
     self.slug       = slugify(self.name)
 
     if (!self.isNew && self._values.length > self.values.length) {
-      const removedId = self._values.find( cId => !self.values.find(cVal => cVal._id == cId) )
-
-      const productsToModify = await Product.find({ 
-        customs: { $elemMatch: { custom_id: self._id, value_id: removedId } } 
-      })
-
-      productsToModify.forEach(async (product) => {
-        const customToRemove = product.customs.find( c => _.isEqual(c.custom_id, self._id) )
-        product.customs.pull({ _id: customToRemove._id })
-        await product.save()
-      })
+      await customValueRemoveProcess(self, next)
     }
 
     if (self.type === 'string') {
@@ -109,7 +99,7 @@ CustomFieldSchema._middlewareFuncs = {
   },
   preUpdate(next) {
     const self = this
-    preUpdateValidations.call(self, next)
+    preUpdateValidations(self, next)
 
     const currentDate = new Date()
     self._update.updated_at = currentDate
@@ -135,8 +125,7 @@ const CustomField = mongoose.model('CustomField', CustomFieldSchema)
 
 module.exports = CustomField
 
-async function preSaveValidations(next) {
-  const self = this
+async function preSaveValidations(self, next) {
   if (!self.isNew && self.isModified('slug')) {
     let err = new Error('Slug is not updatable')
     err.name = 'ValidationError'
@@ -172,8 +161,7 @@ async function preSaveValidations(next) {
   }
 }
 
-function preUpdateValidations(next) {
-  const self = this
+function preUpdateValidations(self, next) {
   if (self._update.hasOwnProperty('slug')) {
     err = new Error('Slug is not updatable')
     err.name = 'ValidationError'
@@ -184,4 +172,23 @@ function preUpdateValidations(next) {
     err.name = 'ValidationError'
     next(err)
   }
+}
+
+async function customValueRemoveProcess(self, next) {
+  try {
+    const removedId = self._values.find( cId => !self.values.find(cVal => cVal._id == cId) )
+
+    const productsToModify = await Product.find({ 
+      customs: { $elemMatch: { custom_id: self._id, value_id: removedId } } 
+    })
+
+    for (const product of productsToModify) {
+      const customToRemove = product.customs.find( c => _.isEqual(c.custom_id, self._id) )
+      product.customs.pull({ _id: customToRemove._id })
+      await product.save()
+    }
+  } catch (e) {
+    next(e)
+  }
+  
 }
