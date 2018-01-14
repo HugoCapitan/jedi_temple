@@ -350,14 +350,16 @@ describe('CustomField Model', () => {
           _id: 'ajua', 
           custom_id: removedValueCustom._id, 
           value_id: 'heylisten' 
-        }], 
-        save: jest.fn() 
+        }],
+        save: jest.fn(() => { 
+          console.log('hey. here')
+          throw new Error('Test Error on product.save') 
+        })   
       })
       foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+      
       Product.find = jest.fn(() => [foundProduct])
 
-      Product.prototype.save = jest.fn(() => { throw new Error('Test Error on product.save') })      
-      
       const boundMiddleware = bindMiddleware(context)
 
       try {
