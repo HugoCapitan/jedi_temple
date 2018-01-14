@@ -136,6 +136,11 @@ async function preSaveValidations(self, next) {
     err.name = 'ValidationError'
     next(err)
   }
+  if (!self.isNew && self.isModified('_values')) {
+    let err = new Error('_values is not updatable')
+    err.name = 'ValidationError'
+    next(err)
+  }
   if (!self.isNew && self.isModified('min')) {
     let err = new Error('Min should be modified via update, not save.')
     err.name = 'ValidationError'
