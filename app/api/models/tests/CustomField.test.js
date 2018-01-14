@@ -371,7 +371,22 @@ describe('CustomField Model', () => {
       }
     })
 
-    test('Should call next with _values error')
+    test('Should call next with _values error', async () => {
+      const context = validStringCustom
+      context.isModified = jest.fn( (prop) => prop === '_values' )
+      context.isNew      = false
+      
+      const boundMiddleware = bindMiddleware(context)
+
+      try {
+        await boundMiddleware(next) 
+        expect(1).toBe(0)        
+      } catch(e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('_values is not updatable')
+      }
+    })
 
     function bindMiddleware (context) {
       if (!context.isModified) context.isModified = jest.fn((prop) => false)
@@ -385,6 +400,7 @@ describe('CustomField Model', () => {
       )
       removedValueCustom._values = removedValueCustom.values.map( val => val._id.toString() )
       removedValueCustom._values.push(removedValue)
+      removedValueCustom.isModified = jest.fn((prop) => false)
 
       return removedValueCustom
     }
