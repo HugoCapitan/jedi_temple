@@ -7,7 +7,7 @@ module.exports = new Schema({
     rel: 'CustomField',
     required: true
   },
-  value_id: {
+  value: {
     type: String,
     required: true
   }
