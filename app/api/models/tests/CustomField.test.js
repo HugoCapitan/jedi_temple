@@ -303,42 +303,6 @@ describe('CustomField Model', () => {
       }
     })
 
-    test('Should call next with min error', async () => {
-      const context = { min: 'auto' }
-      context.isNew = false
-      context.isModified = jest.fn((prop) => prop === 'min')
-
-      const boundMiddleware = bindMiddleware(context)
-      const next = jest.fn()
-
-      try {
-        await boundMiddleware(next)
-        expect(1).toBe(0)        
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-        expect( next.mock.calls[0][0].message ).toBe('Min should be modified via update, not save.')
-      }
-    })
-
-    test('Should call next with max error', async () => {
-      const context = { max: 'auto' }
-      context.isNew = false
-      context.isModified = jest.fn((prop) => prop === 'max')
-
-      const boundMiddleware = bindMiddleware(context)
-      const next = jest.fn()
-
-      try {
-        await boundMiddleware(next)
-        expect(1).toBe(0)        
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-        expect( next.mock.calls[0][0].message ).toBe('Max should be modified via update, not save.')
-      }
-    })
-
     test('Should call next with products update error', async () => {
       const removedValueCustom = getRemovedValueCustom('heylisten')
       const context = removedValueCustom
@@ -394,7 +358,7 @@ describe('CustomField Model', () => {
     }
 
     function getRemovedValueCustom (removedValue) {
-      validStringCustom = _.omit(validStringCustom, ['type', 'slug'])
+      validStringCustom = _.omit(validStringCustom, ['slug'])
       let removedValueCustom = new CustomField( 
         _.cloneDeep(validStringCustom)
       )

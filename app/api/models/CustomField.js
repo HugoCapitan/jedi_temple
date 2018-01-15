@@ -81,7 +81,7 @@ CustomFieldSchema._middlewareFuncs = {
 
     self.slug       = slugify(self.name)
 
-    if (!self.isNew && self._values.length > self.values.length) {
+    if (!self.isNew && self.type === 'string' && self._values.length > self.values.length) {
       await customValueRemoveProcess(self, next)
     }
 
@@ -138,16 +138,6 @@ async function preSaveValidations(self, next) {
   }
   if (!self.isNew && self.isModified('_values')) {
     let err = new Error('_values is not updatable')
-    err.name = 'ValidationError'
-    next(err)
-  }
-  if (!self.isNew && self.isModified('min')) {
-    let err = new Error('Min should be modified via update, not save.')
-    err.name = 'ValidationError'
-    next(err)
-  }
-  if (!self.isNew && self.isModified('max')) {
-    let err = new Error('Max should be modified via update, not save.')
     err.name = 'ValidationError'
     next(err)
   }
