@@ -472,7 +472,14 @@ describe('CustomField Model', () => {
         save: jest.fn() 
       }]
       foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
-      Product.find = jest.fn(() => [foundProduct])
+      Product.find = jest.fn(() => foundProducts)
+
+      await boundMiddleware(next)
+
+      expect( foundProduct.customs.length ).toBe(0)
+      expect( foundProduct.customs.pull.mock.calls.length ).toBe(1)
+      expect( foundProduct.customs.pull.mock.calls[0][0] ).toEqual({ _id: 'ajua' })
+      expect( foundProduct.save.mock.calls.length ).toBe(1)
 
     })
 
