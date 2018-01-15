@@ -97,7 +97,7 @@ CustomFieldSchema._middlewareFuncs = {
 
     next()
   },
-  preUpdate(next) {
+  async preUpdate(next) {
     const self = this
     preUpdateValidations(self, next)
 
@@ -105,6 +105,10 @@ CustomFieldSchema._middlewareFuncs = {
     self._update.updated_at = currentDate
 
     if (self._update.name) self._update.slug = slugify(self._update.name)
+
+    if ((self._update.min && self._update.min != 'auto') || (self._update.max && self._update.max != 'auto')) {
+      productCustomMinMaxUpdate(self, next)
+    }
 
     next()
   },
@@ -167,6 +171,16 @@ function preUpdateValidations(self, next) {
     err.name = 'ValidationError'
     next(err)
   }
+  if (self._update.hasOwnProperty('values')) {
+    err = new Error('Values should be updated via CustomField.save')
+    err.name = 'ValidationError'
+    next(err)
+  }
+  if (self._update.hasOwnProperty('_values')) {
+    err = new Error('_values is not updatable')
+    err.name = 'ValidationError'
+    next(err)
+  }
 }
 
 async function customValueRemoveProcess(self, next) {
@@ -185,5 +199,20 @@ async function customValueRemoveProcess(self, next) {
   } catch (e) {
     next(e)
   }
-  
+}
+
+async function productCustomMinMaxUpdate(self, next) {
+  try {
+    const productsToModify = await Product.find({ 
+      customs: { $elemMatch: { custom_id: self._id } } 
+    })
+
+    for (const product of productsToModify) {
+      const customToRemove = product.customs.find( c => _.isEqual(c.custom_id, self._id) )
+      product.customs.pull({ _id: customToRemove._id })
+      await product.save()
+    }
+  } catch (e) {
+    next(e)
+  }
 }

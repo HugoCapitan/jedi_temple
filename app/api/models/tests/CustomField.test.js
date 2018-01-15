@@ -316,7 +316,6 @@ describe('CustomField Model', () => {
           value_id: 'heylisten' 
         }],
         save: jest.fn(() => { 
-          console.log('hey. here')
           throw new Error('Test Error on product.save') 
         })   
       })
@@ -373,149 +372,132 @@ describe('CustomField Model', () => {
 
   describe('preUpdate Middleware', () => {
     let next
+
     const bindMiddleware = (context) => 
       CustomField.schema._middlewareFuncs.preUpdate.bind(context) 
 
-    beforeEach(() => { next = jest.fn() })
+    beforeEach(() => {
+      Product.find = jest.fn(() => [])
+
+      Product.prototype.save = jest.fn(() => true)
+
+      next = jest.fn((err) => {
+        if (err) throw err
+      })
+    })
     
-    test('Should call next', () => {
+    test('Should call next', async () => {
       const _update = { name: 'new name' }
 
       const boundMiddleware = bindMiddleware({ _update })
 
-      boundMiddleware(next)
+      await boundMiddleware(next)
 
       expect( next.mock.calls.length ).toBe(1)
     })
 
-    test('Should call next with values error')
-
-    test('Should call next with _values error')
-
-    test('Should update the slug if name is passed', () => {
+    test('Should update the slug if name is passed', async () => {
       const newField = { name: 'New Name' }
       const _update = newField
 
       const boundMiddleware = bindMiddleware({ _update })
       
-      boundMiddleware(next)
+      await boundMiddleware(next)
 
       expect( newField.slug ).toBe('new_name')
     })
 
-    test('Should prevent modification of the slug and return a ValidationError', () => {
-      const newField  = { slug: 'what_a_slug' }
-      const _update = newField
-
-      const boundMiddleware = bindMiddleware({ _update })
-
-      boundMiddleware(next)
-
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
-    })
-
-    test('Should prevent modification of the slug if undefined sent and return a ValidationError', () => {
-      const newField  = { slug: undefined }
-      const _update = newField
-
-      const boundMiddleware = bindMiddleware({ _update })
-
-      boundMiddleware(next)
-
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
-    })
-
-    test('Should prevent modification of the slug if null sent and return a ValidationError', () => {
-      const newField  = { slug: null }
-      const _update = newField
-
-      const boundMiddleware = bindMiddleware({ _update })
-
-      boundMiddleware(next)
-
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
-    })
-
-    test('Should prevent modification of the slug if false sent and return a ValidationError', () => {
-      const newField  = { slug: false }
-      const _update = newField
-
-      const boundMiddleware = bindMiddleware({ _update })
-
-      boundMiddleware(next)
-
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
-    })
-
-    test('Should prevent modification of type and return a ValidationError', () => {
-      const newField  = { type: 'string' }
-      const _update = newField
-
-      const boundMiddleware = bindMiddleware({ _update })
-
-      boundMiddleware(next)
-
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
-    })
-
-    test('Should prevent modification of type if undefined sent and return a ValidationError', () => {
-      const newField  = { type: undefined }
-      const _update = newField
-
-      const boundMiddleware = bindMiddleware({ _update })
-
-      boundMiddleware(next)
-
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
-    })
-
-    test('Should prevent modification of type if null sent and return a ValidationError', () => {
-      const newField  = { type: null }
-      const _update = newField
-
-      const boundMiddleware = bindMiddleware({ _update })
-
-      boundMiddleware(next)
-
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
-    })
-
-    test('Should prevent modification of type if false sent and return a ValidationError', () => {
-      const newField  = { type: false }
-      const _update = newField
-
-      const boundMiddleware = bindMiddleware({ _update })
-
-      boundMiddleware(next)
-
-      expect( next.mock.calls.length ).toBe(2)
-      expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-      expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
-    })
-
-    test('Should update updated_at date', () => {
+    test('Should update updated_at date', async () => {
       const newField = { name: 'new name' }
       const _update = newField
 
       const boundMiddleware = bindMiddleware({ _update })
 
-      boundMiddleware(next)
+      await boundMiddleware(next)
 
       expect( isThisMinute(newField.updated_at) ).toBeTruthy()
+    })
+
+    test('Should call Product.find if min or max modified', async () => {
+      const minUpdated = { min: 500 }
+      const _update = minUpdated
+
+      const boundMiddleware = bindMiddleware({ _id: 'pinacolada', _update })
+
+      const expectedQuery = { 
+        customs: { $elemMatch: { custom_id: 'pinacolada' } } 
+      }
+
+      await boundMiddleware(next)
+
+      expect( Product.find.mock.calls.length ).toBe(1)
+      expect( Product.find.mock.calls[0][0] ).toEqual(expectedQuery)
+    })
+
+    test('Should correctly update and call save on necessary products')
+
+    test('Should prevent modification of the slug and return a ValidationError', async () => {
+      const newField  = { slug: 'what_a_slug' }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      try {
+        await boundMiddleware(next)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
+      }
+    })
+
+    test('Should prevent modification of type and return a ValidationError', async () => {
+      const newField  = { type: 'string' }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      try {
+        await boundMiddleware(next)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
+      }
+    })
+
+    test('Should call next with values error', async () => {
+      const newField  = { values: [{ value: 'heyhey' }] }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      try {
+        await boundMiddleware(next)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('Values should be updated via CustomField.save')
+      }
+    })
+
+    test('Should call next with _values error', async () => {
+      const newField  = { _values: ['something'] }
+      const _update = newField
+
+      const boundMiddleware = bindMiddleware({ _update })
+
+      try {
+        await boundMiddleware(next)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('_values is not updatable')
+      }
     })
 
   })
