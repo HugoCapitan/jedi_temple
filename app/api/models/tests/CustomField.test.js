@@ -141,8 +141,8 @@ describe('CustomField Model', () => {
   })
 
   describe('preSave Middleware', () => {
-
     let next
+
     beforeEach(() => {
       Product.find = jest.fn(() => [])
 
@@ -418,7 +418,7 @@ describe('CustomField Model', () => {
       expect( isThisMinute(newField.updated_at) ).toBeTruthy()
     })
 
-    test('Should call Product.find if min or max modified', async () => {
+    test('Should call Product.find if min modified', async () => {
       const minUpdated = { min: 500 }
       const _update = minUpdated
 
@@ -434,7 +434,47 @@ describe('CustomField Model', () => {
       expect( Product.find.mock.calls[0][0] ).toEqual(expectedQuery)
     })
 
-    test('Should correctly update and call save on necessary products')
+    test('Should call Product.find if max modified', async () => {
+      const maxUpdated = { max: 500 }
+      const _update = maxUpdated
+
+      const boundMiddleware = bindMiddleware({ _id: 'pinacolada', _update })
+
+      const expectedQuery = { 
+        customs: { $elemMatch: { custom_id: 'pinacolada' } } 
+      }
+
+      await boundMiddleware(next)
+
+      expect( Product.find.mock.calls.length ).toBe(1)
+      expect( Product.find.mock.calls[0][0] ).toEqual(expectedQuery)
+    })
+
+    test('Should correctly call update and save on necessary products', async () => {
+      const minUpdated = { min: 500 }
+      const _update = maxUpdated
+
+      const boundMiddleware = bindMiddleware({ _id: 'pinacolada', _update })
+
+      const foundProducts = [{ 
+          customs: [{ 
+          _id: 'ajua', 
+          custom_id: 'pinacolada', 
+          value_id: '900' 
+        }], 
+        save: jest.fn() 
+      }, { 
+        customs: [{ 
+          _id: 'notajua', 
+          custom_id: 'pinacolada', 
+          value_id: '400' 
+        }], 
+        save: jest.fn() 
+      }]
+      foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+      Product.find = jest.fn(() => [foundProduct])
+
+    })
 
     test('Should prevent modification of the slug and return a ValidationError', async () => {
       const newField  = { slug: 'what_a_slug' }
