@@ -668,6 +668,7 @@ describe('CustomField Model', () => {
 
       try {
         await boundMiddleware(next)
+        expect(0).toBe(1)
       } catch (e) {
         expect( next.mock.calls.length ).toBe(1)
         expect( next.mock.calls[0][0].message ).toBe('Smoothie Error')
@@ -688,6 +689,7 @@ describe('CustomField Model', () => {
 
       try {
         await boundMiddleware(next)
+        expect(0).toBe(1)
       } catch (e) {
         expect( next.mock.calls.length ).toBe(1)
         expect( next.mock.calls[0][0].message ).toBe('Smoothie Error')
