@@ -2,7 +2,9 @@ const moment = require('moment')
 const _ = require('lodash')
 
 jest.mock('../Product')
+jest.mock('../Store')
 const Product = require('../Product')
+const Store = require('../Store')
 const CustomField = require('../CustomField')
 
 const { howManyKeys } = require('../../utils')
@@ -563,8 +565,10 @@ describe('CustomField Model', () => {
 
     beforeEach(() => {
       Product.find = jest.fn(() => [])
+      Store.find = jest.fn(() => [])
 
       Product.prototype.save = jest.fn()
+      Store.prototype.save = jest.fn()
 
       next = jest.fn((err) => {
         if (err) throw err
@@ -611,7 +615,9 @@ describe('CustomField Model', () => {
       expect( foundProduct.save.mock.calls.length ).toBe(1)
     })
 
-    test('Should call store.find with the custom id')
+    test('Should call store.find with the custom id', () => {
+
+    })
 
     test('Should iterate and update stores')
 
