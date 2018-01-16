@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const Store = require('./Store')
+
 const AddressSchema = require('./schemas/AddressSchema')
 
 const ClientSchema = new Schema({
@@ -50,6 +52,30 @@ ClientSchema._middlewareFuncs = {
     this._update.updated_at = new Date()
     
     next()
+  },
+  async preRemove(next) {
+    const self = this
+
+    try {
+      
+      const storesToModify = Store.find({ clients: self._conditions._id })
+      let saves = []
+
+      for (const store of storesToModify) {
+        store.clients.pull(self._conditions._id)
+        saves.push(store.save())
+      }
+
+      Promise.all(saves)
+      .then(results => {
+        next()
+      })
+      .catch(err => {
+        throw err
+      })
+    } catch (e) {
+      next(e)
+    }
   }
 }
 
