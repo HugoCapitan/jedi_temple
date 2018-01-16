@@ -3,6 +3,7 @@
     "js": "node index.js"
   },
   "env": {
-    "NODE_ENV": "development"
+    "NODE_ENV": "development",
+    "ITERATIONS": 1000
   }
 }
