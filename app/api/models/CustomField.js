@@ -112,10 +112,32 @@ CustomFieldSchema._middlewareFuncs = {
 
     next()
   },
-  preRemove(next) {
-    const productError = new Error('prod')
-    productError.customOrigin = ('Product')
-    next(productError)
+  async preRemove(next) {
+    const self = this
+    try {
+      const productsToModify = await Product.find({
+        customs: { $elemMatch: { custom_id: self._conditions._id } }
+      })
+  
+      let saves = []
+      for (const product of productsToModify) {
+        const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
+        product.customs.pull({ _id: customToRemove._id })
+        saves.push(product.save())
+      }
+  
+      Promise.all(saves)
+      .then((results) => {
+        // log results
+        next()
+      })
+      .catch((err) => {
+        throw err
+      })
+    } catch (e) {
+      console.log(e)
+      next(e)
+    }
   }
 }
 

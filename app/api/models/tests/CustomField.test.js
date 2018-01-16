@@ -556,10 +556,62 @@ describe('CustomField Model', () => {
   })
 
   describe('preRemove Middleware', () => {
-    
-    test('Should call next')
+    let next
 
-    test('Should iterate and update products')
+    const bindMiddleware = (context) => 
+      CustomField.schema._middlewareFuncs.preRemove.bind(context) 
+
+    beforeEach(() => {
+      Product.find = jest.fn(() => [])
+
+      Product.prototype.save = jest.fn()
+
+      next = jest.fn((err) => {
+        if (err) throw err
+      })
+    })
+    
+    test('Should call next', async () => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+
+      await boundMiddleware(next)
+
+      expect( next.mock.calls.length ).toBe(1)
+    })
+
+    test('Should call product.find with the custom id', async () => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const expectedQuery = { customs: { $elemMatch: { custom_id: 'chocobanana' } } }
+
+      await boundMiddleware(next)
+
+      expect( Product.find.mock.calls.length ).toBe(1)
+      expect( Product.find.mock.calls[0][0] ).toEqual(expectedQuery)
+    }) 
+
+    test('Should iterate and update products', async () => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+
+      const foundProduct = { 
+        customs: [{ _id: 'smoothie', custom_id: 'chocobanana' }],
+        save: jest.fn()
+      }
+      foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+
+      Product.find = jest.fn(() => [foundProduct])
+
+      await boundMiddleware(next)
+
+      expect( foundProduct.customs.length ).toBe(0)
+      expect( foundProduct.customs.pull.mock.calls.length ).toBe(1)
+      expect( foundProduct.customs.pull.mock.calls[0][0] ).toEqual({ _id: 'smoothie' })
+      expect( foundProduct.save.mock.calls.length ).toBe(1)
+    })
+
+    test('Should call store.find with the custom id')
 
     test('Should iterate and update stores')
 
