@@ -199,7 +199,7 @@ describe('Client model', () => {
       expect( foundStores[0].clients.pull.mock.calls[0][0] ).toBe('jarrito_loco')
       expect( foundStores[0].save.mock.calls.length ).toBe(1)
 
-      expect( foundStores[1].clients.length ).toBe(0)
+      expect( foundStores[1].clients.length ).toBe(1)
       expect( foundStores[1].clients.pull.mock.calls.length ).toBe(1)
       expect( foundStores[1].clients.pull.mock.calls[0][0] ).toBe('jarrito_loco')
       expect( foundStores[1].save.mock.calls.length ).toBe(1)
