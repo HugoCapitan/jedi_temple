@@ -131,8 +131,8 @@ CustomFieldSchema._middlewareFuncs = {
       }
 
       for (const store of storesToModify) {
-        store.customs.pull(_self._conditions._id)
-        saves.push(store.save)
+        store.customs.pull(self._conditions._id)
+        saves.push(store.save())
       }
   
       Promise.all(saves)
@@ -144,7 +144,6 @@ CustomFieldSchema._middlewareFuncs = {
         throw err
       })
     } catch (e) {
-      console.log(e)
       next(e)
     }
   }

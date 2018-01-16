@@ -627,11 +627,72 @@ describe('CustomField Model', () => {
       expect( Store.find.mock.calls[0][0] ).toEqual(expectedQuery)
     })
 
-    test('Should iterate and update stores')
+    test('Should iterate and update stores', async () => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const foundStores = [{
+        customs: ['anotherthing', 'chocobanana'],
+        save: jest.fn()
+      }, {
+        customs: ['shomething', 'chocobanana'],
+        save: jest.fn()
+      }]
+      foundStores[0].customs.pull = jest.fn(() => { foundStores[0].customs.pop() })
+      foundStores[1].customs.pull = jest.fn(() => { foundStores[1].customs.pop() })
+      Store.find = jest.fn(() => foundStores)
 
-    test('Should call next with products error')
+      await boundMiddleware(next)
 
-    test('Should call next with stores error')
+      expect( foundStores[0].customs.length ).toBe(1)
+      expect( foundStores[0].customs.pull.mock.calls.length ).toBe(1)
+      expect( foundStores[0].customs.pull.mock.calls[0][0] ).toBe('chocobanana')
+      expect( foundStores[0].save.mock.calls.length ).toBe(1)
+
+      expect( foundStores[1].customs.length ).toBe(1)
+      expect( foundStores[1].customs.pull.mock.calls.length ).toBe(1)
+      expect( foundStores[1].customs.pull.mock.calls[0][0] ).toBe('chocobanana')
+      expect( foundStores[1].save.mock.calls.length ).toBe(1)
+    })
+
+    test('Should call next with products error', async () => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+
+      const foundProduct = { 
+        customs: [{ _id: 'smoothie', custom_id: 'chocobanana' }],
+        save: jest.fn(() => { throw new Error('Smoothie Error') })
+      }
+      foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+
+      Product.find = jest.fn(() => [foundProduct])
+
+      try {
+        await boundMiddleware(next)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].message ).toBe('Smoothie Error')
+      }
+    })
+
+    test('Should call next with stores error', async () => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+
+      const foundStore = { 
+        customs: ['chocobanana'],
+        save: jest.fn(() => { throw new Error('Smoothie Error') })
+      }
+      foundStore.customs.pull = jest.fn(() => { foundStore.customs.pop() })
+
+      Store.find = jest.fn(() => [foundStore])
+
+      try {
+        await boundMiddleware(next)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].message ).toBe('Smoothie Error')
+      }
+    }) 
 
   })
 
