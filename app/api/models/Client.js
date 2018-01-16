@@ -82,6 +82,8 @@ ClientSchema._middlewareFuncs = {
 ClientSchema.pre('save', ClientSchema._middlewareFuncs.preSave)
 ClientSchema.pre('udpate', ClientSchema._middlewareFuncs.preUpdate)
 ClientSchema.pre('findOneAndUpdate', ClientSchema._middlewareFuncs.preUpdate)
+ClientSchema.pre('remove', ClientSchema._middlewareFuncs.preRemove)
+ClientSchema.pre('findOneAndRemove', ClientSchema._middlewareFuncs.preRemove)
 
 const Client = mongoose.model('Client', ClientSchema)
 
