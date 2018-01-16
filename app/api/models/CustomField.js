@@ -191,11 +191,20 @@ async function productCustomRemovedValue(self, next) {
       customs: { $elemMatch: { custom_id: self._id, value_id: removedId } }
     })
 
+    let saves = []
     for (const product of productsToModify) {
       const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._id))
       product.customs.pull({ _id: customToRemove._id })
-      await product.save()
+      saves.push(product.save())
     }
+
+    Promise.all(saves)
+    .then((results) => {
+      // log results
+    })
+    .catch((err) => {
+      throw err
+    })
   } catch (e) {
     next(e)
   }
@@ -223,15 +232,15 @@ async function productCustomUpdatedMinMax(self, next) {
     for (const product of filtered) {
       const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
       product.customs.pull({ _id: customToRemove._id })
-      saves.push(product.save)
+      saves.push(product.save())
     }
 
     Promise.all(saves)
     .then((results) => {
-      // log fine
+      // log results
     })
     .catch((err) => {
-      next(err)
+      throw err
     })
   } catch (e) {
     next(e)

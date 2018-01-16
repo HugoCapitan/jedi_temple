@@ -462,14 +462,14 @@ describe('CustomField Model', () => {
           custom_id: 'pinacolada', 
           value: '900' 
         }], 
-        save: new Promise((resolve, reject) => { console.log('huhu'); resolve() })
+        save: jest.fn()
       }, { 
         customs: [{ 
           _id: 'notajua', 
           custom_id: 'pinacolada', 
           value: '400' 
         }], 
-        save: new Promise((resolve, reject) => { console.log('huhu'); resolve() })
+        save: jest.fn()
       }]
       foundProducts[0].customs.pull = jest.fn(() => { foundProducts[0].customs.pop() })
       foundProducts[1].customs.pull = jest.fn(() => { foundProducts[1].customs.pop() })
