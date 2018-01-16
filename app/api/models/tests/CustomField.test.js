@@ -422,7 +422,7 @@ describe('CustomField Model', () => {
       const minUpdated = { min: 500 }
       const _update = minUpdated
 
-      const boundMiddleware = bindMiddleware({ _id: 'pinacolada', _update })
+      const boundMiddleware = bindMiddleware({ _options: { _id: 'pinacolada' }, _update })
 
       const expectedQuery = { 
         customs: { $elemMatch: { custom_id: 'pinacolada' } } 
@@ -451,7 +451,7 @@ describe('CustomField Model', () => {
     })
 
     test('Should correctly call update and save on necessary products', async () => {
-      const minUpdated = { min: 500 }
+      const maxUpdated = {max: 500 }
       const _update = maxUpdated
 
       const boundMiddleware = bindMiddleware({ _id: 'pinacolada', _update })
@@ -471,15 +471,20 @@ describe('CustomField Model', () => {
         }], 
         save: jest.fn() 
       }]
-      foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+      foundProducts[0].customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+      foundProducts[1].customs.pull = jest.fn(() => { foundProduct.customs.pop() })
       Product.find = jest.fn(() => foundProducts)
 
       await boundMiddleware(next)
 
-      expect( foundProduct.customs.length ).toBe(0)
-      expect( foundProduct.customs.pull.mock.calls.length ).toBe(1)
-      expect( foundProduct.customs.pull.mock.calls[0][0] ).toEqual({ _id: 'ajua' })
-      expect( foundProduct.save.mock.calls.length ).toBe(1)
+      expect( foundProducts[0].customs.length ).toBe(0)
+      expect( foundProducts[0].customs.pull.mock.calls.length ).toBe(1)
+      expect( foundProducts[0].customs.pull.mock.calls[0][0] ).toEqual({ _id: 'ajua' })
+      expect( foundProducts[0].save.mock.calls.length ).toBe(1)
+
+      expect( foundProducts[1].customs.length ).toBe(1)
+      expect( foundProducts[1].customs.pull.mock.calls.length ).toBe(0)
+      expect( foundProducts[1].save.mock.calls.length ).toBe(0)
 
     })
 
