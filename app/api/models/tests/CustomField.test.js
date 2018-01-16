@@ -146,7 +146,7 @@ describe('CustomField Model', () => {
     beforeEach(() => {
       Product.find = jest.fn(() => [])
 
-      Product.prototype.save = jest.fn(() => true)
+      Product.prototype.save = jest.fn()
 
       next = jest.fn((err) => {
         if (err) throw err
@@ -379,7 +379,7 @@ describe('CustomField Model', () => {
     beforeEach(() => {
       Product.find = jest.fn(() => [])
 
-      Product.prototype.save = jest.fn(() => true)
+      Product.prototype.save = jest.fn()
 
       next = jest.fn((err) => {
         if (err) throw err
@@ -422,7 +422,7 @@ describe('CustomField Model', () => {
       const minUpdated = { min: 500 }
       const _update = minUpdated
 
-      const boundMiddleware = bindMiddleware({ _options: { _id: 'pinacolada' }, _update })
+      const boundMiddleware = bindMiddleware({ _conditions: { _id: 'pinacolada' }, _update })
 
       const expectedQuery = { 
         customs: { $elemMatch: { custom_id: 'pinacolada' } } 
@@ -438,7 +438,7 @@ describe('CustomField Model', () => {
       const maxUpdated = { max: 500 }
       const _update = maxUpdated
 
-      const boundMiddleware = bindMiddleware({ _id: 'pinacolada', _update })
+      const boundMiddleware = bindMiddleware({ _conditions: { _id: 'pinacolada' }, _update })
 
       const expectedQuery = { 
         customs: { $elemMatch: { custom_id: 'pinacolada' } } 
@@ -451,28 +451,28 @@ describe('CustomField Model', () => {
     })
 
     test('Should correctly call update and save on necessary products', async () => {
-      const maxUpdated = {max: 500 }
+      const maxUpdated = { min: '450', max: '500' }
       const _update = maxUpdated
 
-      const boundMiddleware = bindMiddleware({ _id: 'pinacolada', _update })
+      const boundMiddleware = bindMiddleware({ _conditions: { _id: 'pinacolada' }, _update })
 
       const foundProducts = [{ 
           customs: [{ 
           _id: 'ajua', 
           custom_id: 'pinacolada', 
-          value_id: '900' 
+          value: '900' 
         }], 
-        save: jest.fn() 
+        save: new Promise((resolve, reject) => { console.log('huhu'); resolve() })
       }, { 
         customs: [{ 
           _id: 'notajua', 
           custom_id: 'pinacolada', 
-          value_id: '400' 
+          value: '400' 
         }], 
-        save: jest.fn() 
+        save: new Promise((resolve, reject) => { console.log('huhu'); resolve() })
       }]
-      foundProducts[0].customs.pull = jest.fn(() => { foundProduct.customs.pop() })
-      foundProducts[1].customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+      foundProducts[0].customs.pull = jest.fn(() => { foundProducts[0].customs.pop() })
+      foundProducts[1].customs.pull = jest.fn(() => { foundProducts[1].customs.pop() })
       Product.find = jest.fn(() => foundProducts)
 
       await boundMiddleware(next)
@@ -482,9 +482,10 @@ describe('CustomField Model', () => {
       expect( foundProducts[0].customs.pull.mock.calls[0][0] ).toEqual({ _id: 'ajua' })
       expect( foundProducts[0].save.mock.calls.length ).toBe(1)
 
-      expect( foundProducts[1].customs.length ).toBe(1)
-      expect( foundProducts[1].customs.pull.mock.calls.length ).toBe(0)
-      expect( foundProducts[1].save.mock.calls.length ).toBe(0)
+      expect( foundProducts[1].customs.length ).toBe(0)
+      expect( foundProducts[1].customs.pull.mock.calls.length ).toBe(1)
+      expect( foundProducts[1].customs.pull.mock.calls[0][0] ).toEqual({ _id: 'notajua' })
+      expect( foundProducts[1].save.mock.calls.length ).toBe(1)
 
     })
 
