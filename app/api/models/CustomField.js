@@ -7,7 +7,7 @@ const CustomValueSchema = require('./schemas/CustomValueSchema')
 const Product = require('./Product')
 
 const { saysString, saysNumber, isNumeric, areMinMax } = require('../utils/validators')
-const { slugify } =  require('../utils')
+const { slugify } = require('../utils')
 
 const CustomFieldSchema = new Schema({
   name: {
@@ -54,14 +54,14 @@ const CustomFieldSchema = new Schema({
   max: {
     type: String,
     required() { return saysNumber(this.type) },
-    validate(val) { 
+    validate(val) {
       return saysNumber(this.type) && (isNumeric(val) || val === 'auto') && areMinMax(this.min, val)
-    } 
+    }
   },
   unit: {
     type: String,
     required() { return saysNumber(this.type) },
-    validate(val) { return saysNumber(this.type) }
+    validate(val) { return saysNumber(this.type) }
   },
   unit_place: {
     type: String,
@@ -79,14 +79,14 @@ CustomFieldSchema._middlewareFuncs = {
     const self = this
     await preSaveValidations(self, next)
 
-    self.slug       = slugify(self.name)
+    self.slug = slugify(self.name)
 
     if (!self.isNew && self.type === 'string' && self._values.length > self.values.length) {
-      await customValueRemoveProcess(self, next)
+      await productCustomRemovedValue(self, next)
     }
 
     if (self.type === 'string') {
-      self._values = self.values.map( val => val._id.toString() )
+      self._values = self.values.map(val => val._id.toString())
     }
 
     const currentDate = new Date()
@@ -107,7 +107,7 @@ CustomFieldSchema._middlewareFuncs = {
     if (self._update.name) self._update.slug = slugify(self._update.name)
 
     if ((self._update.min && self._update.min != 'auto') || (self._update.max && self._update.max != 'auto')) {
-      productCustomMinMaxUpdate(self, next)
+      productCustomUpdatedMinMax(self, next)
     }
 
     next()
@@ -152,7 +152,7 @@ async function preSaveValidations(self, next) {
     }, {})
     valCount = Object.values(valCount)
 
-    if ( valCount.find(val => val > 1) ) {
+    if (valCount.find(val => val > 1)) {
       let err = new Error('Duplicated value for CustomField.values')
       err.name = 'ValidationError'
       next(err)
@@ -165,7 +165,7 @@ function preUpdateValidations(self, next) {
     err = new Error('Slug is not updatable')
     err.name = 'ValidationError'
     next(err)
-  } 
+  }
   if (self._update.hasOwnProperty('type')) {
     err = new Error('Type is not updatable')
     err.name = 'ValidationError'
@@ -183,16 +183,16 @@ function preUpdateValidations(self, next) {
   }
 }
 
-async function customValueRemoveProcess(self, next) {
+async function productCustomRemovedValue(self, next) {
   try {
-    const removedId = self._values.find( cId => !self.values.find(cVal => cVal._id == cId) )
+    const removedId = self._values.find(cId => !self.values.find(cVal => cVal._id == cId))
 
-    const productsToModify = await Product.find({ 
-      customs: { $elemMatch: { custom_id: self._id, value_id: removedId } } 
+    const productsToModify = await Product.find({
+      customs: { $elemMatch: { custom_id: self._id, value_id: removedId } }
     })
 
     for (const product of productsToModify) {
-      const customToRemove = product.customs.find( c => _.isEqual(c.custom_id, self._id) )
+      const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._id))
       product.customs.pull({ _id: customToRemove._id })
       await product.save()
     }
@@ -201,17 +201,38 @@ async function customValueRemoveProcess(self, next) {
   }
 }
 
-async function productCustomMinMaxUpdate(self, next) {
+async function productCustomUpdatedMinMax(self, next) {
   try {
-    const productsToModify = await Product.find({ 
-      customs: { $elemMatch: { custom_id: self._id } } 
+    const productsToModify = await Product.find({
+      customs: { $elemMatch: { custom_id: self._conditions._id } }
     })
+    let filtered = []
 
-    for (const product of productsToModify) {
-      const customToRemove = product.customs.find( c => _.isEqual(c.custom_id, self._id) )
-      product.customs.pull({ _id: customToRemove._id })
-      await product.save()
+    if (self._update.min) {
+      filtered.push(...productsToModify.filter(product =>
+        !!product.customs.find(custom => _.isEqual(custom.custom_id, self._conditions._id) && parseInt(custom.value) > parseInt(self._update.min))
+      ))
     }
+    if (self._update.max) {
+      filtered.push(...productsToModify.filter(product =>
+        !!product.customs.find(custom => _.isEqual(custom.custom_id, self._conditions._id) && parseInt(custom.value) < parseInt(self._update.max))
+      ))
+    }
+
+    let saves = []
+    for (const product of filtered) {
+      const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
+      product.customs.pull({ _id: customToRemove._id })
+      saves.push(product.save)
+    }
+
+    Promise.all(saves)
+    .then((results) => {
+      // log fine
+    })
+    .catch((err) => {
+      next(err)
+    })
   } catch (e) {
     next(e)
   }
