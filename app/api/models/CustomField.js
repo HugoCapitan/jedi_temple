@@ -5,6 +5,7 @@ const Schema = mongoose.Schema
 const CustomValueSchema = require('./schemas/CustomValueSchema')
 
 const Product = require('./Product')
+const Store = require('./Store')
 
 const { saysString, saysNumber, isNumeric, areMinMax } = require('../utils/validators')
 const { slugify } = require('../utils')
@@ -115,15 +116,23 @@ CustomFieldSchema._middlewareFuncs = {
   async preRemove(next) {
     const self = this
     try {
+      let saves = []
+
       const productsToModify = await Product.find({
         customs: { $elemMatch: { custom_id: self._conditions._id } }
       })
   
-      let saves = []
+      const storesToModify = await Store.find({ customs: self._conditions._id })
+      
       for (const product of productsToModify) {
         const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
         product.customs.pull({ _id: customToRemove._id })
         saves.push(product.save())
+      }
+
+      for (const store of storesToModify) {
+        store.customs.pull(_self._conditions._id)
+        saves.push(store.save)
       }
   
       Promise.all(saves)

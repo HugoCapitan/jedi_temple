@@ -1,5 +1,6 @@
 const moment = require('moment')
 const _ = require('lodash')
+const { ObjectId } = require('mongoose').Schema.Types
 
 jest.mock('../Product')
 jest.mock('../Store')
@@ -615,8 +616,15 @@ describe('CustomField Model', () => {
       expect( foundProduct.save.mock.calls.length ).toBe(1)
     })
 
-    test('Should call store.find with the custom id', () => {
+    test('Should call store.find with the custom id', async () => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const expectedQuery = { customs: 'chocobanana' }
 
+      await boundMiddleware(next)
+
+      expect( Store.find.mock.calls.length ).toBe(1)
+      expect( Store.find.mock.calls[0][0] ).toEqual(expectedQuery)
     })
 
     test('Should iterate and update stores')
