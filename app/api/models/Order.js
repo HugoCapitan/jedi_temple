@@ -4,14 +4,14 @@ const Schema = mongoose.Schema
 const AddressSchema      = require('./schemas/AddressSchema')
 const OrderProductSchema = require('./schemas/OrderProductSchema')
 
-const { createOrdercode } = require('../utils/models')
-const { isEmail }         = require('../utils/validators') 
+const uModels = require('../utils/models')
+const validate = require('../utils/validators') 
 
 const OrderSchema = new Schema({
   email: {
     type: String,
     required: true,
-    validate: isEmail
+    validate: validate.isEmail
   },
   order_code: {
     type: String,
@@ -53,7 +53,7 @@ OrderSchema.pre('save', (next) => {
     this.created_at = currentDate
 
   if (!this.order_code)
-    this.order_code = createOrdercode(currentDate)
+    this.order_code = uModels.slugify(currentDate)
 
   next()
 })

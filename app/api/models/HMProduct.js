@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const { slugify } = require('../utils')
+const common = require('../utils')
 
 const HandmadeMaterialSchema = require('./schemas/HandmadeMaterialSchema')
 
@@ -27,7 +27,7 @@ HMProductSchema.pre('save', (next) => {
   if (!this.created_at) 
     this.created_at = currentDate
 
-  this.slug = slugify(this.name)
+  this.slug = common.slugify(this.name)
 
   next()
 })

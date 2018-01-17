@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
-const { slugify } = require('../utils')
+const uCommons = require('../utils')
 // const { hasRequiredCustoms } = require('../utils/validators')
 
 const CustomSchema = require('./schemas/CustomSchema')
@@ -37,7 +37,7 @@ ProductSchema.pre('save', function(next) {
   if (!this.created_at) 
     this.created_at = currentDate
 
-  this.slug = slugify(this.name)
+  this.slug = uCommons.slugify(this.name)
 
   next()
 })

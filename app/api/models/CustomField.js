@@ -8,7 +8,7 @@ const Product = require('./Product')
 const Store = require('./Store')
 
 const validate = require('../utils/validators')
-const common = require('../utils')
+const uCommon = require('../utils')
 
 const CustomFieldSchema = new Schema({
   name: {
@@ -80,7 +80,7 @@ CustomFieldSchema._middlewareFuncs = {
     const self = this
     await preSaveValidations(self, next)
 
-    self.slug = common.slugify(self.name)
+    self.slug = uCommon.slugify(self.name)
 
     if (!self.isNew && self.type === 'string' && self._values.length > self.values.length) {
       await productCustomRemovedValue(self, next)
@@ -105,7 +105,7 @@ CustomFieldSchema._middlewareFuncs = {
     const currentDate = new Date()
     self._update.updated_at = currentDate
 
-    if (self._update.name) self._update.slug = common.slugify(self._update.name)
+    if (self._update.name) self._update.slug = uCommon.slugify(self._update.name)
 
     if ((self._update.min && self._update.min != 'auto') || (self._update.max && self._update.max != 'auto')) {
       productCustomUpdatedMinMax(self, next)

@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const { isPicture } = require('../utils/validators')
+const validate = require('../utils/validators')
 
 const PictureSchema = new Schema({
   url: {
     type: String,
     required: true,
-    validate: isPicture
+    validate: validate.isPicture
   },
   created_at: Date,
   updated_at: Date
