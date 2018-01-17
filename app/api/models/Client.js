@@ -41,24 +41,24 @@ const ClientSchema = new Schema({
 
 ClientSchema._middlewareFuncs = {
   async preSave(next) {
+    const self = this
     try {
       const currentDate = new Date()
 
-      this.updated_at = currentDate
-      if (!this.created_at) this.created_at = currentDate
+      self.updated_at = currentDate
+      if (!self.created_at) self.created_at = currentDate
 
-      if (this.isNew && !this.password) {
+      if (self.isNew && !self.password) {
         const e = new Error('Password Required')
         e.name = 'ValidationError'
         throw e
       }
 
-      if (this.password) {
-        console.log('hola')
-        const hashed = await uModels.hashPassword(this.password)
+      if (self.password) {
+        const hashed = await uModels.hashPassword(self.password)
 
-        this.password = hashed.hash
-        this.salt = hashed.salt
+        self.password = hashed.hash
+        self.salt = hashed.salt
       }
 
       next()
@@ -67,10 +67,23 @@ ClientSchema._middlewareFuncs = {
     }
     
   },
-  preUpdate(next) {
-    this._update.updated_at = new Date()
+  async preUpdate(next) {
+    const self = this
+    try {
+      self._update.updated_at = new Date()
+
+      if (self._update.password) {
+        const hashed = await uModels.hashPassword(self._update.password)
+
+        self._update.password = hashed.hash
+        self._update.salt = hashed.salt
+      }
     
-    next()
+      next()
+    } catch (e) {
+      next(e)
+    }
+    
   },
   async preRemove(next) {
     const self = this

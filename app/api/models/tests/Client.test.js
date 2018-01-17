@@ -123,27 +123,60 @@ describe('Client model', () => {
       expect( hashSpy ).toHaveBeenCalled()
       expect( context.password ).toBeTruthy()
       expect( context.salt ).toBeTruthy()
+      models.hashPassword.mockRestore()
     })
 
-    test('Shoul call next with no password error')
+    test('Shoul call next with no password error', async () => {
+      delete validClient.password
+      const context = validClient
+      context.isNew = true
 
-    test('Should call next with encryption error')
+      const boundMiddleware = Client.schema._middlewareFuncs.preSave.bind(context)
+      const next = jest.fn(err => { if (err) throw err })
+
+      try {
+        await boundMiddleware(next)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('Password Required')
+      }
+    })
+
+    test('Should call next with encryption error', async () => {
+      const oldHashPswd = models.hashPassword
+      const context = validClient
+      models.hashPassword = jest.fn( () => new Promise((resolve, reject) => { reject(new Error('hola_amigo')) }) )
+
+      const boundMiddleware = Client.schema._middlewareFuncs.preSave.bind(context)
+      const next = jest.fn(err => { if (err) throw err })
+
+      try {
+        await boundMiddleware(next)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].message ).toBe('hola_amigo')
+        models.hashPassword = oldHashPswd
+      }
+    })
 
   })
 
   describe('preUpdate Middleware', () => {
 
-    test('Should call next', () => {
+    test('Should call next', async () => {
       const boundMiddlewareFunc = Client.schema._middlewareFuncs.preUpdate
       .bind({ _update: validClient })
       const next = jest.fn()
 
-      boundMiddlewareFunc(next)
+      await boundMiddlewareFunc(next)
 
       expect( next.mock.calls.length ).toBe(1)
     })
 
-    test('Should update updated_at date', () => {
+    test('Should update updated_at date', async () => {
       const creationDate = moment().subtract(1, 'weeks').toDate()
       Object.assign( validClient, { created_at: creationDate, updated_at: creationDate } )
 
@@ -153,13 +186,45 @@ describe('Client model', () => {
       .bind({ _update: updateObj })
       const next = jest.fn()
 
-      boundMiddlewareFunc(next)
+      await boundMiddlewareFunc(next)
 
       expect( validClient.created_at ).toBe(creationDate)
       expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
     })  
 
-    test('Should encrypt password before saving')
+    test('Should encrypt password before saving', async () => {
+      hashSpy = jest.spyOn(models, 'hashPassword')
+
+      const context = { password: 'newpas' }
+
+      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preUpdate.bind({ _update: context })
+      const next = jest.fn()
+
+      await boundMiddlewareFunc(next)
+
+      expect( hashSpy ).toHaveBeenCalled()
+      expect( context.password ).toBeTruthy()
+      expect( context.salt ).toBeTruthy()
+      models.hashPassword.mockRestore()
+    })
+
+    test('Should call next with encryption error', async () => {
+      const oldHashPswd = models.hashPassword
+      const context = { password: 'newpas' }
+      models.hashPassword = jest.fn( () => new Promise((resolve, reject) => { reject(new Error('hola_amigo')) }) )
+
+      const boundMiddleware = Client.schema._middlewareFuncs.preUpdate.bind({ _update: context })
+      const next = jest.fn(err => { if (err) throw err })
+
+      try {
+        await boundMiddleware(next)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].message ).toBe('hola_amigo')
+        models.hashPassword = oldHashPswd
+      }
+    })
 
   })
 
