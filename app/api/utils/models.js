@@ -15,8 +15,17 @@ module.exports = {
 
         resolve({
           salt, 
-          hashedPassword: derivedKey.toString('hex')
+          hash: derivedKey.toString('hex')
         })
+      })
+    })
+  },
+  isPasswordRight(savedHash, savedSalt, passwordAttempt) {
+    return new Promise((resolve, reject) => {
+      crypto.pbkdf2(passwordAttempt, savedSalt, 1000, 512, 'sha512', (err, derivedKey) => {
+        if (err) reject(err)
+
+        resolve( derivedKey.toString('hex') == savedHash )
       })
     })
   }
