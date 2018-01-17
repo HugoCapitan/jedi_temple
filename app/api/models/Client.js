@@ -5,7 +5,7 @@ const Store = require('./Store')
 
 const AddressSchema = require('./schemas/AddressSchema')
 
-const models = require('../utils/models')
+const uModels = require('../utils/models')
 
 const ClientSchema = new Schema({
   name: {
@@ -55,7 +55,7 @@ ClientSchema._middlewareFuncs = {
 
       if (this.password) {
         console.log('hola')
-        const hashed = await models.hashPassword(this.password)
+        const hashed = await uModels.hashPassword(this.password)
 
         this.password = hashed.hash
         this.salt = hashed.salt
