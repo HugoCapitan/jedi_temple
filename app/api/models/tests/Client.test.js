@@ -4,6 +4,7 @@ jest.mock('../Store')
 const Store = require('../Store')
 const Client = require('../Client')
 
+const models = require('../../utils/models')
 const { howManyKeys } = require('../../utils')
 const { isThisMinute } = require('../../utils/validators')
 const { getValidClient } = require('../../utils/validSchemas')
@@ -20,14 +21,13 @@ describe('Client model', () => {
     expect(v).toBeFalsy()
   })
 
-  test('Should be invalid if missing: name, email, password', () => {
+  test('Should be invalid if missing: name, email', () => {
     const m = new Client( Object.assign(validClient, { name: undefined, email: undefined, password: undefined }) )
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(3)
+    expect(howManyKeys(v.errors)).toBe(2)
     expect(v.errors.name).toBeTruthy()
     expect(v.errors.email).toBeTruthy()
-    expect(v.errors.password).toBeTruthy()
   })
 
   test('Should be invalid if Wishlist Product id is empty', () => {
@@ -72,30 +72,30 @@ describe('Client model', () => {
 
   describe('preSave Middleware', () => {
 
-    test('Should call next', () => {
+    test('Should call next', async () => {
       const context = validClient
 
       const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
       const next = jest.fn()
 
-      boundMiddlewareFunc(next)
+      await boundMiddlewareFunc(next)
 
       expect( next.mock.calls.length ).toBe(1)
     })
 
-    test('Should add created_at and updated_at', () => {
+    test('Should add created_at and updated_at', async () => {
       const context = validClient
 
       const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
       const next = jest.fn()
 
-      boundMiddlewareFunc(next)
+      await boundMiddlewareFunc(next)
 
       expect( isThisMinute(validClient.created_at) ).toBeTruthy()
       expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
     })
 
-    test('Should modify updated_at but not created_at', () => {
+    test('Should modify updated_at but not created_at', async () => {
       const creationDate = moment().subtract(1, 'weeks').toDate()
       Object.assign( validClient, { created_at: creationDate, updated_at: creationDate } )
 
@@ -104,13 +104,30 @@ describe('Client model', () => {
       const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
       const next = jest.fn()
 
-      boundMiddlewareFunc(next)
+      await boundMiddlewareFunc(next)
       
       expect( validClient.created_at ).toBe(creationDate)
       expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
     })
 
-    test('Should encript password before saving it')
+    test('Should encrypt password before saving it', async () => {
+      hashSpy = jest.spyOn(models, 'hashPassword')
+
+      const context = validClient
+
+      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
+      const next = jest.fn()
+
+      await boundMiddlewareFunc(next)
+
+      expect( hashSpy ).toHaveBeenCalled()
+      expect( context.password ).toBeTruthy()
+      expect( context.salt ).toBeTruthy()
+    })
+
+    test('Shoul call next with no password error')
+
+    test('Should call next with encryption error')
 
   })
 
@@ -142,7 +159,7 @@ describe('Client model', () => {
       expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
     })  
 
-    test('Should encript password before saving')
+    test('Should encrypt password before saving')
 
   })
 
