@@ -7,8 +7,8 @@ const CustomValueSchema = require('./schemas/CustomValueSchema')
 const Product = require('./Product')
 const Store = require('./Store')
 
-const { saysString, saysNumber, isNumeric, areMinMax } = require('../utils/validators')
-const { slugify } = require('../utils')
+const validate = require('../utils/validators')
+const common = require('../utils')
 
 const CustomFieldSchema = new Schema({
   name: {
@@ -36,39 +36,39 @@ const CustomFieldSchema = new Schema({
   },
   values: {
     type: [CustomValueSchema],
-    required() { return saysString(this.type) },
-    validate(val) { return saysString(this.type) && val.length },
+    required() { return validate.saysString(this.type) },
+    validate(val) { return validate.saysString(this.type) && val.length },
     default: undefined
   },
   _values: {
     type: [String],
-    validate(val) { return saysString(this.type) && val.length },
+    validate(val) { return validate.saysString(this.type) && val.length },
     default: undefined
   },
   min: {
     type: String,
-    required() { return saysNumber(this.type) },
+    required() { return validate.saysNumber(this.type) },
     validate(val) {
-      return saysNumber(this.type) && (isNumeric(val) || val === 'auto') && areMinMax(val, this.max)
+      return validate.saysNumber(this.type) && (validate.isNumeric(val) || val === 'auto') && validate.areMinMax(val, this.max)
     }
   },
   max: {
     type: String,
-    required() { return saysNumber(this.type) },
+    required() { return validate.saysNumber(this.type) },
     validate(val) {
-      return saysNumber(this.type) && (isNumeric(val) || val === 'auto') && areMinMax(this.min, val)
+      return validate.saysNumber(this.type) && (validate.isNumeric(val) || val === 'auto') && validate.areMinMax(this.min, val)
     }
   },
   unit: {
     type: String,
-    required() { return saysNumber(this.type) },
-    validate(val) { return saysNumber(this.type) }
+    required() { return validate.saysNumber(this.type) },
+    validate(val) { return validate.saysNumber(this.type) }
   },
   unit_place: {
     type: String,
-    required() { return saysNumber(this.type) },
+    required() { return validate.saysNumber(this.type) },
     validate(val) {
-      return saysNumber(this.type) && (val === 'before' || val === 'after')
+      return validate.saysNumber(this.type) && (val === 'before' || val === 'after')
     }
   },
   created_at: Date,
@@ -80,7 +80,7 @@ CustomFieldSchema._middlewareFuncs = {
     const self = this
     await preSaveValidations(self, next)
 
-    self.slug = slugify(self.name)
+    self.slug = common.slugify(self.name)
 
     if (!self.isNew && self.type === 'string' && self._values.length > self.values.length) {
       await productCustomRemovedValue(self, next)
@@ -105,7 +105,7 @@ CustomFieldSchema._middlewareFuncs = {
     const currentDate = new Date()
     self._update.updated_at = currentDate
 
-    if (self._update.name) self._update.slug = slugify(self._update.name)
+    if (self._update.name) self._update.slug = common.slugify(self._update.name)
 
     if ((self._update.min && self._update.min != 'auto') || (self._update.max && self._update.max != 'auto')) {
       productCustomUpdatedMinMax(self, next)
