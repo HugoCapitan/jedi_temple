@@ -5,6 +5,8 @@ const Store = require('./Store')
 
 const AddressSchema = require('./schemas/AddressSchema')
 
+const models = require('../utils/models')
+
 const ClientSchema = new Schema({
   name: {
     type: String,
@@ -15,10 +17,8 @@ const ClientSchema = new Schema({
     required: true,
     unique: true
   },
-  password: {
-    type: String,
-    required: true
-  },
+  password: String,
+  salt: String,
   addresses: [AddressSchema],
   orders:[{
     type: Schema.Types.ObjectId,
@@ -40,13 +40,32 @@ const ClientSchema = new Schema({
 })
 
 ClientSchema._middlewareFuncs = {
-  preSave(next) {
-    const currentDate = new Date()
+  async preSave(next) {
+    try {
+      const currentDate = new Date()
 
-    this.updated_at = currentDate
-    if (!this.created_at) this.created_at = currentDate
+      this.updated_at = currentDate
+      if (!this.created_at) this.created_at = currentDate
 
-    next()
+      if (this.isNew && !this.password) {
+        const e = new Error('Password Required')
+        e.name = 'ValidationError'
+        throw e
+      }
+
+      if (this.password) {
+        console.log('hola')
+        const hashed = await models.hashPassword(this.password)
+
+        this.password = hashed.hash
+        this.salt = hashed.salt
+      }
+
+      next()
+    } catch (e) {
+      next(e)
+    }
+    
   },
   preUpdate(next) {
     this._update.updated_at = new Date()
