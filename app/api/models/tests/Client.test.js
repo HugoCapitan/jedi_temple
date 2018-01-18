@@ -232,7 +232,7 @@ describe('Client model', () => {
     let next
 
     beforeEach(() => {
-      Store.find = jest.fn(() => [])
+      Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve([]) }))
       next = jest.fn((err) => { if (err) throw err })
     })
 
@@ -272,7 +272,7 @@ describe('Client model', () => {
       foundStores[0].clients.pull = jest.fn(() => { foundStores[0].clients.pop() })
       foundStores[1].clients.pull = jest.fn(() => { foundStores[1].clients.pop() })
 
-      Store.find = jest.fn(() => foundStores)
+      Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve(foundStores) }))
 
       await boundMiddleware(next)
 
@@ -300,7 +300,7 @@ describe('Client model', () => {
       foundStores[0].clients.pull = jest.fn(() => { foundStores[0].clients.pop() })
       foundStores[1].clients.pull = jest.fn(() => { foundStores[1].clients.pop() })
 
-      Store.find = jest.fn(() => foundStores)
+      Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve(foundStores) }))      
 
       try {
         await boundMiddleware(next)
