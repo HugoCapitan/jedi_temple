@@ -155,38 +155,31 @@ describe('HMProduct Model', () => {
       expect( next.mock.calls.length ).toBe(1)
     })
 
-    // test('Should add created_at and updated_at', async () => {
-    //   const context = validClient
+    test('Should update updated_at date', () => {
+      const context = {  }
 
-    //   const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
-    //   const next = jest.fn()
+      const boundMiddlewareFunc = bindMiddleware({ _udpate: context })
 
-    //   await boundMiddlewareFunc(next)
+      boundMiddlewareFunc(next)
 
-    //   expect( isThisMinute(validClient.created_at) ).toBeTruthy()
-    //   expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
-    // })
+      expect( context.hasOwnProperty('created_at') ).toBe(false)
+      expect( isThisMinute(context.updated_at) ).toBe(true)
+    })    
 
-    // test('Should modify updated_at but not created_at', async () => {
-    //   const creationDate = moment().subtract(1, 'weeks').toDate()
-    //   Object.assign( validClient, { created_at: creationDate, updated_at: creationDate } )
+    test('Should throw error if materials', () => {
+      const context = { materials: [] }
 
-    //   const context = validClient
+      const boundMiddlewareFunc = bindMiddleware({ _udpate: context })
 
-    //   const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
-    //   const next = jest.fn()
-
-    //   await boundMiddlewareFunc(next)
-      
-    //   expect( validClient.created_at ).toBe(creationDate)
-    //   expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
-    // })
-
-    test('Should update updated_at date')
-
-    test('Materials should iterate materials for duplicates and call next with error')
-
-    test('Should iterate on every material\'s models for duplicates and call next with error')
+      try {
+        boundMiddlewareFunc(next)
+        expect(0).toBe(1)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
+        expect( next.mock.calls[0][0].message ).toBe('Materials should be updated via HMProduct.save')
+      }
+    })    
 
   })
 
