@@ -1,6 +1,8 @@
 const moment = require('moment')
+
+jest.mock('../Store')
+const Store = require('../Store')
 const HMProduct = require('../HMProduct')
-const Product = require('../Product')
 
 const uCommon = require('../../utils')
 const valid = require('../../utils/validators')
@@ -148,7 +150,7 @@ describe('HMProduct Model', () => {
     test('Should call next', () => {
       const context = { name: 'bracelet' }
 
-      const boundMiddlewareFunc = bindMiddleware({ _udpate: context })
+      const boundMiddlewareFunc = bindMiddleware({ _update: context })
 
       boundMiddlewareFunc(next)
 
@@ -158,18 +160,18 @@ describe('HMProduct Model', () => {
     test('Should update updated_at date', () => {
       const context = {  }
 
-      const boundMiddlewareFunc = bindMiddleware({ _udpate: context })
+      const boundMiddlewareFunc = bindMiddleware({ _update: context })
 
       boundMiddlewareFunc(next)
 
       expect( context.hasOwnProperty('created_at') ).toBe(false)
-      expect( isThisMinute(context.updated_at) ).toBe(true)
+      expect( valid.isThisMinute(context.updated_at) ).toBe(true)
     })    
 
     test('Should throw error if materials', () => {
       const context = { materials: [] }
 
-      const boundMiddlewareFunc = bindMiddleware({ _udpate: context })
+      const boundMiddlewareFunc = bindMiddleware({ _update: context })
 
       try {
         boundMiddlewareFunc(next)
@@ -184,12 +186,85 @@ describe('HMProduct Model', () => {
   })
 
   describe('preRemove Middleware', () => {
+    let next
+    const bindMiddleware = context => 
+      HMProduct.schema._middlewareFuncs.preRemove.bind(context)
 
-    test('Should call next')
+    beforeEach(() => { 
+      Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve([]) }))
+      next = jest.fn(err => { if (err) throw err })
+    })
 
-    test('Should call stores find with the id')
+    test('Should call next', async () => {
+      const _conditions = { _id: 'cafe_lechero' }
+      const boundMiddlewareFunc = bindMiddleware({ _conditions })
 
-    test('Should update found stores and call save')
+      await boundMiddlewareFunc(next)
+
+      expect( next.mock.calls.length ).toBe(1)
+    })
+
+    test('Should call Store.find with the hmproduct id', async () => {
+      const _conditions = { _id: 'cafe_lechero' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const expectedQuery = { hm_products: 'cafe_lechero' }
+
+      await boundMiddleware(next)
+
+      expect( Store.find.mock.calls.length ).toBe(1)
+      expect( Store.find.mock.calls[0][0] ).toEqual(expectedQuery)
+    })
+
+    test('Should update and save found stores', async () => {
+      const _conditions = { _id: 'cafe_lechero' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const foundStores = [{
+        hm_products: ['cafe_lechero'],
+        save: jest.fn()
+      },{
+        hm_products: ['a_hmprod', 'cafe_lechero'],
+        save: jest.fn()
+      }]
+      foundStores[0].hm_products.pull = jest.fn(() => { foundStores[0].hm_products.pop() })
+      foundStores[1].hm_products.pull = jest.fn(() => { foundStores[1].hm_products.pop() })
+
+      Store.find = jest.fn(() => foundStores)
+
+      await boundMiddleware(next)
+
+      expect( foundStores[0].hm_products.length ).toBe(0)
+      expect( foundStores[0].hm_products.pull.mock.calls.length ).toBe(1)
+      expect( foundStores[0].hm_products.pull.mock.calls[0][0] ).toBe('cafe_lechero')
+      expect( foundStores[0].save.mock.calls.length ).toBe(1)
+
+      expect( foundStores[1].hm_products.length ).toBe(1)
+      expect( foundStores[1].hm_products.pull.mock.calls.length ).toBe(1)
+      expect( foundStores[1].hm_products.pull.mock.calls[0][0] ).toBe('cafe_lechero')
+      expect( foundStores[1].save.mock.calls.length ).toBe(1)
+    })
+
+    test('Should call next with store update error', async () => {
+      const _conditions = { _id: 'cafe_lechero' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const foundStores = [{
+        hm_products: ['cafe_lechero'],
+        save: jest.fn(() => { throw new Error('Se enfrio el cafe :c') })
+      },{
+        hm_products: ['a_client', 'cafe_lechero'],
+        save: jest.fn(() => { throw new Error('Se enfrio el cafe :c') })
+      }]
+      foundStores[0].hm_products.pull = jest.fn(() => { foundStores[0].hm_products.pop() })
+      foundStores[1].hm_products.pull = jest.fn(() => { foundStores[1].hm_products.pop() })
+
+      Store.find = jest.fn(() => foundStores)
+
+      try {
+        await boundMiddleware(next)
+      } catch (e) {
+        expect( next.mock.calls.length ).toBe(1)
+        expect( next.mock.calls[0][0].message ).toBe('Se enfrio el cafe :c')
+      }
+    })
 
   })
 
