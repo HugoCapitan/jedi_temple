@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { Schema } = mongoose
+const Schema = mongoose.Schema
 
 module.exports = new Schema({
   material: {
@@ -11,8 +11,5 @@ module.exports = new Schema({
     type: Number,
     required: true
   },
-  models: [{
-    type: String,
-    unique: true
-  }]
+  models: [String]
 })

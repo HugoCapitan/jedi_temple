@@ -37,21 +37,37 @@ describe('HMProduct Model', () => {
       expect(howManyKeys(v.errors)).toBe(2)
       expect(v.errors['materials.0.material']).toBeTruthy()
       expect(v.errors['materials.0.price']).toBeTruthy()
-    })  
+    })
 
-    // test('Should be invalid if product missing required customs: hmmodel, material', () => {
-    //   const malformedProduct = new Product( getValidProduct() ) // <- returns product without material neither hmmodel schemas
-    //   const malformedHMProduct = getValidHMProduct()
-    //   malformedHMProduct.materials[0].models[0] = malformedProduct._id
+  })
 
-    //   const m = new HMProduct( malformedHMProduct )
-    //   const v = m.validateSync()
+  describe('preSave Middleware', () => {
 
-    //   console.log(v.errors)
-    //   // expect()
-    // })
+    test('Should call next')
 
-    // test('Should be invalid if model price different from material price')
+    test('Materials should iterate materials for duplicates and call next with error')
+
+    test('Should iterate on every material\'s models for duplicates and call next with error')
+
+  })
+
+  describe('preUpdate Middleware', () => {
+
+    test('Should call next')
+
+    test('Materials should iterate materials for duplicates and call next with error')
+
+    test('Should iterate on every material\'s models for duplicates and call next with error')
+
+  })
+
+  describe('preRemove Middleware', () => {
+
+    test('Should call next')
+
+    test('Should call stores find with the id')
+
+    test('Should update found stores and call save')
 
   })
 
