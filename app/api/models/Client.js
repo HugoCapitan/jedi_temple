@@ -90,7 +90,7 @@ ClientSchema._middlewareFuncs = {
 
     try {
       
-      const storesToModify = Store.find({ clients: self._conditions._id })
+      const storesToModify = await Store.find({ clients: self._conditions._id })
       let saves = []
 
       for (const store of storesToModify) {
