@@ -95,16 +95,9 @@ ClientSchema._middlewareFuncs = {
 
       for (const store of storesToModify) {
         store.clients.pull(self._conditions._id)
-        saves.push(store.save())
+        await store.save()
       }
-
-      Promise.all(saves)
-      .then(results => {
-        next()
-      })
-      .catch(err => {
-        throw err
-      })
+      
     } catch (e) {
       next(e)
     }
