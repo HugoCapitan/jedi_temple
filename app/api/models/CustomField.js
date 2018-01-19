@@ -237,6 +237,9 @@ async function productCustomRemovedValue(self) {
 }
 
 async function productCustomUpdatedMinMax(self, next) {
+  if (!(self._update.min && self._update.min != 'auto') || !(self._update.max && self._update.max != 'auto'))
+    return []
+    
   const productsToModify = await Product.find({
     customs: { $elemMatch: { custom_id: self._conditions._id } }
   })
