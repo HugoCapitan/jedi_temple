@@ -76,29 +76,31 @@ const CustomFieldSchema = new Schema({
 })
 
 CustomFieldSchema._middlewareFuncs = {
-  async preSave(next) {
+  preSave(next) {
     const self = this
-    await preSaveValidations(self, next)
+    const saves = []
+    preSaveValidations(self, next)
 
     self.slug = uCommon.slugify(self.name)
 
-    if (!self.isNew && self.type === 'string' && self._values.length > self.values.length) {
-      await productCustomRemovedValue(self, next)
-    }
+    productCustomRemovedValue(self)
+    .then(results => Promise.all(results))
+    .then(results => {
+      if (self.type === 'string') {
+        self._values = self.values.map(val => val._id.toString())
+      }
+  
+      const currentDate = new Date()
+  
+      self.updated_at = currentDate
+      if (!self.created_at)
+        self.created_at = currentDate
 
-    if (self.type === 'string') {
-      self._values = self.values.map(val => val._id.toString())
-    }
-
-    const currentDate = new Date()
-
-    self.updated_at = currentDate
-    if (!self.created_at)
-      self.created_at = currentDate
-
-    next()
+      next()
+    })
+    .catch(next)
   },
-  async preUpdate(next) {
+  preUpdate(next) {
     const self = this
     preUpdateValidations(self, next)
 
@@ -107,11 +109,10 @@ CustomFieldSchema._middlewareFuncs = {
 
     if (self._update.name) self._update.slug = uCommon.slugify(self._update.name)
 
-    if ((self._update.min && self._update.min != 'auto') || (self._update.max && self._update.max != 'auto')) {
-      productCustomUpdatedMinMax(self, next)
-    }
-
-    next()
+    productCustomUpdatedMinMax(self)
+    .then(results => Promise.all(results))
+    .then(results => { next() })
+    .catch(next)
   },
   async preRemove(next) {
     const self = this
@@ -213,66 +214,53 @@ function preUpdateValidations(self, next) {
   }
 }
 
-async function productCustomRemovedValue(self, next) {
-  try {
-    const removedId = self._values.find(cId => !self.values.find(cVal => cVal._id == cId))
+async function productCustomRemovedValue(self) {
+  if (self.isNew || self.type != 'string' || self.values.length >= self._values.length)
+    return []
 
-    const productsToModify = await Product.find({
-      customs: { $elemMatch: { custom_id: self._id, value_id: removedId } }
-    })
+  const saves = []
+  const removedId = self._values.find(cId => !self.values.find(cVal => cVal._id == cId))
 
-    let saves = []
-    for (const product of productsToModify) {
-      const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._id))
-      product.customs.pull({ _id: customToRemove._id })
-      saves.push(product.save())
-    }
+  const productsToModify = await Product.find({
+    customs: { $elemMatch: { custom_id: self._id, value_id: removedId } }
+  })
+  .exec()
+  .catch(e => { throw e })
 
-    Promise.all(saves)
-    .then((results) => {
-      // log results
-    })
-    .catch((err) => {
-      throw err
-    })
-  } catch (e) {
-    next(e)
+  for (const product of productsToModify) {
+    const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._id))
+    product.customs.pull({ _id: customToRemove._id })
+    saves.push(product.save())
   }
+
+  return saves
 }
 
 async function productCustomUpdatedMinMax(self, next) {
-  try {
-    const productsToModify = await Product.find({
-      customs: { $elemMatch: { custom_id: self._conditions._id } }
-    })
-    let filtered = []
+  const productsToModify = await Product.find({
+    customs: { $elemMatch: { custom_id: self._conditions._id } }
+  })
+  .exec()
+  .catch(e => { throw e })
 
-    if (self._update.min) {
-      filtered.push(...productsToModify.filter(product =>
-        !!product.customs.find(custom => _.isEqual(custom.custom_id, self._conditions._id) && parseInt(custom.value) > parseInt(self._update.min))
-      ))
-    }
-    if (self._update.max) {
-      filtered.push(...productsToModify.filter(product =>
-        !!product.customs.find(custom => _.isEqual(custom.custom_id, self._conditions._id) && parseInt(custom.value) < parseInt(self._update.max))
-      ))
-    }
-
-    let saves = []
-    for (const product of filtered) {
-      const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
-      product.customs.pull({ _id: customToRemove._id })
-      saves.push(product.save())
-    }
-
-    Promise.all(saves)
-    .then((results) => {
-      // log results
-    })
-    .catch((err) => {
-      throw err
-    })
-  } catch (e) {
-    next(e)
+  const filtered = []
+  if (self._update.min) {
+    filtered.push(...productsToModify.filter(product =>
+      !!product.customs.find(custom => _.isEqual(custom.custom_id, self._conditions._id) && parseInt(custom.value) > parseInt(self._update.min))
+    ))
   }
+  if (self._update.max) {
+    filtered.push(...productsToModify.filter(product =>
+      !!product.customs.find(custom => _.isEqual(custom.custom_id, self._conditions._id) && parseInt(custom.value) < parseInt(self._update.max))
+    ))
+  }
+
+  let saves = []
+  for (const product of filtered) {
+    const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
+    product.customs.pull({ _id: customToRemove._id })
+    await product.save()
+  }
+
+  return saves
 }
