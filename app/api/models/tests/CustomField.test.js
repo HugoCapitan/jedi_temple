@@ -597,145 +597,176 @@ describe('CustomField Model', () => {
 
   })
 
-  // describe('preRemove Middleware', () => {
-  //   let next
+  describe('preRemove Middleware', () => {
+    let next
 
-  //   const bindMiddleware = (context) => 
-  //     CustomField.schema._middlewareFuncs.preRemove.bind(context) 
+    const bindMiddleware = (context) => 
+      CustomField.schema._middlewareFuncs.preRemove.bind(context) 
 
-  //   beforeEach(() => {
-  //     Product.find = jest.fn(() => new Promise((resolve, reject) => { resolve([]) }))
-  //     Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve([]) }))
+    beforeEach(() => {
+      Product.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([]) })
+      }))
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([]) })
+      }))
 
-  //     Product.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
-  //     Store.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      Product.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      Store.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
 
-  //     next = jest.fn((err) => {
-  //       if (err) throw err
-  //     })
-  //   })
+      next = jest.fn((err) => {
+        if (err) throw err
+      })
+    })
     
-  //   test('Should call next', async () => {
-  //     const _conditions = { _id: 'chocobanana' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
+    test('Should call next', done => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
 
-  //     await boundMiddleware(next)
+      boundMiddleware(next)
+    })
 
-  //     expect( next.mock.calls.length ).toBe(1)
-  //   })
+    test('Should call product.find with the custom id', done => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const expectedQuery = { customs: { $elemMatch: { custom_id: 'chocobanana' } } }
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( Product.find.mock.calls.length ).toBe(1)
+        expect( Product.find.mock.calls[0][0] ).toEqual(expectedQuery)
+        done()
+      }
 
-  //   test('Should call product.find with the custom id', async () => {
-  //     const _conditions = { _id: 'chocobanana' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
-  //     const expectedQuery = { customs: { $elemMatch: { custom_id: 'chocobanana' } } }
+      boundMiddleware(next)
+    }) 
 
-  //     await boundMiddleware(next)
+    test('Should iterate and update products', done=> {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
 
-  //     expect( Product.find.mock.calls.length ).toBe(1)
-  //     expect( Product.find.mock.calls[0][0] ).toEqual(expectedQuery)
-  //   }) 
+      const foundProducts = [{ 
+        customs: [{ _id: 'milkshake', custom_id: 'vanilla' }, { _id: 'smoothie', custom_id: 'chocobanana' }],
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      },{ 
+        customs: [{ _id: 'frapuccino', custom_id: 'chocobanana' }],
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      }]
+      foundProducts[0].customs.pull = jest.fn(() => { foundProducts[0].customs.pop() })
+      Product.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([foundProduct]) })
+      }))
 
-  //   test('Should iterate and update products', async () => {
-  //     const _conditions = { _id: 'chocobanana' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( foundProducts[0].customs.length ).toBe(1)
+        expect( foundProducts[0].customs.pull.mock.calls.length ).toBe(1)
+        expect( foundProducts[0].customs.pull.mock.calls[0][0] ).toEqual({ _id: 'smoothie' })
+        expect( foundProducts[0].save.mock.calls.length ).toBe(1)
 
-  //     const foundProduct = { 
-  //       customs: [{ _id: 'smoothie', custom_id: 'chocobanana' }],
-  //       save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
-  //     }
-  //     foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+        expect( foundProducts[1].customs.length ).toBe(0)
+        expect( foundProducts[1].customs.pull.mock.calls.length ).toBe(1)
+        expect( foundProducts[1].customs.pull.mock.calls[0][0] ).toEqual({ _id: 'frapuccino' })
+        expect( foundProducts[1].save.mock.calls.length ).toBe(1)
+        done()
+      }
 
-  //     Product.find = jest.fn(() => new Promise((resolve, reject) => { resolve([foundProduct]) }))
+      boundMiddleware(next)     
+    })
 
-  //     await boundMiddleware(next)
+    test('Should call store.find with the custom id', done => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const expectedQuery = { customs: 'chocobanana' }
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( Store.find.mock.calls.length ).toBe(1)
+        expect( Store.find.mock.calls[0][0] ).toEqual(expectedQuery)
+        done()
+      }
 
-  //     expect( foundProduct.customs.length ).toBe(0)
-  //     expect( foundProduct.customs.pull.mock.calls.length ).toBe(1)
-  //     expect( foundProduct.customs.pull.mock.calls[0][0] ).toEqual({ _id: 'smoothie' })
-  //     expect( foundProduct.save.mock.calls.length ).toBe(1)
-  //   })
+      boundMiddleware(next)
+    })
 
-  //   test('Should call store.find with the custom id', async () => {
-  //     const _conditions = { _id: 'chocobanana' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
-  //     const expectedQuery = { customs: 'chocobanana' }
+    test('Should iterate and update stores', done => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const foundStores = [{
+        customs: ['anotherthing', 'chocobanana'],
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      }, {
+        customs: ['shomething', 'chocobanana'],
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      }]
+      foundStores[0].customs.pull = jest.fn(() => { foundStores[0].customs.pop() })
+      foundStores[1].customs.pull = jest.fn(() => { foundStores[1].customs.pop() })
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(foundStores) })
+      }))
 
-  //     await boundMiddleware(next)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( foundStores[0].customs.length ).toBe(1)
+        expect( foundStores[0].customs.pull.mock.calls.length ).toBe(1)
+        expect( foundStores[0].customs.pull.mock.calls[0][0] ).toBe('chocobanana')
+        expect( foundStores[0].save.mock.calls.length ).toBe(1)
 
-  //     expect( Store.find.mock.calls.length ).toBe(1)
-  //     expect( Store.find.mock.calls[0][0] ).toEqual(expectedQuery)
-  //   })
+        expect( foundStores[1].customs.length ).toBe(1)
+        expect( foundStores[1].customs.pull.mock.calls.length ).toBe(1)
+        expect( foundStores[1].customs.pull.mock.calls[0][0] ).toBe('chocobanana')
+        expect( foundStores[1].save.mock.calls.length ).toBe(1)
+        done()
+      }
 
-  //   test('Should iterate and update stores', async () => {
-  //     const _conditions = { _id: 'chocobanana' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
-  //     const foundStores = [{
-  //       customs: ['anotherthing', 'chocobanana'],
-  //       save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
-  //     }, {
-  //       customs: ['shomething', 'chocobanana'],
-  //       save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
-  //     }]
-  //     foundStores[0].customs.pull = jest.fn(() => { foundStores[0].customs.pop() })
-  //     foundStores[1].customs.pull = jest.fn(() => { foundStores[1].customs.pop() })
-  //     Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve(foundStores) }))
+      boundMiddleware(next)
+    })
 
-  //     await boundMiddleware(next)
+    test('Should call next with products error', done => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
 
-  //     expect( foundStores[0].customs.length ).toBe(1)
-  //     expect( foundStores[0].customs.pull.mock.calls.length ).toBe(1)
-  //     expect( foundStores[0].customs.pull.mock.calls[0][0] ).toBe('chocobanana')
-  //     expect( foundStores[0].save.mock.calls.length ).toBe(1)
+      const foundProduct = { 
+        customs: [{ _id: 'smoothie', custom_id: 'chocobanana' }],
+        save: jest.fn(() => new Promise((resolve, reject) => { reject(new Error('Smoothie Error')) }))
+      }
+      foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
 
-  //     expect( foundStores[1].customs.length ).toBe(1)
-  //     expect( foundStores[1].customs.pull.mock.calls.length ).toBe(1)
-  //     expect( foundStores[1].customs.pull.mock.calls[0][0] ).toBe('chocobanana')
-  //     expect( foundStores[1].save.mock.calls.length ).toBe(1)
-  //   })
+      Product.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([foundProduct]) })
+      }))
+      const next = err => {
+        expect( err.message ).toBe('Smoothie Error')
+        done()
+      }
 
-  //   test('Should call next with products error', async () => {
-  //     const _conditions = { _id: 'chocobanana' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
+      boundMiddleware(next)
+    })
 
-  //     const foundProduct = { 
-  //       customs: [{ _id: 'smoothie', custom_id: 'chocobanana' }],
-  //       save: jest.fn(() => new Promise((resolve, reject) => { reject(new Error('Smoothie Error')) }))
-  //     }
-  //     foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+    test('Should call next with stores error', done => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
 
-  //     Product.find = jest.fn(() => new Promise((resolve, reject) => { resolve([foundProduct]) }))
+      const foundStore = { 
+        customs: ['chocobanana'],
+        save: jest.fn(() => new Promise((resolve, reject) => { reject(new Error('Smoothie Error')) }))
+      }
+      foundStore.customs.pull = jest.fn(() => { foundStore.customs.pop() })
 
-  //     try {
-  //       await boundMiddleware(next)
-  //       expect(0).toBe(1)
-  //     } catch (e) {
-  //       expect( next.mock.calls.length ).toBe(1)
-  //       expect( next.mock.calls[0][0].message ).toBe('Smoothie Error')
-  //     }
-  //   })
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([foundStore]) })
+      }))
+      const next = err => {
+        expect( err.message ).toBe('Smoothie Error')
+        done()
+      }
 
-  //   test('Should call next with stores error', async () => {
-  //     const _conditions = { _id: 'chocobanana' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
+      boundMiddleware()
+    }) 
 
-  //     const foundStore = { 
-  //       customs: ['chocobanana'],
-  //       save: jest.fn(() => new Promise((resolve, reject) => { reject(new Error('Smoothie Error')) }))
-  //     }
-  //     foundStore.customs.pull = jest.fn(() => { foundStore.customs.pop() })
-
-  //     Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve([foundStore]) }))
-
-  //     try {
-  //       await boundMiddleware(next)
-  //       expect(0).toBe(1)
-  //     } catch (e) {
-  //       expect( next.mock.calls.length ).toBe(1)
-  //       expect( next.mock.calls[0][0].message ).toBe('Smoothie Error')
-  //     }
-  //   }) 
-
-  // })
+  })
 
   function setupTest () {
     validNumberCustom = getValidNumberCustom()
