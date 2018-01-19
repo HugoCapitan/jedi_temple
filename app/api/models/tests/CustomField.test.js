@@ -144,58 +144,63 @@ describe('CustomField Model', () => {
   })
 
   describe('preSave Middleware', () => {
-    let next
-
     beforeEach(() => {
-      Product.find = jest.fn(() => [])
+      Product.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([]) })
+      }))
 
-      Product.prototype.save = jest.fn()
-
-      next = jest.fn((err) => {
-        if (err) throw err
-      })
+      Product.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
     })
 
-    test('Should call next', async () => {
+    test('Should call next', done => {
       const context = validNumberCustom
       context.isNew = true
       
       const boundMiddleware = bindMiddleware(context)
 
-      await boundMiddleware(next)
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
 
-      expect( next.mock.calls.length ).toBe(1)
-      expect( next.mock.calls[0][0] ).toBeFalsy()
+      boundMiddleware(next)
     })
 
-    test('Should sluggify name and add updated and created dates', async () => {
+    test('Should sluggify name and add updated and created dates', done => {
       const context = validNumberCustom
       context.isNew = true
 
       const boundMiddleware = bindMiddleware(context)
+     
+      const next = err => {
+        expect( err ).toBeFalsy()
+        expect( validNumberCustom.slug ).toBe('number_customfield')
+        expect( isThisMinute(validNumberCustom.created_at) ).toBeTruthy()
+        expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
+        done()
+      }
 
-      await boundMiddleware(next)
-
-      expect( validNumberCustom.slug ).toBe('number_customfield')
-      expect( isThisMinute(validNumberCustom.created_at) ).toBeTruthy()
-      expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
+      boundMiddleware(next)
     })
 
-    test('Should not update created_at date', async () => {
+    test('Should not update created_at date', done => {
       const yesterday = moment().subtract(1, 'days').toDate()
       const context = Object.assign(validNumberCustom, { created_at: yesterday })
       context.isNew = true
 
       const boundMiddleware = bindMiddleware(context)
-      const next = jest.fn()
 
-      await boundMiddleware(next)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(validNumberCustom.created_at).toBe(yesterday)
+        expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
+        done()
+      }
 
-      expect(validNumberCustom.created_at).toBe(yesterday)
-      expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
+      boundMiddleware(next)      
     })
 
-    test('Should update _values', async () => {
+    test('Should update _values', done => {
       validStringCustom.values.push( { value: 'wazap wazap' } )
       const context = new CustomField( validStringCustom )
       context.isNew = true
@@ -203,15 +208,18 @@ describe('CustomField Model', () => {
       const expectedValues = context.values.map( val => val._id.toString() )
       const boundMiddleware = bindMiddleware(context)
 
-      await boundMiddleware(next)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expectedValues.forEach(value => {
+          expect( context._values ).toContain(value)
+        })
+        done()
+      }
 
-      expectedValues.forEach(value => {
-        expect( context._values ).toContain(value)
-      })
-
+      boundMiddleware(next)
     })    
 
-    test('Should call Product.find with custom query for products with removed value', async () => {
+    test('Should call Product.find with custom query for products with removed value', done => {
       const removedValueCustom = getRemovedValueCustom('heylisten')
       const context = removedValueCustom
       context.isNew = false
@@ -221,92 +229,130 @@ describe('CustomField Model', () => {
       }
 
       const boundMiddleware = bindMiddleware(context)
-
-      await boundMiddleware(next)
-
-      expect( Product.find.mock.calls.length ).toBe(1)
-      expect( Product.find.mock.calls[0][0] ).toEqual(expectedQuery)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( Product.find.mock.calls.length ).toBe(1)
+        expect( Product.find.mock.calls[0][0] ).toEqual(expectedQuery)
+        done()
+      }
+ 
+      boundMiddleware(next)
     })
 
-    test('Should iterate over found products and remove this custom, and call each product.save', async () => {
+    test('Should iterate over found products and remove this custom, and call each product.save', done => {
       const removedValueCustom = getRemovedValueCustom('heylisten')
       const context = removedValueCustom
       context.isNew = false
 
-      const foundProduct = Object.assign(
-        getValidProduct, { 
+      const foundProducts = [{ 
           customs: [{ 
           _id: 'ajua', 
           custom_id: removedValueCustom._id, 
           value_id: 'heylisten' 
         }], 
-        save: jest.fn() 
-      })
-      foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
-      Product.find = jest.fn(() => [foundProduct])
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() })) 
+      },{ 
+        customs: [{ 
+          _id: 'anothernotajua', 
+          custom_id: 'someweirdid', 
+          value_id: 'huhuhu' 
+        },{ 
+          _id: 'anothernotajua2', 
+          custom_id: removedValueCustom._id, 
+          value_id: 'heylisten' 
+        }], 
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() })) 
+      }]
+      foundProducts[0].customs.pull = jest.fn(() => { foundProducts[0].customs.pop() })
+      foundProducts[1].customs.pull = jest.fn(() => { foundProducts[1].customs.pop() })
+      Product.find = jest.fn(() => ({ 
+        exec: () => new Promise((resolve, reject) => { resolve(foundProducts) })
+      }))
       
       const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( foundProducts[0].customs.length ).toBe(0)
+        expect( foundProducts[0].customs.pull.mock.calls.length ).toBe(1)
+        expect( foundProducts[0].customs.pull.mock.calls[0][0] ).toEqual({ _id: 'ajua' })
+        expect( foundProducts[0].save.mock.calls.length ).toBe(1)
 
-      await boundMiddleware(next)
+        expect( foundProducts[1].customs.length ).toBe(1)
+        expect( foundProducts[1].customs.pull.mock.calls.length ).toBe(1)
+        expect( foundProducts[1].customs.pull.mock.calls[0][0] ).toEqual({ _id: 'anothernotajua2' })
+        expect( foundProducts[1].save.mock.calls.length ).toBe(1)
+        done()
+      }
 
-      expect( foundProduct.customs.length ).toBe(0)
-      expect( foundProduct.customs.pull.mock.calls.length ).toBe(1)
-      expect( foundProduct.customs.pull.mock.calls[0][0] ).toEqual({ _id: 'ajua' })
-      expect( foundProduct.save.mock.calls.length ).toBe(1)
+      boundMiddleware(next)
     })
 
-    test('Should call next with slug error', async () => {
+    test('Should call next with slug error', done => {
       const context = validNumberCustom
       context.isModified = jest.fn( (prop) => prop === 'slug' )
       context.isNew      = false
       
       const boundMiddleware = bindMiddleware(context)
-
-      try {
-        await boundMiddleware(next) 
-        expect(1).toBe(0)        
-      } catch(e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-        expect( next.mock.calls[0][0].message ).toBe('Slug is not updatable')
+      const next = err => {
+        expect(err.name).toBe('ValidationError')
+        expect(err.message).toBe('Slug is not updatable')
+        done()
       }
+
+      boundMiddleware(next) 
     })
 
-    test('Should call next with type error', async () => {
+    test('Should call next with type error', done => {
       const context = validNumberCustom
       context.isModified = jest.fn( (prop) => prop == 'type' ? true : false )
       context.isNew      = false
       
       const boundMiddleware = bindMiddleware(context)
-
-      try {
-        await boundMiddleware(next)      
-        expect(1).toBe(0)        
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-        expect( next.mock.calls[0][0].message ).toBe('Type is not updatable')
+      const next = err => {
+        expect( err.name ).toBe('ValidationError')
+        expect( err.message ).toBe('Type is not updatable')
+        done()
       }
+      
+      boundMiddleware(next)
     })
 
-    test('Should iterate over customs and call next with a ValidationError if duplications found', async () => {
+    test('Should iterate over customs and call next with a ValidationError if duplications found', done => {
       const context = validStringCustom
       context.values.push({ value: 'A value' })
       context.isNew = true
 
       const boundMiddleware = bindMiddleware(context)
-
-      try {
-        await boundMiddleware(next)
-        expect(1).toBe(0)        
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-        expect( next.mock.calls[0][0].message ).toBe('Duplicated value for CustomField.values')
+      const next = err => {
+        expect( err.name ).toBe('ValidationError')
+        expect( err.message ).toBe('Duplicated value for CustomField.values')
+        done()
       }
+
+      boundMiddleware(next)
     })
 
-    test('Should call next with products update error', async () => {
+    test('Should call next with products find error', done => {
+      const removedValueCustom = getRemovedValueCustom('heylisten')
+      const context = removedValueCustom
+      context.isNew = false
+
+      const boundMiddleware = bindMiddleware(context)      
+      
+      Product.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { reject(new Error('Test error fetching products')) })
+      }))
+
+      const next = err => {
+        // console.log('holadios')
+        expect(err.message).toBe('Test error fetching products')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should call next with products update error', done => {
       const removedValueCustom = getRemovedValueCustom('heylisten')
       const context = removedValueCustom
       context.isNew = false
@@ -318,40 +364,36 @@ describe('CustomField Model', () => {
           custom_id: removedValueCustom._id, 
           value_id: 'heylisten' 
         }],
-        save: jest.fn(() => { 
-          throw new Error('Test Error on product.save') 
-        })   
+        save: jest.fn(() => new Promise((resolve, reject) => { reject( new Error('Test Error on product.save') ) }))
       })
       foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
       
-      Product.find = jest.fn(() => [foundProduct])
+      Product.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([foundProduct]) })
+      }))
 
       const boundMiddleware = bindMiddleware(context)
-
-      try {
-        await boundMiddleware(next)
-        expect(1).toBe(0)
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].message ).toBe('Test Error on product.save')
+      const next = err => {
+        expect( err.message ).toBe('Test Error on product.save')
+        done()
       }
+
+      boundMiddleware(next)
     })
 
-    test('Should call next with _values error', async () => {
+    test('Should call next with _values error', done => {
       const context = validStringCustom
       context.isModified = jest.fn( (prop) => prop === '_values' )
       context.isNew      = false
       
       const boundMiddleware = bindMiddleware(context)
-
-      try {
-        await boundMiddleware(next) 
-        expect(1).toBe(0)        
-      } catch(e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-        expect( next.mock.calls[0][0].message ).toBe('_values is not updatable')
+      const next = err => {
+        expect( err.name ).toBe('ValidationError')
+        expect( err.message ).toBe('_values is not updatable')
+        done()
       }
+
+      boundMiddleware(next)
     })
 
     function bindMiddleware (context) {
@@ -380,9 +422,9 @@ describe('CustomField Model', () => {
       CustomField.schema._middlewareFuncs.preUpdate.bind(context) 
 
     beforeEach(() => {
-      Product.find = jest.fn(() => [])
+      Product.find = jest.fn(() => new Promise((resolve, reject) => resolve([])))
 
-      Product.prototype.save = jest.fn()
+      Product.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
 
       next = jest.fn((err) => {
         if (err) throw err
@@ -465,18 +507,18 @@ describe('CustomField Model', () => {
           custom_id: 'pinacolada', 
           value: '900' 
         }], 
-        save: jest.fn()
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
       }, { 
         customs: [{ 
           _id: 'notajua', 
           custom_id: 'pinacolada', 
           value: '400' 
         }], 
-        save: jest.fn()
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
       }]
       foundProducts[0].customs.pull = jest.fn(() => { foundProducts[0].customs.pop() })
       foundProducts[1].customs.pull = jest.fn(() => { foundProducts[1].customs.pop() })
-      Product.find = jest.fn(() => foundProducts)
+      Product.find = jest.fn(() => new Promise((resolve, reject) => { resolve(foundProducts) }))
 
       await boundMiddleware(next)
 
@@ -565,11 +607,11 @@ describe('CustomField Model', () => {
       CustomField.schema._middlewareFuncs.preRemove.bind(context) 
 
     beforeEach(() => {
-      Product.find = jest.fn(() => [])
-      Store.find = jest.fn(() => [])
+      Product.find = jest.fn(() => new Promise((resolve, reject) => { resolve([]) }))
+      Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve([]) }))
 
-      Product.prototype.save = jest.fn()
-      Store.prototype.save = jest.fn()
+      Product.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      Store.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
 
       next = jest.fn((err) => {
         if (err) throw err
@@ -602,11 +644,11 @@ describe('CustomField Model', () => {
 
       const foundProduct = { 
         customs: [{ _id: 'smoothie', custom_id: 'chocobanana' }],
-        save: jest.fn()
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
       }
       foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
 
-      Product.find = jest.fn(() => [foundProduct])
+      Product.find = jest.fn(() => new Promise((resolve, reject) => { resolve([foundProduct]) }))
 
       await boundMiddleware(next)
 
@@ -632,14 +674,14 @@ describe('CustomField Model', () => {
       const boundMiddleware = bindMiddleware({ _conditions })
       const foundStores = [{
         customs: ['anotherthing', 'chocobanana'],
-        save: jest.fn()
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
       }, {
         customs: ['shomething', 'chocobanana'],
-        save: jest.fn()
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
       }]
       foundStores[0].customs.pull = jest.fn(() => { foundStores[0].customs.pop() })
       foundStores[1].customs.pull = jest.fn(() => { foundStores[1].customs.pop() })
-      Store.find = jest.fn(() => foundStores)
+      Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve(foundStores) }))
 
       await boundMiddleware(next)
 
@@ -660,11 +702,11 @@ describe('CustomField Model', () => {
 
       const foundProduct = { 
         customs: [{ _id: 'smoothie', custom_id: 'chocobanana' }],
-        save: jest.fn(() => { throw new Error('Smoothie Error') })
+        save: jest.fn(() => new Promise((resolve, reject) => { reject(new Error('Smoothie Error')) }))
       }
       foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
 
-      Product.find = jest.fn(() => [foundProduct])
+      Product.find = jest.fn(() => new Promise((resolve, reject) => { resolve([foundProduct]) }))
 
       try {
         await boundMiddleware(next)
@@ -681,11 +723,11 @@ describe('CustomField Model', () => {
 
       const foundStore = { 
         customs: ['chocobanana'],
-        save: jest.fn(() => { throw new Error('Smoothie Error') })
+        save: jest.fn(() => new Promise((resolve, reject) => { reject(new Error('Smoothie Error')) }))
       }
       foundStore.customs.pull = jest.fn(() => { foundStore.customs.pop() })
 
-      Store.find = jest.fn(() => [foundStore])
+      Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve([foundStore]) }))
 
       try {
         await boundMiddleware(next)
