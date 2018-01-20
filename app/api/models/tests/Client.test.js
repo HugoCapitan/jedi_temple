@@ -71,77 +71,82 @@ describe('Client model', () => {
   })
 
   describe('preSave Middleware', () => {
+    const bindMiddleware = context => 
+      Client.schema._middlewareFuncs.preSave.bind(context)
 
-    test('Should call next', async () => {
+    test('Should call next', done => {
       const context = validClient
 
-      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
-      const next = jest.fn()
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
 
-      await boundMiddlewareFunc(next)
-
-      expect( next.mock.calls.length ).toBe(1)
+      boundMiddleware(next)
     })
 
-    test('Should add created_at and updated_at', async () => {
+    test('Should add created_at and updated_at', done => {
       const context = validClient
 
-      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
-      const next = jest.fn()
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()        
+        expect( isThisMinute(validClient.created_at) ).toBeTruthy()
+        expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
+        done()
+      }
 
-      await boundMiddlewareFunc(next)
-
-      expect( isThisMinute(validClient.created_at) ).toBeTruthy()
-      expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
+      boundMiddleware(next)
     })
 
-    test('Should modify updated_at but not created_at', async () => {
+    test('Should modify updated_at but not created_at', done => {
       const creationDate = moment().subtract(1, 'weeks').toDate()
       Object.assign( validClient, { created_at: creationDate, updated_at: creationDate } )
-
       const context = validClient
 
-      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
-      const next = jest.fn()
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( validClient.created_at ).toBe(creationDate)
+        expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
+        done()
+      }
 
-      await boundMiddlewareFunc(next)
-      
-      expect( validClient.created_at ).toBe(creationDate)
-      expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
+      boundMiddleware(next)
     })
 
-    test('Should encrypt password before saving it', async () => {
+    test('Should encrypt password before saving it', done => {
       hashSpy = jest.spyOn(models, 'hashPassword')
 
       const context = validClient
 
-      const boundMiddlewareFunc = Client.schema._middlewareFuncs.preSave.bind(context)
-      const next = jest.fn()
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( hashSpy ).toHaveBeenCalled()
+        expect( context.password ).toBeTruthy()
+        expect( context.salt ).toBeTruthy()
+        models.hashPassword.mockRestore()      
+        done()
+      }
 
-      await boundMiddlewareFunc(next)
-
-      expect( hashSpy ).toHaveBeenCalled()
-      expect( context.password ).toBeTruthy()
-      expect( context.salt ).toBeTruthy()
-      models.hashPassword.mockRestore()
+      boundMiddleware(next)
     })
 
-    test('Shoul call next with no password error', async () => {
+    test('Shoul call next with no password error', done => {
       delete validClient.password
       const context = validClient
       context.isNew = true
 
-      const boundMiddleware = Client.schema._middlewareFuncs.preSave.bind(context)
-      const next = jest.fn(err => { if (err) throw err })
-
-      try {
-        await boundMiddleware(next)
-        expect(1).toBe(0)
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-        expect( next.mock.calls[0][0].message ).toBe('Password Required')
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err.name).toBe('ValidationError')
+        expect(err.message).toBe('Password Required')
+        done()
       }
+
+      boundMiddleware(next)
     })
 
     test('Should call next with encryption error', async () => {
@@ -149,17 +154,13 @@ describe('Client model', () => {
       const context = validClient
       models.hashPassword = jest.fn( () => new Promise((resolve, reject) => { reject(new Error('hola_amigo')) }) )
 
-      const boundMiddleware = Client.schema._middlewareFuncs.preSave.bind(context)
-      const next = jest.fn(err => { if (err) throw err })
-
-      try {
-        await boundMiddleware(next)
-        expect(1).toBe(0)
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].message ).toBe('hola_amigo')
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect( err.message ).toBe('hola_amigo')
         models.hashPassword = oldHashPswd
       }
+
+      boundMiddleware(next)
     })
 
   })
