@@ -149,7 +149,7 @@ describe('Client model', () => {
       boundMiddleware(next)
     })
 
-    test('Should call next with encryption error', async () => {
+    test('Should call next with encryption error', done => {
       const oldHashPswd = models.hashPassword
       const context = validClient
       models.hashPassword = jest.fn( () => new Promise((resolve, reject) => { reject(new Error('hola_amigo')) }) )
@@ -158,6 +158,7 @@ describe('Client model', () => {
       const next = err => {
         expect( err.message ).toBe('hola_amigo')
         models.hashPassword = oldHashPswd
+        done()
       }
 
       boundMiddleware(next)
