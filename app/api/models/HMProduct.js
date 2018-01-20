@@ -68,10 +68,10 @@ HMProductSchema._middlewareFuncs = {
     if (self._update.materials) {
       const err = new Error('Materials should be updated via HMProduct.save')
       err.name = 'ValidationError'
-      next(err)
+      return next(err)
     }
 
-    next()
+    return next()
   },
   preRemove(next) {
     const self = this
