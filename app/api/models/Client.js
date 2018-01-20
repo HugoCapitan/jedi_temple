@@ -78,14 +78,14 @@ ClientSchema._middlewareFuncs = {
     })
     .catch(err => next(err))
   },
-  async preRemove(next) {
+  preRemove(next) {
     const self = this
 
     Store.find({ clients: self._conditions._id })
     .exec()
     .then(storesToModify => {
       let saves = []
-      for (const store in storesToModify) {
+      for (const store of storesToModify) {
         store.clients.pull(self._conditions._id)
         saves.push(store.save())
       }
