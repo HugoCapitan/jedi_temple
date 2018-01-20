@@ -96,9 +96,9 @@ CustomFieldSchema._middlewareFuncs = {
       if (!self.created_at)
         self.created_at = currentDate
 
-      next()
+      return next()
     })
-    .catch(next)
+    .catch(err => next(err))
   },
   preUpdate(next) {
     const self = this
@@ -111,8 +111,8 @@ CustomFieldSchema._middlewareFuncs = {
 
     productCustomUpdatedMinMax(self)
     .then(results => Promise.all(results))
-    .then(results => { next() })
-    .catch(next)
+    .then(results => next())
+    .catch(err => next(err))
   },
   preRemove(next) {
     const self = this
@@ -137,8 +137,8 @@ CustomFieldSchema._middlewareFuncs = {
 
       return Promise.all(saves)
     })
-    .then(results => { next() })
-    .catch(next)
+    .then(results => next() )
+    .catch(err => next(err))
   }
 }
 
@@ -156,17 +156,17 @@ async function preSaveValidations(self, next) {
   if (!self.isNew && self.isModified('slug')) {
     let err = new Error('Slug is not updatable')
     err.name = 'ValidationError'
-    next(err)
+    return next(err)
   }
   if (!self.isNew && self.isModified('type')) {
     let err = new Error('Type is not updatable')
     err.name = 'ValidationError'
-    next(err)
+    return next(err)
   }
   if (!self.isNew && self.isModified('_values')) {
     let err = new Error('_values is not updatable')
     err.name = 'ValidationError'
-    next(err)
+    return next(err)
   }
   if (self.values) {
     let valCount = self.values.reduce((acc, val) => {
@@ -178,7 +178,7 @@ async function preSaveValidations(self, next) {
     if (valCount.find(val => val > 1)) {
       let err = new Error('Duplicated value for CustomField.values')
       err.name = 'ValidationError'
-      next(err)
+      return next(err)
     }
   }
 }
@@ -187,22 +187,22 @@ function preUpdateValidations(self, next) {
   if (self._update.hasOwnProperty('slug')) {
     err = new Error('Slug is not updatable')
     err.name = 'ValidationError'
-    next(err)
+    return next(err)
   }
   if (self._update.hasOwnProperty('type')) {
     err = new Error('Type is not updatable')
     err.name = 'ValidationError'
-    next(err)
+    return next(err)
   }
   if (self._update.hasOwnProperty('values')) {
     err = new Error('Values should be updated via CustomField.save')
     err.name = 'ValidationError'
-    next(err)
+    return next(err)
   }
   if (self._update.hasOwnProperty('_values')) {
     err = new Error('_values is not updatable')
     err.name = 'ValidationError'
-    next(err)
+    return next(err)
   }
 }
 
