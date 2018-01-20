@@ -5,7 +5,7 @@ const Store = require('../Store')
 const HMProduct = require('../HMProduct')
 
 const uCommon = require('../../utils')
-const valid = require('../../utils/validators')
+const uValid = require('../../utils/validators')
 const uSchemas = require('../../utils/validSchemas')
 
 describe('HMProduct Model', () => {
@@ -71,8 +71,8 @@ describe('HMProduct Model', () => {
 
       boundMiddlewareFunc(next)
 
-      expect( valid.isThisMinute(context.created_at) ).toBeTruthy()
-      expect( valid.isThisMinute(context.updated_at) ).toBeTruthy()
+      expect( uValid.isThisMinute(context.created_at) ).toBeTruthy()
+      expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
     })
 
     test('Should modify updated_at but not created_at', async () => {
@@ -84,7 +84,7 @@ describe('HMProduct Model', () => {
       boundMiddlewareFunc(next)
       
       expect( context.created_at ).toBe(creationDate)
-      expect( valid.isThisMinute(context.updated_at) ).toBeTruthy()
+      expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
     })
 
     test('Materials should iterate materials for duplicates and call next with error', () => {
@@ -165,7 +165,7 @@ describe('HMProduct Model', () => {
       boundMiddlewareFunc(next)
 
       expect( context.hasOwnProperty('created_at') ).toBe(false)
-      expect( valid.isThisMinute(context.updated_at) ).toBe(true)
+      expect( uValid.isThisMinute(context.updated_at) ).toBe(true)
     })    
 
     test('Should throw error if materials', () => {

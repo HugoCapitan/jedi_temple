@@ -8,9 +8,9 @@ const Product = require('../Product')
 const Store = require('../Store')
 const CustomField = require('../CustomField')
 
-const { howManyKeys } = require('../../utils')
-const { isThisMinute } = require('../../utils/validators')
-const { getValidNumberCustom, getValidStringCustom, getValidProduct } = require('../../utils/validSchemas')
+const uCommon  = require('../../utils')
+const uValid   = require('../../utils/validators')
+const uSchemas = require('../../utils/validSchemas')
 
 describe('CustomField Model', () => {
   let validNumberCustom, validStringCustom
@@ -31,7 +31,7 @@ describe('CustomField Model', () => {
     const m = new CustomField({ })
     const v = m.validateSync()
 
-    expect(howManyKeys(v['errors'])).toBe(3)
+    expect(uCommon.howManyKeys(v['errors'])).toBe(3)
 
     expect(v.errors.name).toBeTruthy()
     expect(v.errors.type).toBeTruthy()
@@ -42,7 +42,7 @@ describe('CustomField Model', () => {
     const m = new CustomField({ name: 'Some name', type: 'number', show: false })
     const v = m.validateSync()
 
-    expect(howManyKeys(v['errors'])).toBe(4)
+    expect(uCommon.howManyKeys(v['errors'])).toBe(4)
 
     expect(v.errors.min).toBeTruthy()
     expect(v.errors.max).toBeTruthy()
@@ -63,7 +63,7 @@ describe('CustomField Model', () => {
     ) 
     const v = m.validateSync()
 
-    expect(howManyKeys(v['errors'])).toBe(3)
+    expect(uCommon.howManyKeys(v['errors'])).toBe(3)
 
     expect(v.errors.min).toBeTruthy()
     expect(v.errors.max).toBeTruthy()
@@ -76,7 +76,7 @@ describe('CustomField Model', () => {
     const m = new CustomField(wrongMaxMinCF)
     const v = m.validateSync()
 
-    expect(howManyKeys(v['errors'])).toBe(2)
+    expect(uCommon.howManyKeys(v['errors'])).toBe(2)
 
     expect(v.errors.min).toBeTruthy()
     expect(v.errors.max).toBeTruthy()
@@ -97,7 +97,7 @@ describe('CustomField Model', () => {
     const m = new CustomField(emptyString)
     const v = m.validateSync()
 
-    expect(howManyKeys(v['errors'])).toBe(1)
+    expect(uCommon.howManyKeys(v['errors'])).toBe(1)
 
     expect(v.errors['values.0.value']).toBeTruthy()
   })
@@ -108,7 +108,7 @@ describe('CustomField Model', () => {
     const m = new CustomField( invalidString )
     const v = m.validateSync()
 
-    expect( howManyKeys(v.errors) ).toBe(1)
+    expect( uCommon.howManyKeys(v.errors) ).toBe(1)
     expect( v.errors.values ).toBeTruthy()
   })
 
@@ -118,7 +118,7 @@ describe('CustomField Model', () => {
     const m = new CustomField(invalidNumber)
     const v = m.validateSync()
 
-    expect( howManyKeys(v.errors) ).toBe(1)
+    expect( uCommon.howManyKeys(v.errors) ).toBe(1)
     expect( v.errors.values ).toBeTruthy()
   })
 
@@ -136,7 +136,7 @@ describe('CustomField Model', () => {
     const m = new CustomField( invalidString )
     const v = m.validateSync()
 
-    expect( howManyKeys(v.errors) ).toBe(4)
+    expect( uCommon.howManyKeys(v.errors) ).toBe(4)
     expect( v.errors.min ).toBeTruthy()
     expect( v.errors.max ).toBeTruthy()
     expect( v.errors.unit ).toBeTruthy()
@@ -175,8 +175,8 @@ describe('CustomField Model', () => {
       const next = err => {
         expect( err ).toBeFalsy()
         expect( validNumberCustom.slug ).toBe('number_customfield')
-        expect( isThisMinute(validNumberCustom.created_at) ).toBeTruthy()
-        expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
+        expect( uValid.isThisMinute(validNumberCustom.created_at) ).toBeTruthy()
+        expect( uValid.isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
         done()
       }
 
@@ -193,7 +193,7 @@ describe('CustomField Model', () => {
       const next = err => {
         expect(err).toBeFalsy()
         expect(validNumberCustom.created_at).toBe(yesterday)
-        expect( isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
+        expect( uValid.isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
         done()
       }
 
@@ -358,7 +358,7 @@ describe('CustomField Model', () => {
       context.isNew = false
 
       const foundProduct = Object.assign(
-        getValidProduct, { 
+        uSchemas.getValidProduct, { 
           customs: [{ 
           _id: 'ajua', 
           custom_id: removedValueCustom._id, 
@@ -456,7 +456,7 @@ describe('CustomField Model', () => {
       const boundMiddleware = bindMiddleware({ _update })
       const next = err => {
         expect(err).toBeFalsy()
-        expect( isThisMinute(newField.updated_at) ).toBeTruthy()
+        expect( uValid.isThisMinute(newField.updated_at) ).toBeTruthy()
         done()
       }
 
@@ -841,7 +841,7 @@ describe('CustomField Model', () => {
   })
 
   function setupTest () {
-    validNumberCustom = getValidNumberCustom()
-    validStringCustom = getValidStringCustom()
+    validNumberCustom = uSchemas.getValidNumberCustom()
+    validStringCustom = uSchemas.getValidStringCustom()
   }
 })

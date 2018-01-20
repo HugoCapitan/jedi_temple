@@ -5,14 +5,14 @@ const Store = require('../Store')
 const Client = require('../Client')
 
 const models = require('../../utils/models')
-const { howManyKeys } = require('../../utils')
-const { isThisMinute } = require('../../utils/validators')
-const { getValidClient } = require('../../utils/validSchemas')
+const uCommon = require('../../utils')
+const uValid = require('../../utils/validators')
+const uSchemas = require('../../utils/validSchemas')
 
 describe('Client model', () => {
   let validClient
 
-  beforeEach(() => { validClient = getValidClient() })
+  beforeEach(() => { validClient = uSchemas.getValidClient() })
 
   test('Should be valid', () => {
     const m = new Client(validClient)
@@ -25,7 +25,7 @@ describe('Client model', () => {
     const m = new Client( Object.assign(validClient, { name: undefined, email: undefined, password: undefined }) )
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(2)
+    expect(uCommon.howManyKeys(v.errors)).toBe(2)
     expect(v.errors.name).toBeTruthy()
     expect(v.errors.email).toBeTruthy()
   })
@@ -34,7 +34,7 @@ describe('Client model', () => {
     const m = new Client( Object.assign(validClient, { wishlist: [ '' ] }) )
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(1)
+    expect(uCommon.howManyKeys(v.errors)).toBe(1)
     expect(v.errors['wishlist']).toBeTruthy()
   })
   
@@ -42,7 +42,7 @@ describe('Client model', () => {
     const m = new Client( Object.assign(validClient, { wishlist: [ 'somewrongid' ] }) )
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(1)
+    expect(uCommon.howManyKeys(v.errors)).toBe(1)
     expect(v.errors['wishlist']).toBeTruthy()
   })
 
@@ -50,7 +50,7 @@ describe('Client model', () => {
     const m = new Client( Object.assign(validClient, { addresses: [ 'supbabe' ] }) )
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(1)
+    expect(uCommon.howManyKeys(v.errors)).toBe(1)
     expect(v.errors.addresses).toBeTruthy()
   })
 
@@ -58,7 +58,7 @@ describe('Client model', () => {
     const m = new Client( Object.assign(validClient, { orders: [ '' ] }) )
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(1)
+    expect(uCommon.howManyKeys(v.errors)).toBe(1)
     expect(v.errors.orders).toBeTruthy()
   })
 
@@ -66,7 +66,7 @@ describe('Client model', () => {
     const m = new Client( Object.assign(validClient, { orders: [ 'supbabe' ] }) )
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(1)
+    expect(uCommon.howManyKeys(v.errors)).toBe(1)
     expect(v.errors.orders).toBeTruthy()
   })
 
@@ -92,8 +92,8 @@ describe('Client model', () => {
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
         expect(err).toBeFalsy()        
-        expect( isThisMinute(validClient.created_at) ).toBeTruthy()
-        expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
+        expect( uValid.isThisMinute(validClient.created_at) ).toBeTruthy()
+        expect( uValid.isThisMinute(validClient.updated_at) ).toBeTruthy()
         done()
       }
 
@@ -109,7 +109,7 @@ describe('Client model', () => {
       const next = err => {
         expect(err).toBeFalsy()
         expect( validClient.created_at ).toBe(creationDate)
-        expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
+        expect( uValid.isThisMinute(validClient.updated_at) ).toBeTruthy()
         done()
       }
 
@@ -190,7 +190,7 @@ describe('Client model', () => {
       const next = err => {
         expect(err).toBeFalsy()
         expect( validClient.created_at ).toBe(creationDate)
-        expect( isThisMinute(validClient.updated_at) ).toBeTruthy()
+        expect( uValid.isThisMinute(validClient.updated_at) ).toBeTruthy()
         done()
       }
 
