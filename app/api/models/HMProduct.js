@@ -72,27 +72,21 @@ HMProductSchema._middlewareFuncs = {
 
     next()
   },
-  async preRemove(next) {
+  preRemove(next) {
     const self = this
-    try {
-      const storesToModify = await Store.find({ hm_products: self._conditions._id })
+    Store.find({ hm_products: self._conditions._id })
+    .exec()
+    .then(storesToModify => {
       let saves = []
-
       for (const store of storesToModify) {
         store.hm_products.pull(self._conditions._id)
         saves.push(store.save())
       }
 
-      Promise.all(saves)
-      .then(results => {
-        next()
-      })
-      .catch(err => {
-        throw err
-      })
-    } catch (e) {
-      next(e)
-    }
+      return Promise.all(saves)
+    })
+    .then(results => next())
+    .catch(err => next(err))
   }
 }
 
