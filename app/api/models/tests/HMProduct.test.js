@@ -177,36 +177,41 @@ describe('HMProduct Model', () => {
   })
 
   describe('preRemove Middleware', () => {
-    let next
     const bindMiddleware = context => 
       HMProduct.schema._middlewareFuncs.preRemove.bind(context)
 
     beforeEach(() => { 
-      Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve([]) }))
-      next = jest.fn(err => { if (err) throw err })
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([]) })
+      }))
     })
 
-    test('Should call next', async () => {
+    test('Should call next', done => {
       const _conditions = { _id: 'cafe_lechero' }
       const boundMiddlewareFunc = bindMiddleware({ _conditions })
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
 
-      await boundMiddlewareFunc(next)
-
-      expect( next.mock.calls.length ).toBe(1)
+      boundMiddlewareFunc(next)
     })
 
-    test('Should call Store.find with the hmproduct id', async () => {
+    test('Should call Store.find with the hmproduct id', done => {
       const _conditions = { _id: 'cafe_lechero' }
       const boundMiddleware = bindMiddleware({ _conditions })
       const expectedQuery = { hm_products: 'cafe_lechero' }
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(Store.find.mock.calls.length).toBe(1)
+        expect(Store.find.mock.calls[0][0]).toEqual(expectedQuery)
+        done()
+      } 
 
-      await boundMiddleware(next)
-
-      expect( Store.find.mock.calls.length ).toBe(1)
-      expect( Store.find.mock.calls[0][0] ).toEqual(expectedQuery)
+      boundMiddleware(next)
     })
 
-    test('Should update and save found stores', async () => {
+    test('Should update and save found stores', done => {
       const _conditions = { _id: 'cafe_lechero' }
       const boundMiddleware = bindMiddleware({ _conditions })
       const foundStores = [{
@@ -219,42 +224,68 @@ describe('HMProduct Model', () => {
       foundStores[0].hm_products.pull = jest.fn(() => { foundStores[0].hm_products.pop() })
       foundStores[1].hm_products.pull = jest.fn(() => { foundStores[1].hm_products.pop() })
 
-      Store.find = jest.fn(() => foundStores)
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(foundStores) })
+      }))
 
-      await boundMiddleware(next)
+      const next = err => {
+        expect(err).toBeFalsy()
 
-      expect( foundStores[0].hm_products.length ).toBe(0)
-      expect( foundStores[0].hm_products.pull.mock.calls.length ).toBe(1)
-      expect( foundStores[0].hm_products.pull.mock.calls[0][0] ).toBe('cafe_lechero')
-      expect( foundStores[0].save.mock.calls.length ).toBe(1)
+        expect( foundStores[0].hm_products.length ).toBe(0)
+        expect( foundStores[0].hm_products.pull.mock.calls.length ).toBe(1)
+        expect( foundStores[0].hm_products.pull.mock.calls[0][0] ).toBe('cafe_lechero')
+        expect( foundStores[0].save.mock.calls.length ).toBe(1)
 
-      expect( foundStores[1].hm_products.length ).toBe(1)
-      expect( foundStores[1].hm_products.pull.mock.calls.length ).toBe(1)
-      expect( foundStores[1].hm_products.pull.mock.calls[0][0] ).toBe('cafe_lechero')
-      expect( foundStores[1].save.mock.calls.length ).toBe(1)
+        expect( foundStores[1].hm_products.length ).toBe(1)
+        expect( foundStores[1].hm_products.pull.mock.calls.length ).toBe(1)
+        expect( foundStores[1].hm_products.pull.mock.calls[0][0] ).toBe('cafe_lechero')
+        expect( foundStores[1].save.mock.calls.length ).toBe(1)
+
+        done()
+      }
+
+      boundMiddleware(next)
     })
 
-    test('Should call next with store update error', async () => {
+    test('Should call next with store find error', done => {
+      const _conditions = { _id: 'cafe_lechero' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { reject(new Error('Test error fetching stores')) })
+      }))
+
+      const next = err => {
+        expect(err.message).toBe('Test error fetching stores')
+        done()      
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should call next with store update error', done => {
       const _conditions = { _id: 'cafe_lechero' }
       const boundMiddleware = bindMiddleware({ _conditions })
       const foundStores = [{
         hm_products: ['cafe_lechero'],
-        save: jest.fn(() => { throw new Error('Se enfrio el cafe :c') })
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
       },{
         hm_products: ['a_client', 'cafe_lechero'],
-        save: jest.fn(() => { throw new Error('Se enfrio el cafe :c') })
+        save: jest.fn(() => new Promise((resolve, reject) => { reject(new Error('Se enfrio el cafe :c')) }))
       }]
       foundStores[0].hm_products.pull = jest.fn(() => { foundStores[0].hm_products.pop() })
       foundStores[1].hm_products.pull = jest.fn(() => { foundStores[1].hm_products.pop() })
 
-      Store.find = jest.fn(() => foundStores)
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(foundStores) })
+      }))
 
-      try {
-        await boundMiddleware(next)
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].message ).toBe('Se enfrio el cafe :c')
+      const next = err => {
+        expect( err.message ).toBe('Se enfrio el cafe :c')
+        done()      
       }
+
+      boundMiddleware(next)
     })
 
   })
