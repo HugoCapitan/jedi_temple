@@ -114,39 +114,31 @@ CustomFieldSchema._middlewareFuncs = {
     .then(results => { next() })
     .catch(next)
   },
-  async preRemove(next) {
+  preRemove(next) {
     const self = this
-    try {
-      let saves = []
-
-      const productsToModify = await Product.find({
-        customs: { $elemMatch: { custom_id: self._conditions._id } }
-      })
-  
-      const storesToModify = await Store.find({ customs: self._conditions._id })
-      
+    const saves = []            
+    Product.find({
+      customs: { $elemMatch: { custom_id: self._conditions._id } }
+    }).exec()
+    .then(productsToModify => {
       for (const product of productsToModify) {
         const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
         product.customs.pull({ _id: customToRemove._id })
         saves.push(product.save())
       }
 
+      return Store.find({ customs: self._conditions._id }).exec()
+    })
+    .then(storesToModify => {
       for (const store of storesToModify) {
         store.customs.pull(self._conditions._id)
         saves.push(store.save())
       }
-  
-      Promise.all(saves)
-      .then((results) => {
-        // log results
-        next()
-      })
-      .catch((err) => {
-        throw err
-      })
-    } catch (e) {
-      next(e)
-    }
+
+      return Promise.all(saves)
+    })
+    .then(results => { next() })
+    .catch(next)
   }
 }
 
