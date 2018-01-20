@@ -135,48 +135,43 @@ describe('HMProduct Model', () => {
   })
 
   describe('preUpdate Middleware', () => {
-    let next
     const bindMiddleware = context => 
       HMProduct.schema._middlewareFuncs.preUpdate.bind(context)
 
-    beforeEach(() => { 
-      next = jest.fn(err => { if (err) throw err })
-    })
-
-    test('Should call next', () => {
+    test('Should call next', done => {
       const context = { name: 'bracelet' }
-
       const boundMiddlewareFunc = bindMiddleware({ _update: context })
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
 
       boundMiddlewareFunc(next)
-
-      expect( next.mock.calls.length ).toBe(1)
     })
 
-    test('Should update updated_at date', () => {
+    test('Should update updated_at date', done => {
       const context = {  }
-
       const boundMiddlewareFunc = bindMiddleware({ _update: context })
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( context.hasOwnProperty('created_at') ).toBe(false)
+        expect( uValid.isThisMinute(context.updated_at) ).toBe(true)
+        done()
+      }
 
       boundMiddlewareFunc(next)
-
-      expect( context.hasOwnProperty('created_at') ).toBe(false)
-      expect( uValid.isThisMinute(context.updated_at) ).toBe(true)
     })    
 
-    test('Should throw error if materials', () => {
+    test('Should throw error if materials', done => {
       const context = { materials: [] }
-
       const boundMiddlewareFunc = bindMiddleware({ _update: context })
-
-      try {
-        boundMiddlewareFunc(next)
-        expect(0).toBe(1)
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-        expect( next.mock.calls[0][0].message ).toBe('Materials should be updated via HMProduct.save')
+      const next = err => {
+        expect(err.name).toBe('ValidationError')
+        expect(err.message).toBe('Materials should be updated via HMProduct.save')
+        done()
       }
+
+      boundMiddlewareFunc(next)
     })    
 
   })
