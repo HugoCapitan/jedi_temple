@@ -656,8 +656,9 @@ describe('CustomField Model', () => {
         save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
       }]
       foundProducts[0].customs.pull = jest.fn(() => { foundProducts[0].customs.pop() })
+      foundProducts[1].customs.pull = jest.fn(() => { foundProducts[1].customs.pop() })
       Product.find = jest.fn(() => ({
-        exec: () => new Promise((resolve, reject) => { resolve([foundProduct]) })
+        exec: () => new Promise((resolve, reject) => { resolve(foundProducts) })
       }))
 
       const next = err => {
@@ -724,6 +725,20 @@ describe('CustomField Model', () => {
       boundMiddleware(next)
     })
 
+    test('Should call next with Product.find Error', done => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      Product.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { reject(new Error('Test error fetching products')) })
+      }))
+      const next = err => {
+        expect( err.message ).toBe('Test error fetching products')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
     test('Should call next with products error', done => {
       const _conditions = { _id: 'chocobanana' }
       const boundMiddleware = bindMiddleware({ _conditions })
@@ -739,6 +754,20 @@ describe('CustomField Model', () => {
       }))
       const next = err => {
         expect( err.message ).toBe('Smoothie Error')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should call next with Store.find Error', done => {
+      const _conditions = { _id: 'chocobanana' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { reject(new Error('Test error fetching stores')) })
+      }))
+      const next = err => {
+        expect( err.message ).toBe('Test error fetching stores')
         done()
       }
 
@@ -763,7 +792,7 @@ describe('CustomField Model', () => {
         done()
       }
 
-      boundMiddleware()
+      boundMiddleware(next)
     }) 
 
   })
