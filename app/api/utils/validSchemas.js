@@ -57,7 +57,7 @@ function getValidHMProduct() {
   return { 
     name: 'Bracelet',
     materials: [{
-      material: '24K Gold',
+      name: '24K Gold',
       price: 999.99,
       models: [
         product._id

@@ -30,16 +30,16 @@ describe('HMProduct Model', () => {
 
   describe('Material subschema', () => {
 
-    test('Should be invalid if material missing price or material', () => {
+    test('Should be invalid if material missing price or name', () => {
       const malformedMaterial = uSchemas.getValidHMProduct()
       malformedMaterial.materials[0].price = undefined
-      malformedMaterial.materials[0].material = undefined
+      malformedMaterial.materials[0].name = undefined
 
       const m = new HMProduct( malformedMaterial )
       const v = m.validateSync()
 
       expect(uCommon.howManyKeys(v.errors)).toBe(2)
-      expect(v.errors['materials.0.material']).toBeTruthy()
+      expect(v.errors['materials.0.name']).toBeTruthy()
       expect(v.errors['materials.0.price']).toBeTruthy()
     })
 
@@ -114,7 +114,7 @@ describe('HMProduct Model', () => {
     test('Should iterate on every material\'s models for duplicates and call next with error', done => {
       const context = { 
         name: 'canastita', 
-        materials: [{ 
+        materials: [{
           name: 'olakease',
           models: ['nadanada', 'mucho', 'nadanada']
         }, { 
