@@ -34,19 +34,7 @@ HMProductSchema._middlewareFuncs = {
 
     if (self.materials) {
       const materialsCount = self.materials.reduce((matacc, material) => {
-
-        const modelsCount = material.models.reduce((modacc, model) => {
-          !!modacc[model] ? ++modacc[model] : modacc[model] = 1
-          return modacc
-        }, {})
-
-        if (Object.values( modelsCount ).find( v => v > 1 )) {
-          const err = new Error(`Duplicated value for models in material ${material.name} in ${self.name} HMProduct`)
-          err.name = 'ValidationError'
-          return next(err)
-        }
-
-        !!matacc[material.material] ? ++matacc[material.material] : matacc[material.material] = 1
+        !!matacc[material.name] ? ++matacc[material.name] : matacc[material.name] = 1
         return matacc
       }, {})
   
@@ -54,6 +42,19 @@ HMProductSchema._middlewareFuncs = {
         let err = new Error(`Duplicated value for materials in ${self.name} HMProduct`)
         err.name = 'ValidationError'
         return next(err)
+      }
+
+      for (material of self.materials) {
+        const modelsCount = material.models.reduce((modacc, model) => {
+          !!modacc[model] ? ++modacc[model] : modacc[model] = 1
+          return modacc
+        }, {})
+  
+        if (Object.values( modelsCount ).find( v => v > 1 )) {
+          const err = new Error(`Duplicated value for models in material ${material.name} in ${self.name} HMProduct`)
+          err.name = 'ValidationError'
+          return next(err)
+        }
       }
     }
 
