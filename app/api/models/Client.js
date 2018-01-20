@@ -42,65 +42,57 @@ const ClientSchema = new Schema({
 ClientSchema._middlewareFuncs = {
   async preSave(next) {
     const self = this
-    try {
-      const currentDate = new Date()
+    const currentDate = new Date()
 
-      self.updated_at = currentDate
-      if (!self.created_at) self.created_at = currentDate
+    self.updated_at = currentDate
+    if (!self.created_at) self.created_at = currentDate
 
-      if (self.isNew && !self.password) {
-        const e = new Error('Password Required')
-        e.name = 'ValidationError'
-        throw e
-      }
+    if (self.isNew && !self.password) {
+      const e = new Error('Password Required')
+      e.name = 'ValidationError'
+      next(e)
+    }
 
-      if (self.password) {
-        const hashed = await uModels.hashPassword(self.password)
-
+    handlePassword(self)
+    .then(hashed => { 
+      if (hashed && hashed.hasOwnProperty('hash') && hashed.hasOwnProperty('salt')) {
         self.password = hashed.hash
         self.salt = hashed.salt
       }
-
-      next()
-    } catch (e) {
-      next(e)
-    }
+      next() 
+    })
+    .catch(next)
     
   },
   async preUpdate(next) {
     const self = this
-    try {
-      self._update.updated_at = new Date()
+    self._update.updated_at = new Date()
 
-      if (self._update.password) {
-        const hashed = await uModels.hashPassword(self._update.password)
-
+    handlePassword(context)
+    .then(hashed => {
+      if (hashed && hashed.hasOwnProperty('hash') && hashed.hasOwnProperty('salt')) {
         self._update.password = hashed.hash
         self._update.salt = hashed.salt
       }
-    
       next()
-    } catch (e) {
-      next(e)
-    }
-    
+    })
+    .catch(next)
   },
   async preRemove(next) {
     const self = this
 
-    try {
-      
-      const storesToModify = await Store.find({ clients: self._conditions._id })
+    Store.find({ clients: self._conditions._id })
+    .exec()
+    .then(storesToModify => {
       let saves = []
-
-      for (const store of storesToModify) {
+      for (const store in storesToModify) {
         store.clients.pull(self._conditions._id)
-        await store.save()
+        saves.push(store.save())
       }
-      
-    } catch (e) {
-      next(e)
-    }
+      return Promise.all(saves)
+    })
+    .then(results => { next() })
+    .catch(next)
   }
 }
 
@@ -113,3 +105,13 @@ ClientSchema.pre('findOneAndRemove', ClientSchema._middlewareFuncs.preRemove)
 const Client = mongoose.model('Client', ClientSchema)
 
 module.exports = Client
+
+async function handlePassword(context) {
+  if (!context.password)
+    return false
+
+  const hashed = await uModels.hashPassword(context.password)
+    .catch(err => { throw err })
+
+  return hashed
+}
