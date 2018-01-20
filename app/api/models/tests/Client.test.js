@@ -232,88 +232,113 @@ describe('Client model', () => {
 
   })
 
-  // describe('preRemove Middleware', () => {
-  //   let next
+  describe('preRemove Middleware', () => {
 
-  //   beforeEach(() => {
-  //     Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve([]) }))
-  //     next = jest.fn((err) => { if (err) throw err })
-  //   })
+    beforeEach(() => {
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([]) })
+      }))
+    })
 
-  //   const bindMiddleware = context => 
-  //     Client.schema._middlewareFuncs.preRemove.bind(context)
+    const bindMiddleware = context => 
+      Client.schema._middlewareFuncs.preRemove.bind(context)
 
-  //   test('Should call next', async () => {
-  //     const _conditions = { _id: 'jarrito_loco' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
+    test('Should call next', done => {
+      const _conditions = { _id: 'jarrito_loco' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
 
-  //     await boundMiddleware(next)
+      boundMiddleware(next)
+    })
 
-  //     expect( next.mock.calls.length ).toBe(1)
-  //   })
+    test('Should call Store.find with the client id', done => {
+      const _conditions = { _id: 'jarrito_loco' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const expectedQuery = { clients: 'jarrito_loco' }
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( Store.find.mock.calls.length ).toBe(1)
+        expect( Store.find.mock.calls[0][0] ).toEqual(expectedQuery)
+        done()
+      }
 
-  //   test('Should call Store.find with the client id', async () => {
-  //     const _conditions = { _id: 'jarrito_loco' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
-  //     const expectedQuery = { clients: 'jarrito_loco' }
+      boundMiddleware(next)      
+    })
 
-  //     await boundMiddleware(next)
+    test('Should update and save found stores', done => {
+      const _conditions = { _id: 'jarrito_loco' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const foundStores = [{
+        clients: ['jarrito_loco'],
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      },{
+        clients: ['a_client', 'jarrito_loco'],
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      }]
+      foundStores[0].clients.pull = jest.fn(() => { foundStores[0].clients.pop() })
+      foundStores[1].clients.pull = jest.fn(() => { foundStores[1].clients.pop() })
 
-  //     expect( Store.find.mock.calls.length ).toBe(1)
-  //     expect( Store.find.mock.calls[0][0] ).toEqual(expectedQuery)
-  //   })
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(foundStores) })
+      }))
+      const next = err => {
+        expect( foundStores[0].clients.length ).toBe(0)
+        expect( foundStores[0].clients.pull.mock.calls.length ).toBe(1)
+        expect( foundStores[0].clients.pull.mock.calls[0][0] ).toBe('jarrito_loco')
+        expect( foundStores[0].save.mock.calls.length ).toBe(1)
 
-  //   test('Should update and save found stores', async () => {
-  //     const _conditions = { _id: 'jarrito_loco' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
-  //     const foundStores = [{
-  //       clients: ['jarrito_loco'],
-  //       save: jest.fn()
-  //     },{
-  //       clients: ['a_client', 'jarrito_loco'],
-  //       save: jest.fn()
-  //     }]
-  //     foundStores[0].clients.pull = jest.fn(() => { foundStores[0].clients.pop() })
-  //     foundStores[1].clients.pull = jest.fn(() => { foundStores[1].clients.pop() })
+        expect( foundStores[1].clients.length ).toBe(1)
+        expect( foundStores[1].clients.pull.mock.calls.length ).toBe(1)
+        expect( foundStores[1].clients.pull.mock.calls[0][0] ).toBe('jarrito_loco')
+        expect( foundStores[1].save.mock.calls.length ).toBe(1)
+        done()
+      }
 
-  //     Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve(foundStores) }))
+      boundMiddleware(next)
+    })
 
-  //     await boundMiddleware(next)
+    test('Should call next with store find error', done => {
+      const _conditions = { _id: 'jarrito_loco' }
+      const boundMiddleware = bindMiddleware({ _conditions })
 
-  //     expect( foundStores[0].clients.length ).toBe(0)
-  //     expect( foundStores[0].clients.pull.mock.calls.length ).toBe(1)
-  //     expect( foundStores[0].clients.pull.mock.calls[0][0] ).toBe('jarrito_loco')
-  //     expect( foundStores[0].save.mock.calls.length ).toBe(1)
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { reject(new Error('Test store find error')) })
+      }))
+      const next = err => {
+        expect(err.message).toBe('Test store find error')
+        done()
+      }
 
-  //     expect( foundStores[1].clients.length ).toBe(1)
-  //     expect( foundStores[1].clients.pull.mock.calls.length ).toBe(1)
-  //     expect( foundStores[1].clients.pull.mock.calls[0][0] ).toBe('jarrito_loco')
-  //     expect( foundStores[1].save.mock.calls.length ).toBe(1)
-  //   })
+      boundMiddleware(next)
+    })
 
-  //   test('Should call next with store update error', async () => {
-  //     const _conditions = { _id: 'jarrito_loco' }
-  //     const boundMiddleware = bindMiddleware({ _conditions })
-  //     const foundStores = [{
-  //       clients: ['jarrito_loco'],
-  //       save: jest.fn(() => { throw new Error('Se rompio el jarrito :c') })
-  //     },{
-  //       clients: ['a_client', 'jarrito_loco'],
-  //       save: jest.fn(() => { throw new Error('Se rompio el jarrito :c') })
-  //     }]
-  //     foundStores[0].clients.pull = jest.fn(() => { foundStores[0].clients.pop() })
-  //     foundStores[1].clients.pull = jest.fn(() => { foundStores[1].clients.pop() })
+    test('Should call next with store update error', done => {
+      const _conditions = { _id: 'jarrito_loco' }
+      const boundMiddleware = bindMiddleware({ _conditions })
+      const foundStores = [{
+        clients: ['jarrito_loco'],
+        save: jest.fn(() => { throw new Error('Se rompio el jarrito :c') })
+      },{
+        clients: ['a_client', 'jarrito_loco'],
+        save: jest.fn(() => { throw new Error('Se rompio el jarrito :c') })
+      }]
+      foundStores[0].clients.pull = jest.fn(() => { foundStores[0].clients.pop() })
+      foundStores[1].clients.pull = jest.fn(() => { foundStores[1].clients.pop() })
 
-  //     Store.find = jest.fn(() => new Promise((resolve, reject) => { resolve(foundStores) }))      
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(foundStores) })
+      }))
+      const next = err => {
+        expect(err.message).toBe('Se rompio el jarrito :c')
+        done()
+      }
 
-  //     try {
-  //       await boundMiddleware(next)
-  //     } catch (e) {
-  //       expect( next.mock.calls.length ).toBe(1)
-  //       expect( next.mock.calls[0][0].message ).toBe('Se rompio el jarrito :c')
-  //     }
-  //   })
+      boundMiddleware(next)
+    })
 
-  // })
+  })
 
 })
