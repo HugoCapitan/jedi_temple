@@ -228,7 +228,7 @@ async function productCustomRemovedValue(self) {
   return saves
 }
 
-async function productCustomUpdatedMinMax(self, next) {
+async function productCustomUpdatedMinMax(self) {
   if (!(self._update.min && self._update.min != 'auto') && !(self._update.max && self._update.max != 'auto'))
     return []
 
@@ -254,7 +254,7 @@ async function productCustomUpdatedMinMax(self, next) {
   for (const product of filtered) {
     const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
     product.customs.pull({ _id: customToRemove._id })
-    await product.save()
+    saves.push(product.save())
   }
 
   return saves

@@ -543,6 +543,49 @@ describe('CustomField Model', () => {
       boundMiddleware(next)
     })
 
+    test('Should call next with Product.find Error', done => {
+      const maxUpdated = { min: '450', max: '500' }
+      const _update = maxUpdated
+
+      const boundMiddleware = bindMiddleware({ _conditions: { _id: 'pinacolada' }, _update })
+      Product.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { reject(new Error('Test error fetching products')) })
+      }))
+      const next = err => {
+        expect( err.message ).toBe('Test error fetching products')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should call next with products error', done => {
+      const maxUpdated = { min: '450', max: '500' }
+      const _update = maxUpdated
+
+      const boundMiddleware = bindMiddleware({ _conditions: { _id: 'pinacolada' }, _update })
+
+      const foundProduct = { 
+        customs: [{ 
+          _id: 'ajua', 
+          custom_id: 'pinacolada', 
+          value: '900' 
+        }], 
+        save: jest.fn(() => new Promise((resolve, reject) => { reject(new Error('Smoothie Error')) }))
+      }
+      foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+
+      Product.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([foundProduct]) })
+      }))
+      const next = err => {
+        expect( err.message ).toBe('Smoothie Error')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
     test('Should prevent modification of the slug and return a ValidationError', done => {
       const newField  = { slug: 'what_a_slug' }
       const _update = newField
