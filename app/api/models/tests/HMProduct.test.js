@@ -46,48 +46,48 @@ describe('HMProduct Model', () => {
   })
 
   describe('preSave Middleware', () => {
-    let next
     const bindMiddleware = context => 
       HMProduct.schema._middlewareFuncs.preSave.bind(context)
 
-    beforeEach(() => { 
-      next = jest.fn(err => { if (err) throw err })
-    })
-
-    test('Should call next', () => {
+    test('Should call next', done => {
       const context = { name: 'bracelet' }
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
 
-      const boundMiddlewareFunc = bindMiddleware(context)
-
-      boundMiddlewareFunc(next)
-
-      expect( next.mock.calls.length ).toBe(1)
+      boundMiddleware(next)
     })
 
-    test('Should add created_at and updated_at', async () => {
+    test('Should add created_at and updated_at', done => {
       const context = { name: 'bracelet' }
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( uValid.isThisMinute(context.created_at) ).toBeTruthy()
+        expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
+        done()
+      }
 
-      const boundMiddlewareFunc = bindMiddleware(context)
-
-      boundMiddlewareFunc(next)
-
-      expect( uValid.isThisMinute(context.created_at) ).toBeTruthy()
-      expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
+      boundMiddleware(next)
     })
 
-    test('Should modify updated_at but not created_at', async () => {
+    test('Should modify updated_at but not created_at', done => {
       const creationDate = moment().subtract(1, 'weeks').toDate()
       const context = { name: 'bracelet', created_at: creationDate, updated_at: creationDate }
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( context.created_at ).toBe(creationDate)
+        expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
+        done()
+      }
 
-      const boundMiddlewareFunc = bindMiddleware(context)
-
-      boundMiddlewareFunc(next)
-      
-      expect( context.created_at ).toBe(creationDate)
-      expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
+      boundMiddleware(next)
     })
 
-    test('Materials should iterate materials for duplicates and call next with error', () => {
+    test('Materials should iterate materials for duplicates and call next with error', done => {
       const context = { 
         name: 'canastita', 
         materials: [{ 
@@ -101,19 +101,17 @@ describe('HMProduct Model', () => {
           models: []
         }] 
       }
-
-      const boundMiddlewareFunc = bindMiddleware(context)
-
-      try {
-        boundMiddlewareFunc(next)
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-        expect( next.mock.calls[0][0].message ).toBe('Duplicated value for materials in canastita HMProduct')
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err.name).toBe('ValidationError')
+        expect(err.message).toBe('Duplicated value for materials in canastita HMProduct')
+        done()
       }
+      
+      boundMiddleware(next)
     })
 
-    test('Should iterate on every material\'s models for duplicates and call next with error', () => {
+    test('Should iterate on every material\'s models for duplicates and call next with error', done => {
       const context = { 
         name: 'canastita', 
         materials: [{ 
@@ -124,16 +122,14 @@ describe('HMProduct Model', () => {
           models: [] 
         }] 
       }
-
-      const boundMiddlewareFunc = bindMiddleware(context)
-
-      try {
-        boundMiddlewareFunc(next)
-      } catch (e) {
-        expect( next.mock.calls.length ).toBe(1)
-        expect( next.mock.calls[0][0].name ).toBe('ValidationError')
-        expect( next.mock.calls[0][0].message ).toBe('Duplicated value for models in material olakease in canastita HMProduct')
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err.name).toBe('ValidationError')
+        expect(err.message).toBe('Duplicated value for models in material olakease in canastita HMProduct')
+        done()
       }
+
+      boundMiddleware(next)
     })
 
   })
