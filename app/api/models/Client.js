@@ -50,7 +50,7 @@ ClientSchema._middlewareFuncs = {
     if (self.isNew && !self.password) {
       const e = new Error('Password Required')
       e.name = 'ValidationError'
-      next(e)
+      return next(e)
     }
 
     handlePassword(self)
@@ -59,9 +59,9 @@ ClientSchema._middlewareFuncs = {
         self.password = hashed.hash
         self.salt = hashed.salt
       }
-      next() 
+      return next() 
     })
-    .catch(next)
+    .catch(err => next(err))
     
   },
   preUpdate(next) {
@@ -74,9 +74,9 @@ ClientSchema._middlewareFuncs = {
         self._update.password = hashed.hash
         self._update.salt = hashed.salt
       }
-      next()
+      return next()
     })
-    .catch(next)
+    .catch(err => next(err))
   },
   async preRemove(next) {
     const self = this
