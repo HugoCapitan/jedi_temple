@@ -91,8 +91,8 @@ ClientSchema._middlewareFuncs = {
       }
       return Promise.all(saves)
     })
-    .then(results => { next() })
-    .catch(next)
+    .then(results => { return next() })
+    .catch(err => next(err))
   }
 }
 
