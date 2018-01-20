@@ -43,7 +43,7 @@ HMProductSchema._middlewareFuncs = {
         if (Object.values( modelsCount ).find( v => v > 1 )) {
           const err = new Error(`Duplicated value for models in material ${material.name} in ${self.name} HMProduct`)
           err.name = 'ValidationError'
-          next(err)
+          return next(err)
         }
 
         !!matacc[material.material] ? ++matacc[material.material] : matacc[material.material] = 1
@@ -53,11 +53,11 @@ HMProductSchema._middlewareFuncs = {
       if (Object.values( materialsCount ).find( v => v > 1 )) {
         let err = new Error(`Duplicated value for materials in ${self.name} HMProduct`)
         err.name = 'ValidationError'
-        next(err)
+        return next(err)
       }
     }
 
-    next()
+    return next()
   },
   preUpdate(next) {
     const self = this
