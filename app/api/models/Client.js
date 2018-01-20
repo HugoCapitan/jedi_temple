@@ -40,7 +40,7 @@ const ClientSchema = new Schema({
 })
 
 ClientSchema._middlewareFuncs = {
-  async preSave(next) {
+  preSave(next) {
     const self = this
     const currentDate = new Date()
 
@@ -64,11 +64,11 @@ ClientSchema._middlewareFuncs = {
     .catch(next)
     
   },
-  async preUpdate(next) {
+  preUpdate(next) {
     const self = this
     self._update.updated_at = new Date()
 
-    handlePassword(context)
+    handlePassword(self._update)
     .then(hashed => {
       if (hashed && hashed.hasOwnProperty('hash') && hashed.hasOwnProperty('salt')) {
         self._update.password = hashed.hash
