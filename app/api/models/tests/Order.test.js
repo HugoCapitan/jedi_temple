@@ -67,6 +67,46 @@ describe('Order model', () => {
     expect(v.errors['products.0.product_id']).toBeTruthy()
   })
 
+  describe('preSave Middleware', () => {
+
+    test('Should be no error')
+
+    test('Should create a new order code')
+
+    test('Should add creation and update dates')
+
+    test('Should update update date')
+
+  })
+
+  describe('preUpdate Middleware', () => {
+    
+    test('Should be no error')
+
+    test('Should prevent code modification')
+
+    test('Should send email on partial shipment')
+
+    test('Should send email on shipment')
+
+    test('Should send email on completed')
+
+    test('Should send email on canceled')
+
+  })
+
+  describe('preRemove Error', () => {
+    
+    test('Should be no error')
+
+    test('Should call find on stores and clients')
+
+    test('Should update and save found stores')
+
+    test('Should update and save found clients')
+
+  })
+
   function setupTest() {
     validOrder = getValidOrder()
   }
