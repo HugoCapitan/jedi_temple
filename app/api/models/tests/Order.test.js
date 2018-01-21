@@ -63,13 +63,14 @@ describe('Order model', () => {
 
   test('Should be invalid if wrong product_id in product', () => {
     const malformed = uSchemas.getValidOrder()
-    malformed.products[0].product_id = 'heyhey'
+    malformed.products[0].code = 'heyhey'
 
     const m = new Order(malformed)
     const v = m.validateSync()
-
-    // expect(uCommon.howManyKeys(v.errors)).toBe(1)
-    expect(v.errors['products.0.product_id']).toBeTruthy()
+    
+    expect(uCommon.howManyKeys(v.errors)).toBe(2)
+    expect(v.errors['products.0.code']).toBeTruthy()
+    expect(v.errors['products.0.products.0.code']).toBeTruthy()
   })
 
   describe('preSave Middleware', () => {
