@@ -109,7 +109,12 @@ describe('Order model', () => {
       Order.schema._middlewareFuncs.preRemove(context)
 
     beforeEach(() => {
-
+      Client.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([]) })
+      }))
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve([]) })
+      }))
     })
     
     test('Should be no error')
