@@ -1,7 +1,7 @@
 const Order = require('../Order')
 
-const { howManyKeys } = require('../../utils')
-const { getValidOrder } = require('../../utils/validSchemas')
+const uCommon = require('../../utils')
+const uSchemas = require('../../utils/validSchemas')
 
 describe('Order model', () => {
   let validOrder
@@ -19,7 +19,7 @@ describe('Order model', () => {
     const m = new Order({ })
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(6)
+    expect(uCommon.howManyKeys(v.errors)).toBe(6)
     expect(v.errors.email).toBeTruthy()
     expect(v.errors.status).toBeTruthy()
     expect(v.errors.products).toBeTruthy()
@@ -32,7 +32,7 @@ describe('Order model', () => {
     const m = new Order( Object.assign( validOrder, { email: 'thisaintanemail' } ) )
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(1)
+    expect(uCommon.howManyKeys(v.errors)).toBe(1)
     expect(v.errors.email).toBeTruthy()
   })
 
@@ -40,30 +40,30 @@ describe('Order model', () => {
     const m = new Order( Object.assign( validOrder, { shipping_address: 'wrong id babe', billing_address: 'haha' } ) )
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(2)
+    expect(uCommon.howManyKeys(v.errors)).toBe(2)
     expect(v.errors.billing_address).toBeTruthy()
     expect(v.errors.shipping_address).toBeTruthy()
   })
 
   test('Should be invalid if wrong quantity in product', () => {
-    const malformed = getValidOrder()
+    const malformed = uSchemas.getValidOrder()
     malformed.products[0].quantity = 'whatup'
 
     const m = new Order(malformed)
     const v = m.validateSync()
 
-    // expect(howManyKeys(v.errors)).toBe(1)
+    // expect(uCommon.howManyKeys(v.errors)).toBe(1)
     expect(v.errors['products.0.quantity']).toBeTruthy()
   })
 
   test('Should be invalid if wrong product_id in product', () => {
-    const malformed = getValidOrder()
+    const malformed = uSchemas.getValidOrder()
     malformed.products[0].product_id = 'heyhey'
 
     const m = new Order(malformed)
     const v = m.validateSync()
 
-    // expect(howManyKeys(v.errors)).toBe(1)
+    // expect(uCommon.howManyKeys(v.errors)).toBe(1)
     expect(v.errors['products.0.product_id']).toBeTruthy()
   })
 
@@ -118,7 +118,7 @@ describe('Order model', () => {
   })
 
   function setupTest() {
-    validOrder = getValidOrder()
+    validOrder = uSchemas.getValidOrder()
   }
 })
  
