@@ -76,7 +76,16 @@ describe('Order model', () => {
     const bindMiddleware = context => 
       Order.schema._middlewareFuncs.preSave(context)
 
-    test('Should be no error')
+    test('Should be no error', done => {
+      const context = validOrder
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
     test('Should create a new order code')
 
