@@ -1,5 +1,10 @@
 const Order = require('../Order')
 
+jest.mock('../Store')
+jest.mock('../Client')
+const Store = require('../Store')
+const Client = require('../Client')
+
 const uCommon = require('../../utils')
 const uSchemas = require('../../utils/validSchemas')
 
