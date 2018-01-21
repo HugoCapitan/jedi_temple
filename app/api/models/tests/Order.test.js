@@ -117,11 +117,7 @@ describe('Order model', () => {
 
     test('Should send email on canceled')
 
-    test('Should call products findById by each product')
-
-    test('Should correctly populate products fields')
-
-    test('Should return a not found Product error')
+    test('Should prevent products update, send message to use Save method')
 
   })
 
