@@ -93,6 +93,12 @@ describe('Order model', () => {
 
     test('Should update update date')
 
+    test('Should call products findById by each product')
+
+    test('Should correctly populate products fields')    
+
+    test('Should return a not found Product error')
+
   })
 
   describe('preUpdate Middleware', () => {
@@ -110,6 +116,12 @@ describe('Order model', () => {
     test('Should send email on completed')
 
     test('Should send email on canceled')
+
+    test('Should call products findById by each product')
+
+    test('Should correctly populate products fields')
+
+    test('Should return a not found Product error')
 
   })
 
