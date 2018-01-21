@@ -1,3 +1,7 @@
+const moment = require('moment')
+const mongoose = require('mongoose')
+const Types = mongoose.Types
+
 const Client      = require('../models/Client')
 const CustomField = require('../models/CustomField')
 const HMProduct   = require('../models/HMProduct')
@@ -6,8 +10,6 @@ const Picture     = require('../models/Picture')
 const Product     = require('../models/Product')
 const Reservation = require('../models/Reservation')
 const Text        = require('../models/Text')
-
-const moment = require('moment')
 
 module.exports = {
   getValidAddress: getValidAddress,
@@ -93,8 +95,9 @@ function getValidOrder() {
     email: 'some@mail.com',
     status: 1,
     products: [{ 
-      product_id: product._id,
-      quantity: 5
+      code: new Types.ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a')
+    },{
+      code: new Types.ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0')
     }],
     shipping: 15,
     billing_address: getValidAddress(),
