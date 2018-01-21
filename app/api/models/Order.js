@@ -44,19 +44,23 @@ const OrderSchema = new Schema({
   updated_at: Date
 })
 
-OrderSchema.pre('save', (next) => {
-  var currentDate = new Date()
+OrderSchema._middlewareFuncs = {
+  preSave(next) {
+    return next()
+  },
+  preUpdate(next) {
+    return next()
+  },
+  preRemove(next) {
+    return next()
+  }
+}
 
-  this.updated_at = currentDate
-
-  if (!this.created_at) 
-    this.created_at = currentDate
-
-  if (!this.order_code)
-    this.order_code = uModels.slugify(currentDate)
-
-  next()
-})
+OrderSchema.pre('save', OrderSchema._middlewareFuncs.preSave)
+OrderSchema.pre('update', OrderSchema._middlewareFuncs.preUpdate)
+OrderSchema.pre('findOneAndUpdate', OrderSchema._middlewareFuncs.preUpdate)
+OrderSchema.pre('remove', OrderSchema._middlewareFuncs.preRemove)
+OrderSchema.pre('findOneAndUpdate', OrderSchema._middlewareFuncs.preRemove)
 
 const Order = mongoose.model('Order', OrderSchema)
 
