@@ -68,6 +68,8 @@ describe('Order model', () => {
   })
 
   describe('preSave Middleware', () => {
+    const bindMiddleware = context => 
+      Order.schema._middlewareFuncs.preSave(context)
 
     test('Should be no error')
 
@@ -80,6 +82,8 @@ describe('Order model', () => {
   })
 
   describe('preUpdate Middleware', () => {
+    const bindMiddleware = context => 
+      Order.schema._middlewareFuncs.preUpdate(context)
     
     test('Should be no error')
 
@@ -96,6 +100,12 @@ describe('Order model', () => {
   })
 
   describe('preRemove Error', () => {
+    const bindMiddleware = context => 
+      Order.schema._middlewareFuncs.preRemove(context)
+
+    beforeEach(() => {
+
+    })
     
     test('Should be no error')
 
