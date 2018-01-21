@@ -46,6 +46,16 @@ const OrderSchema = new Schema({
 
 OrderSchema._middlewareFuncs = {
   preSave(next) {
+    var currentDate = new Date()
+
+    this.updated_at = currentDate
+
+    if (!this.created_at) 
+      this.created_at = currentDate
+
+    if (!this.order_code)
+      this.order_code = uModels.slugify(currentDate)
+
     return next()
   },
   preUpdate(next) {
