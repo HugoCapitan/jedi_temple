@@ -96,10 +96,12 @@ function getValidOrder() {
     status: 1,
     products: [{ 
       code: new Types.ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
-      quantity: 2
+      quantity: 2,
+      is_populated: false
     },{
       code: new Types.ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'),
-      quantity: 1
+      quantity: 1,
+      is_populated: false
     }],
     shipping: 15,
     billing_address: getValidAddress(),
