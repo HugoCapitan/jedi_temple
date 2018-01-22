@@ -92,10 +92,11 @@ module.exports = Order
 
 function handleProductPopulation(orderProduct) {
   return new Promise((resolve, reject) => {
+    if (orderProduct.is_populated) resolve(orderProduct)
+    
     Product.findById(orderProduct.code).exec()
     .then(fullProduct => {
-      orderProduct.name  = fullProduct.name
-      orderProduct.price = fullProduct.price
+      if (!fullProduct) reject(new Error('Product not found'))
 
       const cQueries = []
       for (const c of fullProduct.customs) {
@@ -120,6 +121,10 @@ function handleProductPopulation(orderProduct) {
 
           return { key, value }
         })
+
+        orderProduct.name         = fullProduct.name
+        orderProduct.price        = fullProduct.price
+        orderProduct.is_populated = true
     
         resolve(orderProduct)
       })
