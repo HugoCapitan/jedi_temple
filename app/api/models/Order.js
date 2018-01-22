@@ -8,7 +8,13 @@ const AddressSchema      = require('./schemas/AddressSchema')
 const OrderProductSchema = require('./schemas/OrderProductSchema')
 
 const uModels = require('../utils/models')
-const validate = require('../utils/validators') 
+const validate = require('../utils/validators')
+
+const statuses = [
+  'Pending', 'Awaiting Payment', 'Awaiting Fulfillment', 'Awaiting Shipment', 'Awaiting Pickup',
+  'Partially Shipped', 'Completed', 'Shipped', 'Cancelled', 'Declined', 'Refunded', 'Disputed',
+  'Verification Required', 'Partially Refunded'
+]
 
 const OrderSchema = new Schema({
   email: {
@@ -21,7 +27,8 @@ const OrderSchema = new Schema({
     unique: true
   },
   status: {
-    type: Number,
+    type: String,
+    enum: statuses,
     required: true
   },
   products: {
@@ -73,6 +80,9 @@ OrderSchema._middlewareFuncs = {
 
   },
   preUpdate(next) {
+    const self = this
+    // if (self )
+
     return next()
   },
   preRemove(next) {

@@ -93,7 +93,7 @@ function getValidOrder() {
 
   return {
     email: 'some@mail.com',
-    status: 1,
+    status: 'Awaiting Payment',
     products: [{ 
       code: new Types.ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
       quantity: 2,
