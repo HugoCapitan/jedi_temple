@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const Order = require('../Order')
 
 jest.mock('../Store')
@@ -9,6 +11,7 @@ const Client = require('../Client')
 
 const uCommon = require('../../utils')
 const uSchemas = require('../../utils/validSchemas')
+const uValid = require('../../utils/validators')
 
 describe('Order model', () => {
   let validOrder
@@ -101,6 +104,8 @@ describe('Order model', () => {
       const next = err => {
         expect(err).toBeFalsy()
         expect(uModels.createOrdercode.mock.calls.length).toBe(1)
+        const paramDate = uModels.createOrdercode.mock.calls[0][0]
+        expect( uValid.isThisMinute(paramDate) ).toBeTruthy()
         expect(context.order_code).toBe('heybabe')
         done()
       }
@@ -108,9 +113,36 @@ describe('Order model', () => {
       boundMiddleware(next)
     })
 
-    test('Should add creation and update dates')
+    test('Should add creation and update dates', done => {
+      const context = validOrder
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(context.created_at).toBeTruthy()
+        expect(context.updated_at).toBeTruthy()
+        expect( uValid.isThisMinute(context.created_at) ).toBeTruthy()
+        expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
+        done()
+      }
 
-    test('Should update update date')
+      boundMiddleware(next)
+    })
+
+    test('Should update update date', () => {
+      const lastWeek = moment().subtract('1', 'weeks')
+      const context = Object.assign(validOrder, { 
+        created_at: lastWeek,
+        updated_at: lastWeek
+      })
+      const boundMiddleware = bindMiddleware(context)
+
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(context.created_at).toBe(lastWeek)
+        expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
+        done()
+      }
+    })
 
     test('Should call products findById by each product')
 
