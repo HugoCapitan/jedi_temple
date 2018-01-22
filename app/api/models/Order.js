@@ -49,18 +49,19 @@ const OrderSchema = new Schema({
 
 OrderSchema._middlewareFuncs = {
   preSave(next) {
+    const self = this
     var currentDate = new Date()
 
-    this.updated_at = currentDate
+    self.updated_at = currentDate
 
-    if (!this.created_at) 
-      this.created_at = currentDate
+    if (!self.created_at) 
+      self.created_at = currentDate
 
-    if (!this.order_code)
-      this.order_code = uModels.createOrdercode(currentDate)
+    if (!self.order_code)
+      self.order_code = uModels.createOrdercode(currentDate)
 
     
-    const pupulations = []
+    const populations = []
     for (const product of self.products)
       populations.push( handleProductPopulation(product) )
     
@@ -103,23 +104,26 @@ function handleProductPopulation(orderProduct) {
         )
       }
 
-      return Promise.all(cQueries)
-    })
-    .then(customsObjects => {
-      orderProduct.customs = customsObjects.map(customObject => {
-        const fullProductCustom = fullProduct.customs.find({ custom_id: customObject._id })
-        const key = customObject.name
-        let value
-  
-        if (customObject.type === 'string') 
-          value = customObject.values.find({ _id: fullProductCustom.value })
-        else 
-          value = fullProductCustom.value
-  
-        return { key, value }
+      Promise.all(cQueries)
+      .then(customsObjects => {
+        orderProduct.customs = customsObjects.map(customObject => {
+          const fullProductCustom = fullProduct.customs.find({ custom_id: customObject._id })
+          const key = customObject.name
+          let value
+    
+          if (customObject.type === 'string') 
+            value = customObject.values.find({ _id: fullProductCustom.value }).value
+          else 
+            value = customObject.unit_place === 'before' 
+              ? `${customObject.unit}${fullProductCustom.value}` 
+              : `${fullProductCustom.value}${customObject.unit}`
+
+          return { key, value }
+        })
+    
+        resolve(orderProduct)
       })
-  
-      resolve(orderProduct)
+      .catch(reject)
     })
     .catch(reject)
   })
