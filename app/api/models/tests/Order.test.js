@@ -87,8 +87,11 @@ describe('Order model', () => {
 
   describe('preSave Middleware', () => {
     let priceCustom, otherCustom, firstProduct, secondProduct
-    const bindMiddleware = context => 
-      Order.schema._middlewareFuncs.preSave.bind(context)
+    const bindMiddleware = context => {
+      if (!context.hasOwnProperty('isModified')) 
+        context.isModified = () => false
+      return Order.schema._middlewareFuncs.preSave.bind(context)
+    }
 
     beforeEach(() => {
       setupProductsAndCustoms()
@@ -281,7 +284,18 @@ describe('Order model', () => {
       boundMiddleware(next)
     })
 
-    test('Should prevent code modification')
+    test('Should prevent code modification', done => {
+      const context = Object.assign(validOrder, { order_code: 'hahaha', isModified(prop) { return prop === 'order_code' } })
+      const boundMiddleware = bindMiddleware(context)
+
+      const next = err => {
+        expect(err.name).toBe('ValidationError')
+        expect(err.message).toBe('Order code is read-only')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
     test('Should handle status modification')
 

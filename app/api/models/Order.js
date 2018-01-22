@@ -57,8 +57,14 @@ const OrderSchema = new Schema({
 OrderSchema._middlewareFuncs = {
   preSave(next) {
     const self = this
-    var currentDate = new Date()
 
+    if (self.order_code && self.isModified('order_code')) {
+      const err = new Error('Order code is read-only')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+
+    const currentDate = new Date()
     self.updated_at = currentDate
 
     if (!self.created_at) 
@@ -67,7 +73,6 @@ OrderSchema._middlewareFuncs = {
     if (!self.order_code)
       self.order_code = uModels.createOrdercode(currentDate)
 
-    
     const populations = []
     for (const product of self.products)
       populations.push( handleProductPopulation(product) )
