@@ -90,6 +90,8 @@ describe('Order model', () => {
     const bindMiddleware = context => {
       if (!context.hasOwnProperty('isModified')) 
         context.isModified = () => false
+      if (!context.hasOwnProperty('isNew'))
+        context.isNew = true
       return Order.schema._middlewareFuncs.preSave.bind(context)
     }
 
@@ -285,19 +287,37 @@ describe('Order model', () => {
     })
 
     test('Should prevent code modification', done => {
-      const context = Object.assign(validOrder, { order_code: 'hahaha', isModified(prop) { return prop === 'order_code' } })
+      const context = Object.assign(validOrder, { 
+        order_code: 'hahaha',
+        isNew: false,
+        isModified(prop) { return prop === 'order_code' } 
+      })
       const boundMiddleware = bindMiddleware(context)
 
       const next = err => {
-        expect(err.name).toBe('ValidationError')
         expect(err.message).toBe('Order code is read-only')
+        expect(err.name).toBe('ValidationError')
         done()
       }
 
       boundMiddleware(next)
     })
 
-    test('Should handle status modification')
+    test('Should prevent status modification', done => {
+      const context = Object.assign(validOrder, { 
+        status: 'Completed',
+        isNew: false,
+        isModified(prop) { return prop === 'status' } 
+      })
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err.message).toBe('Status should be modified via order.udpate')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
     function setupProductsAndCustoms() {
       numberCustom = {
@@ -372,8 +392,16 @@ describe('Order model', () => {
       boundMiddleware(next)
     })
 
-    test('Should prevent code modification', () => {
+    test('Should prevent code modification', done => {
+      const _update = { order_code: 'something' }
+      const boundMiddleware = bindMiddleware({ _update })
+      const next = err => {
+        expect(err.message).toBe('Order code is read-only')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
 
+      boundMiddleware(next)
     })
 
     test('Should send email on partial shipment')

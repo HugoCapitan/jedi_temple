@@ -58,8 +58,13 @@ OrderSchema._middlewareFuncs = {
   preSave(next) {
     const self = this
 
-    if (self.order_code && self.isModified('order_code')) {
+    if (self.isModified('order_code')) {
       const err = new Error('Order code is read-only')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if (!self.isNew && self.isModified('status')) {
+      const err = new Error('Status should be modified via order.udpate')
       err.name = 'ValidationError'
       return next(err)
     }
@@ -86,7 +91,11 @@ OrderSchema._middlewareFuncs = {
   },
   preUpdate(next) {
     const self = this
-    // if (self )
+    if (self._update.hasOwnProperty('order_code')) {
+      const err = new Error('Order code is read-only')
+      err.name = 'ValidationError'
+      return next(err)
+    }
 
     return next()
   },
