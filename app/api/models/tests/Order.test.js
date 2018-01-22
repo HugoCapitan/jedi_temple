@@ -7,6 +7,8 @@ const Order = require('../Order')
 
 jest.mock('../Client')
 const Client = require('../Client')
+jest.mock('../CustomField')
+const CustomField = require('../CustomField')
 jest.mock('../Product')
 const Product = require('../Product')
 jest.mock('../Store')
@@ -84,39 +86,27 @@ describe('Order model', () => {
   })
 
   describe('preSave Middleware', () => {
+    let priceCustom, otherCustom, firstProduct, secondProduct
     const bindMiddleware = context => 
       Order.schema._middlewareFuncs.preSave.bind(context)
 
     beforeEach(() => {
-      const firsProduct = {
-        _id: new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
-        name: 'The great product',
-        customs: [{
-          custom_id: new ObjectId('cfcfcfcfcfcfcfcfcfcfcfcf'), // <- PRICE CUSTOM
-          value: '549.99'
-        },{
-          custom_id: new ObjectId('afafafafafafafafafafafaf'),
-          value: 'ffaaffaaffaaffaaffaaffaa'
-        }]
-      }
-      const secondProduct = {
-        _id: new ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'),
-        name: 'The great product',
-        customs: [{
-          custom_id: new ObjectId('cfcfcfcfcfcfcfcfcfcfcfcf'), // <- PRICE CUSTOM
-          value: '349.99'
-        },{
-          custom_id: new ObjectId('afafafafafafafafafafafaf'),
-          value: 'ffaaffaaffaaffaaffaaffaa'
-        }]
-      }
+      setupProductsAndCustoms()
 
       uModels.createOrdercode = jest.fn(() => 'heybabe')
       Product.findById = jest.fn(_id => ({
-        exec: () => new Promise((resolve, reject) => { 
-          if (_.isEqual(_id, '0a0a0a0a0a0a0a0a0a0a0a0a'))      resolve(firsProduct)
-          else if (_.isEqual(_id, 'a0a0a0a0a0a0a0a0a0a0a0a0')) resolve(secondProduct)
-          else                                                 resolve(undefined)
+        exec: () => new Promise((resolve, reject) => {
+          if (_.isEqual(_id, firstProduct._id))       resolve(firstProduct)
+          else if (_.isEqual(_id, secondProduct._id)) resolve(secondProduct)
+          else                                        resolve(undefined)
+        })
+      }))
+
+      CustomField.findById = jest.fn(_id => ({
+        exec: () => new Promise((resolve, reject) => {
+          if (_.isEqual(_id, numberCustom._id))     resolve(numberCustom)
+          else if (_.isEqual(_id, otherCustom._id)) resolve(otherCustom)
+          else                                      resolve(undefined)
         })
       }))
     })
@@ -197,6 +187,60 @@ describe('Order model', () => {
     test('Should correctly populate products fields')    
 
     test('Should return a not found Product error')
+
+    function setupProductsAndCustoms() {
+      numberCustom = {
+        _id: new ObjectId('cfcfcfcfcfcfcfcfcfcfcfcf'),
+        name: 'Weight',
+        type: 'number',
+        unit: 'g',
+        unit_place: 'after'
+      }
+      otherCustom = {
+        _id: new ObjectId('afafafafafafafafafafafaf'),
+        name: 'Sabores',
+        type: 'string',
+        values: [{
+          _id: new ObjectId('ffaaffaaffaaffaaffaaffaa'),
+          value: 'chocomilk'
+        }]
+      }
+      otherCustom.values.find = jest.fn(_conditions => 
+        otherCustom.values[0]
+      )
+
+      firstProduct = {
+        _id: new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
+        name: 'The great product',
+        customs: [{
+          custom_id: numberCustom._id, // <- NUMBER CUSTOM
+          value: '549.99'
+        },{
+          custom_id: otherCustom._id,
+          value: 'ffaaffaaffaaffaaffaaffaa'
+        }]
+      }
+      firstProduct.customs.find = jest.fn(_conditions => {
+        if (_.isEqual(_conditions.custom_id, firstProduct.customs[0].custom_id))      return firstProduct.customs[0]
+        else if (_.isEqual(_conditions.custom_id, firstProduct.customs[1].custom_id)) return firstProduct.customs[1]
+      })
+
+      secondProduct = {
+        _id: new ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'),
+        name: 'The great product',
+        customs: [{
+          custom_id: numberCustom._id, // <- NUMBER CUSTOM
+          value: '349.99'
+        },{
+          custom_id: otherCustom._id,
+          value: 'ffaaffaaffaaffaaffaaffaa'
+        }]
+      }
+      secondProduct.customs.find = jest.fn(_conditions => {
+        if (_.isEqual(_conditions.custom_id, secondProduct.customs[0].custom_id))      return secondProduct.customs[0]
+        else if (_.isEqual(_conditions.custom_id, secondProduct.customs[1].custom_id)) return secondProduct.customs[1]
+      })
+    }
 
   })
 
