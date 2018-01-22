@@ -178,13 +178,52 @@ describe('Order model', () => {
         expect(err).toBeFalsy()
         expect(Product.findById.mock.calls.length).toBe(2)
         expect(Product.findById.mock.calls[0][0]).toEqual(new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'))
+        expect(Product.findById.mock.calls[1][0]).toEqual(new ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'))
         done()
       }
 
       boundMiddleware(next)
     })
 
-    test('Should correctly populate products fields')    
+    test('Should correctly populate products fields', done => {
+      const context = validOrder
+      const boundMiddleware = bindMiddleware(context)
+      const expectedFirstProduct = {
+        code: new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
+        name: 'The great product',
+        price: 549.99,
+        quantity: 2,
+        customs: [{
+          key: 'Weight', // <- NUMBER CUSTOM
+          value: '200g'
+        },{
+          key: 'Sabores',
+          value: 'chocomilk'
+        }]
+      }
+      const expectedSecondProduct = {
+        code: new ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'),
+        name: 'The also great product',
+        price: 209.99,
+        quantity: 1,
+        customs: [{
+          key: 'Weight', // <- NUMBER CUSTOM
+          value: '49g'
+        },{
+          key: 'Sabores',
+          value: 'chocomilk'
+        }]
+      }
+
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(context.products[0]).toEqual(expectedFirstProduct)
+        expect(context.products[1]).toEqual(expectedSecondProduct)
+        done()
+      }
+
+      boundMiddleware(next)
+    })    
 
     test('Should return a not found Product error')
 
@@ -212,9 +251,10 @@ describe('Order model', () => {
       firstProduct = {
         _id: new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
         name: 'The great product',
+        price: 549.99,
         customs: [{
           custom_id: numberCustom._id, // <- NUMBER CUSTOM
-          value: '549.99'
+          value: '200'
         },{
           custom_id: otherCustom._id,
           value: 'ffaaffaaffaaffaaffaaffaa'
@@ -227,10 +267,11 @@ describe('Order model', () => {
 
       secondProduct = {
         _id: new ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'),
-        name: 'The great product',
+        name: 'The also great product',
+        price: 209.99,
         customs: [{
           custom_id: numberCustom._id, // <- NUMBER CUSTOM
-          value: '349.99'
+          value: '49'
         },{
           custom_id: otherCustom._id,
           value: 'ffaaffaaffaaffaaffaaffaa'
