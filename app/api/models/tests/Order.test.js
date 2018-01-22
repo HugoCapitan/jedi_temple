@@ -75,7 +75,7 @@ describe('Order model', () => {
 
   describe('preSave Middleware', () => {
     const bindMiddleware = context => 
-      Order.schema._middlewareFuncs.preSave(context)
+      Order.schema._middlewareFuncs.preSave.bind(context)
 
     test('Should be no error', done => {
       const context = validOrder

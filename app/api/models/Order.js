@@ -54,7 +54,7 @@ OrderSchema._middlewareFuncs = {
       this.created_at = currentDate
 
     if (!this.order_code)
-      this.order_code = uModels.slugify(currentDate)
+      this.order_code = uModels.createOrdercode(currentDate)
 
     return next()
   },
