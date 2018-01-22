@@ -95,9 +95,11 @@ function getValidOrder() {
     email: 'some@mail.com',
     status: 1,
     products: [{ 
-      code: new Types.ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a')
+      code: new Types.ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
+      quantity: 2
     },{
-      code: new Types.ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0')
+      code: new Types.ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'),
+      quantity: 1
     }],
     shipping: 15,
     billing_address: getValidAddress(),
