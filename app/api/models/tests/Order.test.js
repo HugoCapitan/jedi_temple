@@ -92,8 +92,8 @@ describe('Order model', () => {
 
     beforeEach(() => {
       setupProductsAndCustoms()
-
       uModels.createOrdercode = jest.fn(() => 'heybabe')
+
       Product.findById = jest.fn(_id => ({
         exec: () => new Promise((resolve, reject) => {
           if (_.isEqual(_id, firstProduct._id))       resolve(firstProduct)
@@ -199,7 +199,8 @@ describe('Order model', () => {
         },{
           key: 'Sabores',
           value: 'chocomilk'
-        }]
+        }],
+        is_populated: true
       }
       const expectedSecondProduct = {
         code: new ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'),
@@ -212,7 +213,8 @@ describe('Order model', () => {
         },{
           key: 'Sabores',
           value: 'chocomilk'
-        }]
+        }],
+        is_populated: true
       }
 
       const next = err => {
@@ -223,9 +225,61 @@ describe('Order model', () => {
       }
 
       boundMiddleware(next)
-    })    
+    })
 
-    test('Should return a not found Product error')
+    test('Shouldnt modify a product if already populated', done => {
+      const context = Object.assign(validOrder, { products: [{is_populated: true}] })
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(context.products[0]).toEqual({ is_populated: true })
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should return a Product not found error', done => {
+      const context = validOrder
+      const boundMiddleware = bindMiddleware(context)
+      Product.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(undefined) }) 
+      }))
+      const next = err => {
+        expect(err.message).toBe('Product not found')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should return a findById Product error', done => {
+      const context = validOrder
+      const boundMiddleware = bindMiddleware(context)
+      Product.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { reject(new Error('Test error 12345')) }) 
+      }))
+      const next = err => {
+        expect(err.message).toBe('Test error 12345')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should return a findById CustomField error', done => {
+      const context = validOrder
+      const boundMiddleware = bindMiddleware(context)
+      CustomField.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { reject(new Error('Test error 123456')) }) 
+      }))
+      const next = err => {
+        expect(err.message).toBe('Test error 123456')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
     function setupProductsAndCustoms() {
       numberCustom = {
