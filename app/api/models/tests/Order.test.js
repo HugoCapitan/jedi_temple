@@ -281,6 +281,10 @@ describe('Order model', () => {
       boundMiddleware(next)
     })
 
+    test('Should prevent code modification')
+
+    test('Should handle status modification')
+
     function setupProductsAndCustoms() {
       numberCustom = {
         _id: new ObjectId('cfcfcfcfcfcfcfcfcfcfcfcf'),
@@ -341,11 +345,22 @@ describe('Order model', () => {
 
   describe('preUpdate Middleware', () => {
     const bindMiddleware = context => 
-      Order.schema._middlewareFuncs.preUpdate(context)
+      Order.schema._middlewareFuncs.preUpdate.bind(context)
     
-    test('Should be no error')
+    test('Should be no error', done => {
+      const _update = { status: 2 }
+      const boundMiddleware = bindMiddleware({ _update })
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
 
-    test('Should prevent code modification')
+      boundMiddleware(next)
+    })
+
+    test('Should prevent code modification', () => {
+
+    })
 
     test('Should send email on partial shipment')
 
