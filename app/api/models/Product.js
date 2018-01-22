@@ -15,6 +15,10 @@ const ProductSchema = new Schema({
     type: String,
     unique: true
   },
+  price: {
+    type: Number,
+    required: true
+  },
   stock: {
     type: Number,
     required: true
