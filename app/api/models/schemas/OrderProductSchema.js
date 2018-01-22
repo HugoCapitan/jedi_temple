@@ -16,5 +16,9 @@ module.exports = new Schema({
   customs: [{
     key: String,
     value: String
-  }]
+  }],
+  is_populated: {
+    type: Boolean,
+    default: false
+  }
 })
