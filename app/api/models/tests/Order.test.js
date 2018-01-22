@@ -1,14 +1,19 @@
-const moment = require('moment')
+const _        = require('lodash')
+const moment   = require('moment')
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
 
 const Order = require('../Order')
 
-jest.mock('../Store')
 jest.mock('../Client')
+const Client = require('../Client')
+jest.mock('../Product')
+const Product = require('../Product')
+jest.mock('../Store')
+const Store = require('../Store')
+
 jest.mock('../../utils/models')
 const uModels = require('../../utils/models')
-const Store = require('../Store')
-const Client = require('../Client')
-
 const uCommon = require('../../utils')
 const uSchemas = require('../../utils/validSchemas')
 const uValid = require('../../utils/validators')
@@ -83,7 +88,37 @@ describe('Order model', () => {
       Order.schema._middlewareFuncs.preSave.bind(context)
 
     beforeEach(() => {
+      const firsProduct = {
+        _id: new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
+        name: 'The great product',
+        customs: [{
+          custom_id: new ObjectId('cfcfcfcfcfcfcfcfcfcfcfcf'), // <- PRICE CUSTOM
+          value: '549.99'
+        },{
+          custom_id: new ObjectId('afafafafafafafafafafafaf'),
+          value: 'ffaaffaaffaaffaaffaaffaa'
+        }]
+      }
+      const secondProduct = {
+        _id: new ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'),
+        name: 'The great product',
+        customs: [{
+          custom_id: new ObjectId('cfcfcfcfcfcfcfcfcfcfcfcf'), // <- PRICE CUSTOM
+          value: '349.99'
+        },{
+          custom_id: new ObjectId('afafafafafafafafafafafaf'),
+          value: 'ffaaffaaffaaffaaffaaffaa'
+        }]
+      }
+
       uModels.createOrdercode = jest.fn(() => 'heybabe')
+      Product.findById = jest.fn(_id => ({
+        exec: () => new Promise((resolve, reject) => { 
+          if (_.isEqual(_id, '0a0a0a0a0a0a0a0a0a0a0a0a'))      resolve(firsProduct)
+          else if (_.isEqual(_id, 'a0a0a0a0a0a0a0a0a0a0a0a0')) resolve(secondProduct)
+          else                                                 resolve(undefined)
+        })
+      }))
     })
 
     test('Should be no error', done => {
@@ -128,23 +163,36 @@ describe('Order model', () => {
       boundMiddleware(next)
     })
 
-    test('Should update update date', () => {
+    test('Should update update date', done => {
       const lastWeek = moment().subtract('1', 'weeks')
       const context = Object.assign(validOrder, { 
         created_at: lastWeek,
         updated_at: lastWeek
       })
       const boundMiddleware = bindMiddleware(context)
-
       const next = err => {
         expect(err).toBeFalsy()
         expect(context.created_at).toBe(lastWeek)
         expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
         done()
       }
+
+      boundMiddleware(next)
     })
 
-    test('Should call products findById by each product')
+    test('Should call products findById by each product', done => {
+      const context = validOrder
+      const boundMiddleware = bindMiddleware(context)
+
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(Product.findById.mock.calls.length).toBe(2)
+        expect(Product.findById.mock.calls[0][0]).toEqual(new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'))
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
     test('Should correctly populate products fields')    
 
