@@ -1,8 +1,8 @@
 const moment = require('moment')
 
+const HMProduct = require('../HMProduct')
 jest.mock('../Store')
 const Store = require('../Store')
-const HMProduct = require('../HMProduct')
 
 const uCommon = require('../../utils')
 const uValid = require('../../utils/validators')

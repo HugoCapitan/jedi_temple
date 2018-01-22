@@ -1,8 +1,9 @@
 const moment = require('moment')
 
+const Client = require('../Client')
+
 jest.mock('../Store')
 const Store = require('../Store')
-const Client = require('../Client')
 
 const models = require('../../utils/models')
 const uCommon = require('../../utils')

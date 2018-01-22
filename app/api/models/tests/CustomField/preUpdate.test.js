@@ -72,7 +72,6 @@ describe('preUpdate Middleware', () => {
       customs: { $elemMatch: { custom_id: 'pinacolada' } } 
     }
     const next = err => {
-      console.log(err)
       expect(err).toBeFalsy()
       expect(Product.find.mock.calls.length).toBe(1)
       expect(Product.find.mock.calls[0][0]).toEqual(expectedQuery)
