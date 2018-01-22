@@ -79,11 +79,11 @@ CustomFieldSchema._middlewareFuncs = {
   preSave(next) {
     const self = this
     const saves = []
-    preSaveValidations(self, next)
-
-    self.slug = uCommon.slugify(self.name)
-
-    productCustomRemovedValue(self)
+    preSaveValidations(self).then(() => {
+      self.slug = uCommon.slugify(self.name)
+      
+      return productCustomRemovedValue(self)
+    })
     .then(results => Promise.all(results))
     .then(results => {
       if (self.type === 'string') {
@@ -102,14 +102,14 @@ CustomFieldSchema._middlewareFuncs = {
   },
   preUpdate(next) {
     const self = this
-    preUpdateValidations(self, next)
-
-    const currentDate = new Date()
-    self._update.updated_at = currentDate
-
-    if (self._update.name) self._update.slug = uCommon.slugify(self._update.name)
-
-    productCustomUpdatedMinMax(self)
+    preUpdateValidations(self)
+    .then(() => {
+      const currentDate = new Date()
+      self._update.updated_at = currentDate
+      if (self._update.name) self._update.slug = uCommon.slugify(self._update.name)
+      
+      return productCustomUpdatedMinMax(self)    
+    })
     .then(results => Promise.all(results))
     .then(results => next())
     .catch(err => next(err))
@@ -152,58 +152,65 @@ const CustomField = mongoose.model('CustomField', CustomFieldSchema)
 
 module.exports = CustomField
 
-async function preSaveValidations(self, next) {
-  if (!self.isNew && self.isModified('slug')) {
-    let err = new Error('Slug is not updatable')
-    err.name = 'ValidationError'
-    return next(err)
-  }
-  if (!self.isNew && self.isModified('type')) {
-    let err = new Error('Type is not updatable')
-    err.name = 'ValidationError'
-    return next(err)
-  }
-  if (!self.isNew && self.isModified('_values')) {
-    let err = new Error('_values is not updatable')
-    err.name = 'ValidationError'
-    return next(err)
-  }
-  if (self.values) {
-    let valCount = self.values.reduce((acc, val) => {
-      !!acc[val.value] ? ++acc[val.value] : acc[val.value] = 1
-      return acc
-    }, {})
-    valCount = Object.values(valCount)
-
-    if (valCount.find(val => val > 1)) {
-      let err = new Error('Duplicated value for CustomField.values')
+function preSaveValidations(self) {
+  return new Promise((resolve, reject) => {
+    if (!self.isNew && self.isModified('slug')) {
+      let err = new Error('Slug is not updatable')
       err.name = 'ValidationError'
-      return next(err)
+      reject(err)
     }
-  }
+    if (!self.isNew && self.isModified('type')) {
+      let err = new Error('Type is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (!self.isNew && self.isModified('_values')) {
+      let err = new Error('_values is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self.values) {
+      let valCount = self.values.reduce((acc, val) => {
+        !!acc[val.value] ? ++acc[val.value] : acc[val.value] = 1
+        return acc
+      }, {})
+      valCount = Object.values(valCount)
+  
+      if (valCount.find(val => val > 1)) {
+        let err = new Error('Duplicated value for CustomField.values')
+        err.name = 'ValidationError'
+        reject(err)
+      }
+    }
+    resolve()
+  })
 }
 
-function preUpdateValidations(self, next) {
-  if (self._update.hasOwnProperty('slug')) {
-    err = new Error('Slug is not updatable')
-    err.name = 'ValidationError'
-    return next(err)
-  }
-  if (self._update.hasOwnProperty('type')) {
-    err = new Error('Type is not updatable')
-    err.name = 'ValidationError'
-    return next(err)
-  }
-  if (self._update.hasOwnProperty('values')) {
-    err = new Error('Values should be updated via CustomField.save')
-    err.name = 'ValidationError'
-    return next(err)
-  }
-  if (self._update.hasOwnProperty('_values')) {
-    err = new Error('_values is not updatable')
-    err.name = 'ValidationError'
-    return next(err)
-  }
+function preUpdateValidations(self) {
+  return new Promise((resolve, reject) => {
+    if (self._update.hasOwnProperty('slug')) {
+      err = new Error('Slug is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('type')) {
+      err = new Error('Type is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('values')) {
+      err = new Error('Values should be updated via CustomField.save')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('_values')) {
+      err = new Error('_values is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+
+    resolve()
+  })
 }
 
 async function productCustomRemovedValue(self) {
