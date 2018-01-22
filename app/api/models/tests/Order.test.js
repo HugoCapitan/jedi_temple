@@ -2,6 +2,8 @@ const Order = require('../Order')
 
 jest.mock('../Store')
 jest.mock('../Client')
+jest.mock('../../utils/models')
+const uModels = require('../../utils/models')
 const Store = require('../Store')
 const Client = require('../Client')
 
@@ -77,6 +79,10 @@ describe('Order model', () => {
     const bindMiddleware = context => 
       Order.schema._middlewareFuncs.preSave.bind(context)
 
+    beforeEach(() => {
+      uModels.createOrdercode = jest.fn(() => 'heybabe')
+    })
+
     test('Should be no error', done => {
       const context = validOrder
       const boundMiddleware = bindMiddleware(context)
@@ -88,7 +94,19 @@ describe('Order model', () => {
       boundMiddleware(next)
     })
 
-    test('Should create a new order code')
+    test('Should create a new order code', done => {
+      const context = validOrder
+      const boundMiddleware = bindMiddleware(context)
+
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(uModels.createOrdercode.mock.calls.length).toBe(1)
+        expect(context.order_code).toBe('heybabe')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
     test('Should add creation and update dates')
 
