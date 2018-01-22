@@ -60,10 +60,16 @@ OrderSchema._middlewareFuncs = {
       this.order_code = uModels.createOrdercode(currentDate)
 
     
-    handle
+    const pupulations = []
+    for (const product of self.products)
+      populations.push( handleProductPopulation(product) )
     
+    Promise.all(populations)
+    .then(results => {
+      return next()
+    })
+    .catch(e => next(e))
 
-    return next()
   },
   preUpdate(next) {
     return next()
@@ -115,7 +121,6 @@ function handleProductPopulation(orderProduct) {
   
       resolve(orderProduct)
     })
-    .catch(e => { throw e })
-
+    .catch(reject)
   })
 }
