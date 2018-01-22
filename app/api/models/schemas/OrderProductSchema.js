@@ -7,8 +7,11 @@ module.exports = new Schema({
     rel: 'Product',
     required: true
   },
+  quantity: {
+    type: Number,
+    required: true
+  }, 
   name: String,
-  quantity: Number,
   price: Number,
   customs: [{
     key: String,
