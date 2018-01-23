@@ -31,11 +31,13 @@ async function create(newClient) {
     return addedClient
   } catch (e) {
     e.customOrigin = 'Client'
-    if (e.name === 'ValidationError')
+    
+    if (e.name === 'ValidationError') {
       e.customMessage = 'Validation Error'
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
+    } else if (e.code === 11000) {
+      e.name = 'DuplicationError'
+      e.customMessage = 'Duplicated Email'
+    } else
       e.customMessage = 'Unexpected Error'
 
     throw e
