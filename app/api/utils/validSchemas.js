@@ -121,6 +121,7 @@ function getValidProduct() {
   return {
     name: 'Some product',
     stock: '20',
+    price: 599.99,
     description: 'Some product description',
     images: [ getValidImage() ],
     customs: [{

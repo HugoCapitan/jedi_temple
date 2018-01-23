@@ -16,16 +16,17 @@ describe('Normal Product Model', () => {
     expect(v).toBeFalsy()
   })
 
-  test('Should be invalid if empty: name, stock', () => {
-    const wrongProduct = Object.assign({}, validProduct, {name: undefined, stock: undefined})
+  test('Should be invalid if empty: name, price, stock', () => {
+    const wrongProduct = Object.assign({}, validProduct, {name: undefined, stock: undefined, price: undefined})
 
     const m = new Product(wrongProduct)
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(2)
+    expect(howManyKeys(v.errors)).toBe(3)
 
     expect(v.errors.name).toBeTruthy()
     expect(v.errors.stock).toBeTruthy()
+    expect(v.errors.price).toBeTruthy()
   })
 
 
@@ -46,14 +47,6 @@ describe('Normal Product Model', () => {
     expect(v.errors['images.0.y']).toBeTruthy()
   })
 
-  test('Should be invalid if required customs missing: price', done => {
-    jest.mock('../../utils/validators')
+  describe('')
 
-    function callback(err) {
-      if (!err) done()
-    }
-
-    const m = new Product( validProduct )
-    const v = m.validate(callback)
-  })
 })
