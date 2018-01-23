@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 const uCommons = require('../utils')
-// const { hasRequiredCustoms } = require('../utils/validators')
+
+const Client = require('./Client')
+const Store = require('./Store')
 
 const CustomSchema = require('./schemas/CustomSchema')
 const ImageSchema = require('./schemas/ImageSchema')
@@ -66,7 +68,32 @@ ProductSchema._middlewareFuncs = {
     return next()
   },
   preRemove(next) {
-    return next()
+    const self = this
+    const findPromises = [
+      Client.find({ wishlist: self._conditions._id }).exec(),
+      Store.find({ products: self._conditions._id }).exec()
+    ]
+
+    Promise.all(findPromises)
+    .then(objectsToModify => {
+      const clientsToModify = objectsToModify[0]
+      const storesToModify  = objectsToModify[1]
+      const saves = []
+
+      for (const client of clientsToModify) {
+        client.wishlist.pull(self._conditions._id)
+        saves.push(client.save())
+      }
+
+      for (const store of storesToModify) {
+        store.products.pull(self._conditions._id)
+        saves.push(store.save())
+      }
+
+      return Promise.all(saves)
+    })
+    .then(savedStuff => next())
+    .catch(err => next(err))
   }
 }
 
