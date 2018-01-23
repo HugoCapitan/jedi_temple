@@ -30,8 +30,8 @@ async function create(newClient) {
     const addedClient = await new Client(newClient).save()
     return addedClient
   } catch (e) {
-    e.customOrigin = 'Client'
-    
+    if (!e.customOrigin) e.customOrigin = 'Client'
+
     if (e.name === 'ValidationError') {
       e.customMessage = 'Validation Error'
     } else if (e.code === 11000) {
