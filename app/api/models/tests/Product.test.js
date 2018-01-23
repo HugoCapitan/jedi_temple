@@ -253,9 +253,43 @@ describe('Normal Product Model', () => {
       boundMiddleware(next)
     })
 
-    test('Should call Client.find with prod id in wishlist')
+    test('Should call Client.find with prod id in wishlist', done => {
+      const _conditions = { _id: remove_id }
+      const boundMiddleware = bindMiddleware({_conditions})
+      const expectedQuery = { wishlist: remove_id }
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(Client.find.mock.calls.length).toBe(1)
+        expect(Client.find.mock.calls[0][0]).toEqual(expectedQuery)
+        done()
+      }
 
-    test('Should update and save found wishlists')
+      boundMiddleware(next)
+    })
+
+    test('Should update and save found wishlists', done => {
+      const _conditions = { _id: remove_id }
+      const boundMiddleware = bindMiddleware({_conditions})
+      const foundClients = getFoundClients()
+      Client.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(foundClients) })
+      }))
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(foundClients[0].wishlist.length).toBe(1)
+        expect(foundClients[0].wishlist.pull.mock.calls.length).toBe(1)
+        expect(foundClients[0].wishlist.pull.mock.calls[0][0]).toEqual(remove_id)
+        expect(foundClients[0].save.mock.calls.length).toBe(1)
+        
+        expect(foundClients[1].wishlist.length).toBe(0)
+        expect(foundClients[1].wishlist.pull.mock.calls.length).toBe(1)
+        expect(foundClients[1].wishlist.pull.mock.calls[0][0]).toEqual(remove_id)
+        expect(foundClients[1].save.mock.calls.length).toBe(1)
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
     test('Should send Store.find error')
 
@@ -278,6 +312,21 @@ describe('Normal Product Model', () => {
       foundStores[1].products.pull = jest.fn(() => foundStores[1].products.pop())
       
       return foundStores
+    }
+
+    function getFoundClients() {
+      const foundClients = [{
+        wishlist: [new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'), remove_id],
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      },{
+        wishlist: [remove_id],
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))        
+      }]
+
+      foundClients[0].wishlist.pull = jest.fn(() => foundClients[0].wishlist.pop())
+      foundClients[1].wishlist.pull = jest.fn(() => foundClients[1].wishlist.pop())
+      
+      return foundClients
     }
 
   })
