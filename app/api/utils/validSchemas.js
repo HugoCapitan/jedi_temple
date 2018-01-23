@@ -1,6 +1,6 @@
 const moment = require('moment')
 const mongoose = require('mongoose')
-const Types = mongoose.Types
+const ObjectId = mongoose.Types.ObjectId
 
 const Client      = require('../models/Client')
 const CustomField = require('../models/CustomField')
@@ -48,8 +48,8 @@ function getValidClient() {
     email: 'some@email.com',
     password: 'arealhardpassword',
     addresses: [getValidAddress()],
-    orders: [order._id],
-    wishlist: [product._id]
+    orders: [new ObjectId('fafafafafafafafafafafafa')],
+    wishlist: [new ObjectId('afafafafafafafafafafafaf')]
   }
 }
 
@@ -95,11 +95,11 @@ function getValidOrder() {
     email: 'some@mail.com',
     status: 'Awaiting Payment',
     products: [{ 
-      code: new Types.ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
+      code: new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
       quantity: 2,
       is_populated: false
     },{
-      code: new Types.ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'),
+      code: new ObjectId('a0a0a0a0a0a0a0a0a0a0a0a0'),
       quantity: 1,
       is_populated: false
     }],
