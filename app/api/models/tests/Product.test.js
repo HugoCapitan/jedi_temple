@@ -1,13 +1,16 @@
+const moment = require('moment')
+
 const Product     = require('../Product')
 const CustomField = require('../CustomField')
 
-const { howManyKeys } = require('../../utils')
-const { getValidProduct, getValidNumberCustom } = require('../../utils/validSchemas')
+const uCommon  = require('../../utils')
+const uSchemas = require('../../utils/validSchemas')
+const uValid   = require('../../utils/validators')
 
 describe('Normal Product Model', () => {
   let validProduct
 
-  beforeEach(() => { validProduct = getValidProduct() })
+  beforeEach(() => { validProduct = uSchemas.getValidProduct() })
 
   test('Should be fine', () => {
     const m = new Product(validProduct)
@@ -22,7 +25,7 @@ describe('Normal Product Model', () => {
     const m = new Product(wrongProduct)
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(3)
+    expect(uCommon.howManyKeys(v.errors)).toBe(3)
 
     expect(v.errors.name).toBeTruthy()
     expect(v.errors.stock).toBeTruthy()
@@ -41,7 +44,7 @@ describe('Normal Product Model', () => {
     const m = new Product(malformedProduct)
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(3)
+    expect(uCommon.howManyKeys(v.errors)).toBe(3)
     expect(v.errors['images.0.url']).toBeTruthy()
     expect(v.errors['images.0.x']).toBeTruthy()
     expect(v.errors['images.0.y']).toBeTruthy()
@@ -49,17 +52,77 @@ describe('Normal Product Model', () => {
 
   describe('preSave Middleware', () => {
 
-    test('Should be fine')
+    const bindMiddleware = context => { 
+      if (!context.isModified) context.isModified = prop => false
+      return Product.schema._middlewareFuncs.preSave.bind(context)
+    }
 
-    test('Should slugify name')
+    test('Should be fine', done => {
+      const context = validProduct
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
 
-    test('Should add creation and update dates')
+      boundMiddleware(next)
+    })
 
-    test('Shold update updated_at date')
+    test('Should slugify name', done => {
+      const context = Object.assign(validProduct, { name: 'The Name' })
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(context.slug).toBe('the_name')
+        done()
+      }
 
-    test('Should ')
+      boundMiddleware(next)
+    })
 
-    test('Should send error: Slug is not manually updatable')
+    test('Should add creation and update dates', done => {
+      const context = validProduct
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( context.hasOwnProperty('created_at') ).toBe(true)
+        expect( context.hasOwnProperty('updated_at') ).toBe(true)
+        expect( uValid.isThisMinute(context.created_at) ).toBe(true)
+        expect( uValid.isThisMinute(context.updated_at) ).toBe(true)
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Shold update updated_at date', done => {
+      const lastWeek = moment().subtract(1, 'weeks')
+      const context = Object.assign(validProduct, {created_at: lastWeek.toDate(), updated_at: lastWeek.toDate()})
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( lastWeek.isSame(moment(context.created_at)) )
+        expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should send alert if empty stock')
+
+    test('Should send error: Slug is not manually updatable', done => {
+      const context = Object.assign(validProduct, { slug: 'yoyo' })
+      context.isModified = prop => prop === 'slug'
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err.message).toBe('Slug is read-only')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
   })
 

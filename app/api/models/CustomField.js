@@ -154,7 +154,7 @@ module.exports = CustomField
 
 function preSaveValidations(self) {
   return new Promise((resolve, reject) => {
-    if (!self.isNew && self.isModified('slug')) {
+    if (self.isModified('slug')) {
       let err = new Error('Slug is not updatable')
       err.name = 'ValidationError'
       reject(err)

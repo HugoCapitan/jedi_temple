@@ -32,6 +32,31 @@ const ProductSchema = new Schema({
   updated_at: Date
 })
 
+ProductSchema._middlewareFuncs = {
+  preSave(next) {
+    const self = this
+
+    if (this.isModified('slug')) {
+      const err = new Error('Slug is read-only')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+
+    self.slug = uCommons.slugify(self.name)
+    const currentDate = new Date()
+    self.updated_at = currentDate
+    if (!self.created_at) self.created_at = currentDate
+
+    return next()
+  },
+  preUpdate(next) {
+    return next()
+  },
+  preRemove(next) {
+    return next()
+  }
+}
+
 ProductSchema.pre('save', function(next) {
   var currentDate = new Date()
 
