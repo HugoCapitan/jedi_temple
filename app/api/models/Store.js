@@ -52,24 +52,6 @@ const StoreSchema = new Schema({
   calendar: CalendarConfigSchema
 })
 
-StoreSchema._middlewareFuncs = {
-  preSave(next) {
-    return next()
-  },
-  preUpdate(next) {
-    return next()
-  },
-  preRemove(next) {
-    return next()
-  }
-}
-
-StoreSchema.pre('save', StoreSchema._middlewareFuncs.preSave)
-StoreSchema.pre('update', StoreSchema._middlewareFuncs.preUpdate)
-StoreSchema.pre('findOneAndUpdate', StoreSchema._middlewareFuncs.preUpdate)
-StoreSchema.pre('remove', StoreSchema._middlewareFuncs.preRemove)
-StoreSchema.pre('findOneAndRemove', StoreSchema._middlewareFuncs.preRemove)
-
 const Store = mongoose.model('Store', StoreSchema)
 
 module.exports = Store
