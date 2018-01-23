@@ -109,8 +109,6 @@ describe('Normal Product Model', () => {
       boundMiddleware(next)
     })
 
-    test('Should send alert if empty stock')
-
     test('Should send error: Slug is not manually updatable', done => {
       const context = Object.assign(validProduct, { slug: 'yoyo' })
       context.isModified = prop => prop === 'slug'
@@ -124,19 +122,64 @@ describe('Normal Product Model', () => {
       boundMiddleware(next)
     })
 
+    test('Should send alert if empty stock')    
+
   })
 
   describe('preUpdate Middleware', () => {
+
+    const bindMiddleware = context => 
+      Product.schema._middlewareFuncs.preUpdate.bind(context)
     
-    test('Should be fine')
+    test('Should be fine', done => {
+      const _update = { name: 'A new name' }
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
+
+      boundMiddleware(next)
+    })
     
-    test('Should slugify name')
+    test('Should slugify name', done => {
+      const _update = { name: 'A New Name' }
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(_update.slug).toBe('a_new_name')
+        done()
+      }
 
-    test('Should update updated_at date')
+      boundMiddleware(next)
+    })
 
-    test('Should send alert if empty stock')
+    test('Should update updated_at date', done => {
+      const _update = { name: 'A New Name' }
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect(_update.updated_at).toBeTruthy()
+        expect( uValid.isThisMinute(_update.updated_at) ).toBe(true)
+        done()
+      }
 
-    test('Should send error: Slug is not manually updatable')
+      boundMiddleware(next)
+    })
+
+    test('Should send error: Slug is not manually updatable', done => {
+      const _update = { slug: 'a_slug' }
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err.message).toBe('Slug is read-only')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should send alert if empty stock')    
   
   })
 
