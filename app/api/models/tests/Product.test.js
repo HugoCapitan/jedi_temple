@@ -312,6 +312,9 @@ describe('Normal Product Model', () => {
       foundStores[1].save = jest.fn(() => new Promise((resolve, reject) => { 
         reject(new Error('Save test Error 674')) 
       }))
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(foundStores) })
+      }))
       const next = err => {
         expect(err.message).toBe('Save test Error 674')
         done()
@@ -340,6 +343,9 @@ describe('Normal Product Model', () => {
       const foundClients = getFoundClients()
       foundClients[1].save = jest.fn(() => new Promise((resolve, reject) => { 
         reject(new Error('Save test Error 674')) 
+      }))
+      Client.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(foundClients) })
       }))
       const next = err => {
         expect(err.message).toBe('Save test Error 674')
