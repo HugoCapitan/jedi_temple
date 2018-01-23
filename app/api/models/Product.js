@@ -50,6 +50,19 @@ ProductSchema._middlewareFuncs = {
     return next()
   },
   preUpdate(next) {
+    const self = this
+
+    if (self._update.slug) {
+      const err = new Error('Slug is read-only')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+
+    if (self._update.name) 
+      self._update.slug = uCommons.slugify(self._update.name)
+
+    self._update.updated_at = new Date()
+
     return next()
   },
   preRemove(next) {
@@ -57,18 +70,11 @@ ProductSchema._middlewareFuncs = {
   }
 }
 
-ProductSchema.pre('save', function(next) {
-  var currentDate = new Date()
-
-  this.updated_at = currentDate
-
-  if (!this.created_at) 
-    this.created_at = currentDate
-
-  this.slug = uCommons.slugify(this.name)
-
-  next()
-})
+ProductSchema.pre('save', ProductSchema._middlewareFuncs.preSave)
+ProductSchema.pre('update', ProductSchema._middlewareFuncs.preUpdate)
+ProductSchema.pre('findOneAndUpdate', ProductSchema._middlewareFuncs.preUpdate)
+ProductSchema.pre('remove', ProductSchema._middlewareFuncs.preRemove)
+ProductSchema.pre('findOneAndRemove', ProductSchema._middlewareFuncs.preRemove)
 
 const Product = mongoose.model('Product', ProductSchema)
 
