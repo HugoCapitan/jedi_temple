@@ -291,13 +291,63 @@ describe('Normal Product Model', () => {
       boundMiddleware(next)
     })
 
-    test('Should send Store.find error')
+    test('Should send Store.find error', done => {
+      const _conditions = {_id: remove_id}
+      const boundMiddleware = bindMiddleware({_conditions})
+      Store.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { reject(new Error('Test Store Error 123')) })
+      }))
+      const next = err => {
+        expect(err.message).toBe('Test Store Error 123')
+        done()
+      }
 
-    test('Should send Store.update error')
+      boundMiddleware(next)
+    })
 
-    test('Should send Client.find error')
+    test('Should send Store.update error', done => {
+      const _conditions = {_id: remove_id}
+      const boundMiddleware = bindMiddleware({_conditions})
+      const foundStores = getFoundStores()
+      foundStores[1].save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Save test Error 674')) 
+      }))
+      const next = err => {
+        expect(err.message).toBe('Save test Error 674')
+        done()
+      }
 
-    test('Should send Client.update error')
+      boundMiddleware(next)
+    })
+
+    test('Should send Client.find error', done => {
+      const _conditions = {_id: remove_id}
+      const boundMiddleware = bindMiddleware({_conditions})
+      Client.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { reject(new Error('Test Client Error 123')) })
+      }))
+      const next = err => {
+        expect(err.message).toBe('Test Client Error 123')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should send Client.update error', done => {
+      const _conditions = {_id: remove_id}
+      const boundMiddleware = bindMiddleware({_conditions})
+      const foundClients = getFoundClients()
+      foundClients[1].save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Save test Error 674')) 
+      }))
+      const next = err => {
+        expect(err.message).toBe('Save test Error 674')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
     function getFoundStores() {
       const foundStores = [{
