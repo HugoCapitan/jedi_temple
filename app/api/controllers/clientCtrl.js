@@ -7,10 +7,22 @@ module.exports = {
   remove, 
   update,
   apiAll, 
-  apiCreate, 
+  apiCreate,
   apiRead, 
   apiRemove, 
-  apiUpdate
+  apiUpdate,
+
+  apiCreateAddress,
+  apiAddOrder,
+  apiAddReservation,
+  apiAddWish,
+
+  apiRemoveAddress,
+  apiRemoveOrder,
+  apiRemoveReservation,
+  apiRemoveWish,
+
+  apiUpdateAddress
 }
 
 async function create(newClient) {
@@ -67,7 +79,7 @@ async function update(id, newClient) {
 
 async function apiAll(req, res) {
   try {
-    let all = await Client.find()
+    let all = await Client.find().exec()
     res.status(200).json(all)
   } catch (e) {
     sendError(500, 'Unexpected Error', e, res)
@@ -90,7 +102,7 @@ async function apiCreate(req, res) {
 
 async function apiRead(req, res) {
   try {
-    const foundClient = await Client.findById(req.params.id)
+    const foundClient = await Client.findById(req.params.id).exec()
     if (!foundClient) {
       let notFoundError = new Error(`Client ${req.params.id} not found`)
       notFoundError.name = 'NotFoundError'
@@ -108,7 +120,7 @@ async function apiRead(req, res) {
 
 async function apiRemove(req, res) {
   try {
-    const removedClient = await Client.findByIdAndRemove(req.params.id)
+    const removedClient = await Client.findByIdAndRemove(req.params.id).exec()
 
     if (!removedClient) {
       let notFoundError = new Error(`Client ${req.params.id} not found`)
@@ -127,7 +139,7 @@ async function apiRemove(req, res) {
 
 async function apiUpdate(req, res) {
   try {
-    await Client.findByIdAndUpdate(req.params.id, req.body)
+    await Client.findByIdAndUpdate(req.params.id, req.body).exec()
     const updatedClient = await Client.findById(req.params.id)
 
     res.status(200).json(updatedClient)
@@ -142,4 +154,44 @@ async function apiUpdate(req, res) {
       sendError(500, 'Unexpected Error', e, res)
 
   }
+}
+
+async function apiCreateAddress(req, res) {
+  
+}
+
+async function apiRemoveAddress(req, res) {
+  
+}
+
+async function apiUpdateAddress(req, res) {
+  
+}
+
+
+
+async function apiAddOrder(req, res) {
+
+}
+
+async function apiAddReservation(req, res) {
+
+}
+
+async function apiAddWish(req, res) {
+  
+}
+
+
+
+async function apiRemoveOrder(req, res) {
+  
+}
+
+async function apiRemoveReservation(req, res) {
+  
+}
+
+async function apiRemoveWish(req, res) {
+  
 }
