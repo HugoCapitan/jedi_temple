@@ -23,11 +23,10 @@ const ProductSchema = new Schema({
     type: Number,
     required: true
   },
-  images: [ImageSchema],
   description: String,
+  images: [ImageSchema],
   customs: {
     type: [CustomSchema],
-    // validate: hasRequiredCustoms
   },
   created_at: Date,
   updated_at: Date

@@ -47,6 +47,57 @@ describe('Normal Product Model', () => {
     expect(v.errors['images.0.y']).toBeTruthy()
   })
 
-  describe('')
+  describe('preSave Middleware', () => {
+
+    test('Should be fine')
+
+    test('Should slugify name')
+
+    test('Should add creation and update dates')
+
+    test('Shold update updated_at date')
+
+    test('Should ')
+
+    test('Should send error: Slug is not manually updatable')
+
+  })
+
+  describe('preUpdate Middleware', () => {
+    
+    test('Should be fine')
+    
+    test('Should slugify name')
+
+    test('Should update updated_at date')
+
+    test('Should send alert if empty stock')
+
+    test('Should send error: Slug is not manually updatable')
+  
+  })
+
+
+  describe('preRemove Middleware', () => {
+
+    test('Should be fine')
+
+    test('Should call Store.find with prod id')
+
+    test('Should update and save found stores')
+
+    test('Should call Client.find with prod id in wishlist')
+
+    test('Should update and save found wishlists')
+
+    test('Should send Store.find error')
+
+    test('Should send Store.update error')
+
+    test('Should send Client.find error')
+
+    test('Should send Client.update error')
+
+  })
 
 })
