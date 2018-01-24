@@ -154,13 +154,13 @@ describe('API', () => {
   
     test('Should send "Client with: <recieved_id>, not found"', async () => {
       Client.findById = jest.fn(() => ({
-        exec: new Promise((resolve, reject) => { resolve(null) })
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
       }))
   
       await clientCtrl.apiRead(req, res)
   
       expect(res.statusCode).toBe(404)
-      expect(res.data).toBe(`Client ${expectedId} not found`)
+      expect(res.data).toBe(`Client with id: ${idToSend}, not found`)
     })
   
     test('Should send "Unexpected Error"', async () => {
