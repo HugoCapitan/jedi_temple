@@ -69,8 +69,10 @@ async function update(id, newClient) {
       e.customMessage = 'Validation Error'
     else if (e.name === "CastError")
       e.customMessage = `Client with id: ${id}, not found`
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
+    else if (e.code === 11000) {
+      e.customMessage = 'Duplicated Email'
+      e.name = 'DuplicationError'
+    }
     else
       e.customMessage = 'Unexpected Error'
     
