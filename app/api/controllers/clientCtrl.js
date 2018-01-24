@@ -131,10 +131,10 @@ async function apiRemove(req, res) {
       throw notFoundError
     }
 
-    res.status(200).send(`Client ${removedClient._id} deleted`)
+    res.status(200).json(removedClient)
   } catch (e) {
     if (e.name === 'CastError' || e.name === 'NotFoundError')
-      sendError(404, `Client ${req.params.id} not found`, e, res)
+      sendError(404, `Client with id: ${req.params.id}, not found`, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
