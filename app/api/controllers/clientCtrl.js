@@ -97,7 +97,7 @@ async function apiCreate(req, res) {
     if (e.name === 'ValidationError')
       sendError(403, 'Validation Error', e, res)
     else if (e.code === 11000)
-      sendError(409, 'Duplicated Name', e, res)
+      sendError(409, 'Duplicated Email', e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
