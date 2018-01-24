@@ -154,17 +154,110 @@ describe('clientCtrl -> remove', () => {
 })
 
 describe('clientCtrl -> update', () => {
+  let idToSend, update, updateReturn, updated
 
-  test('Should call Client.findByIdAndUpdate')
+  beforeEach(() => {
+    idToSend = new ObjectId('aaffaaffaaffaaffaaffaaff')
+    update = { name: 'John Doe' }
+    updateReturn = uSchemas.getValidClient()
+    updated = Object.assign({}, updateReturn, {
+      name: 'John Doe'
+    })
+    Client.findByIdAndUpdate = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        resolve(updateReturn)
+      })
+    }))
+  })
 
-  test('Should call Client.findById and return the found document')
+  test('Should call Client.findByIdAndUpdate', async () => {
+    await clientCtrl.update(idToSend, update)
 
-  test('Should throw a ValidationError')
+    expect(Client.findByIdAndUpdate.mock.calls.length).toBe(1)
+    expect(Client.findByIdAndUpdate.mock.calls[0][0]).toBe(idToSend)
+    expect(Client.findByIdAndUpdate.mock.calls[0][1]).toBe(update)
+  })
 
-  test('Should throw a DuplicatedError')
+  test('Should form the updated object return it', async () => {
+    const returnedClient = await clientCtrl.update(idToSend, update)
+    expect(returnedClient).toEqual(updated)
+  })
+
+  test('Should throw a ValidationError', done => {
+    Client.findByIdAndUpdate = (() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'ValidationError'
+        reject(err)
+      })
+    }))
+
+    clientCtrl.update(idToSend, update).then(() => {expect(1).toBe(0)}) // <- Failing test
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('ValidationError')
+      expect(err.customMessage).toBe('Validation Error')
+      done()
+    })
+  })
+
+  test('Should throw a DuplicatedError', done => {
+    Client.findByIdAndUpdate = (() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.code = 11000
+        err.name = 'SomeWeirdName'
+        reject(err)
+      })
+    }))
+
+    clientCtrl.update(idToSend, update).then(() => {expect(1).toBe(0)}) // <- Failing test
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.code).toBe(11000)
+      expect(err.name).toBe('DuplicationError')
+      expect(err.customMessage).toBe('Duplicated Email')
+      expect(err.customOrigin).toBe('Client')
+      done()
+    })
+  })
   
-  test('Should throw a NotFoundError')
+  test('Should throw a NotFoundError', done => {
+    Client.findByIdAndUpdate = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'CastError'
+        reject(err)
+      })
+    }))
 
-  test('Should throw a UnexpectedError')
+    clientCtrl.update(idToSend, update).then(() => {expect(1).toBe(0)})
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.customMessage).toBe(`Client with id: ${idToSend}, not found`)
+      expect(err.customOrigin).toBe('Client')
+      done()
+    })
+  })
+
+  test('Should throw a UnexpectedError with different custom origin', done => {
+    Client.findByIdAndUpdate = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'FakedErrorName'
+        err.customOrigin = 'CustomOrigin1123'
+        reject(err)
+      })
+    }))
+
+    clientCtrl.update(idToSend, update).then(() => { expect(1).toBe(0) }) // <- Failing test
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('FakedErrorName')
+      expect(err.customMessage).toBe('Unexpected Error')
+      expect(err.customOrigin).toBe('CustomOrigin1123')
+      done()
+    })
+  })
 
 }) 
