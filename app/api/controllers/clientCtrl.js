@@ -65,7 +65,7 @@ async function update(id, newClient) {
     const updatedClient = await Client.findById(id).exec()
     return updatedClient
   } catch (e) {
-    e.customOrigin = 'Client'
+    if (!e.customOrigin) e.customOrigin = 'Client'
     if (e.name === 'ValidationError')
       e.customMessage = 'Validation Error'
     else if (e.name === "CastError")
