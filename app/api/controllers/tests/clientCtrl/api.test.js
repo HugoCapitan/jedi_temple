@@ -95,7 +95,7 @@ describe('API', () => {
       expect(res.data).toBe("Validation Error")
     })
 
-    test('Should send a DuplocationError', async () => {
+    test('Should send a DuplicationError', async () => {
       Client.prototype.save = jest.fn(prod => new Promise((resolve, reject) => {
         const dupError = new Error('Faked Error')
         dupError.code = 11000
@@ -127,6 +127,9 @@ describe('API', () => {
     beforeEach(() => {
       idToSend = new ObjectId('aaafffaaafffaaafffaaafff')
       clientToReturn = uSchemas.getValidClient()
+      req.params = {
+        id: idToSend
+      }
 
       Client.findById = jest.fn(() => ({
         exec: () => new Promise((resolve, reject) => {
@@ -135,7 +138,39 @@ describe('API', () => {
       }))
     })
 
-    test('')
+    test('Should call Client.findById with the id in req.params.id', async () => {
+      await clientCtrl.apiRead(req, res)
+  
+      expect(Client.findById.mock.calls.length).toBe(1)
+      expect(Client.findById.mock.calls[0][0]).toBe(req.params.id)
+    })
+  
+    test('Should send the retrieved client formatted', async () => {
+      await clientCtrl.apiRead(req, res)
+  
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(clientToReturn)
+    })
+  
+    test('Should send "Client with: <recieved_id>, not found"', async () => {
+      Client.findById = jest.fn(() => ({
+        exec: new Promise((resolve, reject) => { resolve(null) })
+      }))
+  
+      await clientCtrl.apiRead(req, res)
+  
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Client ${expectedId} not found`)
+    })
+  
+    test('Should send "Unexpected Error"', async () => {
+      Client.findById = jest.fn(id => {throw new Error('Faked Error')})
+  
+      await clientCtrl.apiRead(req, res)
+  
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
 
   })
   
