@@ -51,19 +51,68 @@ describe('clientCtrl -> apiAddress', () => {
       req.body = addressToSend
     })
 
-    test('Should call Client.findById with the sent id')
+    test('Should call Client.findById with the sent id', async () => {
+      await clientCtrl.apiCreateAddress(req, res)
 
-    test('Should push sent address to found client\'s addresses array')
+      expect(Client.findById.mock.calls.length).toBe(1)
+      expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
+    })
 
-    test('Should call foundClient.save')
+    test('Should push sent address to found client\'s addresses array', async () => {
+      await clientCtrl.apiCreateAddress(req, res)
 
-    test('Should return the saved Client')
+      expect(foundClient.addresses.length).toBe(2)
+      expect(foundClient.addresses).toEqual(updatedClient.addresses)
+    })
+
+    test('Should call foundClient.save', async () => {
+      await clientCtrl.apiCreateAddress(req, res)
+
+      expect(foundClient.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the saved Client', async () => {
+      await clientCtrl.apiCreateAddress(req, res)
+      
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundClient)
+      expect(res.data).toEqual(updatedClient)
+    })
     
-    test('Should send a NotFoundError')
+    test('Should send a NotFoundError', async () => {
+      Client.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
 
-    test('Should send a ValidationError')
+      await clientCtrl.apiCreateAddress(req, res)
 
-    test('Should send a UnexpectedError')
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Client with id: ${idToSend}, not found`)
+    })
+
+    test('Should send a ValidationError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'ValidationError'
+        reject(err)
+      }))
+
+      await clientCtrl.apiCreateAddress(req, res)
+
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe('Validation Error')
+    }) 
+
+    test('Should send a UnexpectedError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Faked Error')) 
+      }))
+
+      await clientCtrl.apiCreateAddress(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
 
   })
 
