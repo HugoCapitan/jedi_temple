@@ -14,18 +14,41 @@ describe('API', () => {
   beforeEach(() => {setupTests()})
 
   describe('apiAll', () => {
+    let clients
 
     beforeEach(() => {
+      clients = [ uSchemas.getValidClient(), uSchemas.getValidClient() ]
       Client.find = jest.fn(() => ({
-        resolve
+        exec: () => new Promise((resolve, reject) => {
+          resolve(clients)
+        })
       }))
     })
     
-    test('Should call Client.find')
+    test('Should call Client.find', async () => {
+      await clientCtrl.apiAll(req, res)
+      expect(Client.find.mock.calls.length).toBe(1)
+    })
   
-    test('Should send the returned clients')
+    test('Should send the returned clients', async () => {
+      await clientCtrl.apiAll(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(clients)
+    })
   
-    test('Should throw a UnexpectedError')
+    test('Should throw a UnexpectedError', async () => {
+      Client.find = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          const err = 'Faked Error'
+          reject(err)
+        })
+      }))
+      await clientCtrl.apiAll(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
   
   })
   
