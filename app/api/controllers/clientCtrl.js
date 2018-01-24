@@ -46,12 +46,12 @@ async function create(newClient) {
 
 async function remove(id) {
   try {
-    const deletedClient = await Client.findByIdAndRemove(id)
+    const deletedClient = await Client.findByIdAndRemove(id).exec()
     return deletedClient
   } catch (e) {
-    e.customOrigin = 'Client'
+    if (!e.customOrigin) e.customOrigin = 'Client'
     if (e.name === 'CastError')
-      e.customMessage = `Client ${id} not found`
+      e.customMessage = `Client with id: ${id}, not found`
     else
       e.customMessage = 'Unexpected Error'
 
@@ -69,7 +69,7 @@ async function update(id, newClient) {
     if (e.name === 'ValidationError')
       e.customMessage = 'Validation Error'
     else if (e.name === "CastError")
-      e.customMessage = `Client ${id} not found`
+      e.customMessage = `Client with id: ${id}, not found`
     else if (e.code === 11000)
       e.customMessage = 'Duplicated Name'
     else
