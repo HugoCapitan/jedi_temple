@@ -235,7 +235,98 @@ describe('API', () => {
 
   })
   
-  describe('apiUpdate', () => {})
+  describe('apiUpdate', () => {
+    let idToSend, update, updateReturn
+
+    beforeEach(() => {
+      idToSend     = new ObjectId('fffaaafffaaafffaaafffaaa')
+      update = JSON.stringify({ name: 'John Doe' })
+      updateReturn = Object.assign(uSchemas.getValidClient(), update)
+      req.params = {
+        id: idToSend
+      }
+      req.body = update
+
+      Client.findByIdAndUpdate = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(updateReturn)
+        })
+      }))
+    })
+
+    test('Should call Client.findByIdAndUpdate with sent id and options new: true', async () => {
+      await clientCtrl.apiUpdate(req, res)
+
+      expect(Client.findByIdAndUpdate.mock.calls.length).toBe(1)
+      expect(Client.findByIdAndUpdate.mock.calls[0][0]).toBe(idToSend)
+      expect(Client.findByIdAndUpdate.mock.calls[0][1]).toBe(update)
+      expect(Client.findByIdAndUpdate.mock.calls[0][2]).toEqual({new: true})
+    })
+
+    test('Should send the updated client', async () => {
+      await clientCtrl.apiUpdate(req, res)
+  
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toEqual(updateReturn)
+    })
+
+    test('Should send 404 "CustomField <sent_id> not found"', async () => {
+      Client.findByIdAndUpdate = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          const notFoundErr = new Error('Faked Error')
+          notFoundErr.name = "CastError"
+          reject(notFoundErr)
+        })
+      }))
+  
+      await clientCtrl.apiUpdate(req, res)
+  
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Client with id: ${idToSend}, not found`)
+    })
+  
+    test('Should send 403 "Validation Error"', async () => {
+      Client.findByIdAndUpdate = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          const valErr = new Error('Faked Error')
+          valErr.name = "ValidationError"
+          reject(valErr)
+        })
+      }))
+  
+      await clientCtrl.apiUpdate(req, res)
+  
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe('Validation Error')
+    })
+  
+    test('Should send 409 "Duplicated Name"', async () => {
+      Client.findByIdAndUpdate = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          const dupErr = new Error('Faked Error')
+          dupErr.code = 11000
+          reject(dupErr)
+        })
+      }))
+  
+      await clientCtrl.apiUpdate(req, res)
+  
+      expect(res.statusCode).toBe(409)
+      expect(res.data).toBe("Duplicated Name")
+    })
+  
+    test('Should send 500 "Unexpected Error"', async () => {
+      Client.findByIdAndUpdate = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {reject(new Error('Faked Error'))})
+      }))
+  
+      await clientCtrl.apiUpdate(req, res)
+  
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe("Unexpected Error")
+    })
+
+  })
 
   function setupTests() {
     req = {}
