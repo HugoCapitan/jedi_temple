@@ -59,7 +59,7 @@ describe('API', () => {
       clientToSend = uSchemas.getValidClient()
       savedClient  = uSchemas.getValidClient()
       req.body = clientToSend
-      Client.prototype.save = jest.fn(() => new Promise((resove, reject) => {
+      Client.prototype.save = jest.fn(() => new Promise((resolve, reject) => {
         resolve(savedClient)
       }))
     })
@@ -84,11 +84,11 @@ describe('API', () => {
     })
 
     test('Should send a ValidationError', async () => {
-      Client.prototype.save = jest.fn(prod => {
-        let valError = new Error('Faked Error')
+      Client.prototype.save = jest.fn(prod => new Promise((resolve, reject) => {
+        const valError = new Error('Faked Error')
         valError.name = "ValidationError"
-        throw valError
-      })
+        reject(valError)
+      }))
   
       await clientCtrl.apiCreate(req, res)
   
@@ -97,11 +97,11 @@ describe('API', () => {
     })
 
     test('Should send a DuplocationError', async () => {
-      Client.prototype.save = jest.fn(prod => {
-        let dupError = new Error('Faked Error')
+      Client.prototype.save = jest.fn(prod => new Promise((resolve, reject) => {
+        const dupError = new Error('Faked Error')
         dupError.code = 11000
-        throw dupError
-      })
+        reject(dupError)
+      }))
   
       await clientCtrl.apiCreate(req, res)
   
@@ -110,7 +110,9 @@ describe('API', () => {
     })
 
     test('Should send a UnexpectedError', async () => {
-      Client.prototype.save = jest.fn(prod => {throw new Error('Faked Error')})
+      Client.prototype.save = jest.fn(prod => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
   
       await clientCtrl.apiCreate(req, res)
   
