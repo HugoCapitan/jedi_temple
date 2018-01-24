@@ -61,9 +61,8 @@ async function remove(id) {
 
 async function update(id, newClient) {
   try {
-    await Client.findByIdAndUpdate(id, newClient).exec()
-    const updatedClient = await Client.findById(id).exec()
-    return updatedClient
+    const updatedClient = await Client.findByIdAndUpdate(id, newClient).exec()
+    return Object.assign(updatedClient, newClient)
   } catch (e) {
     if (!e.customOrigin) e.customOrigin = 'Client'
     if (e.name === 'ValidationError')
