@@ -9,7 +9,7 @@ module.exports = { sendError }
  * @returns {void}
 */
 function sendError(status, msg, err, res) {
-  if (err.message != 'Faked Error')
+  if (err.message != 'Faked Error' && err.name != 'NotFoundError')
     console.log(err);
 
   res.status(status).send(msg);
