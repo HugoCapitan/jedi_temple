@@ -115,7 +115,7 @@ async function apiRead(req, res) {
     res.status(200).json(foundClient)
   } catch(e) {
     if (e.name === 'NotFoundError')
-      sendError(404, `Client ${req.params.id} not found`, e, res)
+      sendError(404, `Client with id: ${req.params.id}, not found`, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
