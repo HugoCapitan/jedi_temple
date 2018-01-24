@@ -107,7 +107,7 @@ async function apiRead(req, res) {
   try {
     const foundClient = await Client.findById(req.params.id).exec()
     if (!foundClient) {
-      let notFoundError = new Error(`Client ${req.params.id} not found`)
+      let notFoundError = new Error(`Client with id: ${req.params.id}, not found`)
       notFoundError.name = 'NotFoundError'
       throw notFoundError
     }
@@ -126,7 +126,7 @@ async function apiRemove(req, res) {
     const removedClient = await Client.findByIdAndRemove(req.params.id).exec()
 
     if (!removedClient) {
-      let notFoundError = new Error(`Client ${req.params.id} not found`)
+      let notFoundError = new Error(`Client with id: ${req.params.id}, not found`)
       notFoundError.name = "NotFoundError"
       throw notFoundError
     }
@@ -142,15 +142,14 @@ async function apiRemove(req, res) {
 
 async function apiUpdate(req, res) {
   try {
-    await Client.findByIdAndUpdate(req.params.id, req.body).exec()
-    const updatedClient = await Client.findById(req.params.id)
+    const updatedClient = await Client.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
 
     res.status(200).json(updatedClient)
   } catch (e) {
     if (e.name === 'ValidationError')
       sendError(403, 'Validation Error', e, res)
     else if (e.name === 'CastError')
-      sendError(404, `Client ${req.params.id} not found`, e, res)
+      sendError(404, `Client with id: ${req.params.id}, not found`, e, res)
     else if (e.code === 11000)
       sendError(409, 'Duplicated Name', e, res)
     else
