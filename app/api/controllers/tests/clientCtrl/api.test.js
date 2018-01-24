@@ -40,8 +40,7 @@ describe('API', () => {
     test('Should throw a UnexpectedError', async () => {
       Client.find = jest.fn(() => ({
         exec: () => new Promise((resolve, reject) => {
-          const err = 'Faked Error'
-          reject(err)
+          reject(new Error('Faked Error'))
         })
       }))
       await clientCtrl.apiAll(req, res)
@@ -122,7 +121,23 @@ describe('API', () => {
 
   })
   
-  describe('apiRead', () => {})
+  describe('apiRead', () => {
+    let idToSend, clientToReturn
+
+    beforeEach(() => {
+      idToSend = new ObjectId('aaafffaaafffaaafffaaafff')
+      clientToReturn = uSchemas.getValidClient()
+
+      Client.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(clientToReturn)
+        })
+      }))
+    })
+
+    test('')
+
+  })
   
   describe('apiRemove', () => {})
   
