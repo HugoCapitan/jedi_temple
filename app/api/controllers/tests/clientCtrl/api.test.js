@@ -52,7 +52,73 @@ describe('API', () => {
   
   })
   
-  describe('apiCreate', () => {})
+  describe('apiCreate', () => {
+    let clientToSend, savedClient
+
+    beforeEach(() => {
+      clientToSend = uSchemas.getValidClient()
+      savedClient  = uSchemas.getValidClient()
+      req.body = clientToSend
+      Client.prototype.save = jest.fn(() => new Promise((resove, reject) => {
+        resolve(savedClient)
+      }))
+    })
+
+    test('Should instantiate a Client with the sent body', async () => {
+      await clientCtrl.apiCreate(req, res)
+
+      expect(Client.mock.calls.length).toBe(1)
+      expect(Client.mock.calls[0][0]).toBe(clientToSend)
+    })
+
+    test('Should call Client.prototype.save', async () => {
+      await clientCtrl.apiCreate(req, res)
+      expect(Client.prototype.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should send back the saved Client', async () => {
+      await clientCtrl.apiCreate(req, res)
+  
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toEqual(savedClient)
+    })
+
+    test('Should send a ValidationError', async () => {
+      Client.prototype.save = jest.fn(prod => {
+        let valError = new Error('Faked Error')
+        valError.name = "ValidationError"
+        throw valError
+      })
+  
+      await clientCtrl.apiCreate(req, res)
+  
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe("Validation Error")
+    })
+
+    test('Should send a DuplocationError', async () => {
+      Client.prototype.save = jest.fn(prod => {
+        let dupError = new Error('Faked Error')
+        dupError.code = 11000
+        throw dupError
+      })
+  
+      await clientCtrl.apiCreate(req, res)
+  
+      expect(res.statusCode).toBe(409)
+      expect(res.data).toBe('Duplicated Email')
+    })
+
+    test('Should send a UnexpectedError', async () => {
+      Client.prototype.save = jest.fn(prod => {throw new Error('Faked Error')})
+  
+      await clientCtrl.apiCreate(req, res)
+  
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })
   
   describe('apiRead', () => {})
   
