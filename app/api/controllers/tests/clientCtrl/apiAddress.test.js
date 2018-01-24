@@ -12,7 +12,7 @@ describe('clientCtrl -> apiAddress', () => {
   let req, res, foundClient, clientIdToSend
 
   beforeEach(() => {
-    idToSend = new ObjectId('aaafffaaafffaaafffaaafff')
+    clientIdToSend = new ObjectId('aaafffaaafffaaafffaaafff')
     foundClient = Object.assign(uSchemas.getValidClient(), {
       save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
     })
@@ -25,7 +25,7 @@ describe('clientCtrl -> apiAddress', () => {
 
     req = {
       params: {
-        client_id: idToSend
+        client_id: clientIdToSend
       }
     }
     res = {
@@ -87,7 +87,7 @@ describe('clientCtrl -> apiAddress', () => {
       await clientCtrl.apiCreateAddress(req, res)
 
       expect(res.statusCode).toBe(404)
-      expect(res.data).toBe(`Client with id: ${idToSend}, not found`)
+      expect(res.data).toBe(`Client with id: ${clientIdToSend}, not found`)
     })
 
     test('Should send a ValidationError', async () => {
