@@ -61,8 +61,8 @@ async function remove(id) {
 
 async function update(id, newClient) {
   try {
-    await Client.find ({_id: slug}, newClient)
-    const updatedClient = await Client.findById(id)
+    await Client.findByIdAndUpdate(id, newClient).exec()
+    const updatedClient = await Client.findById(id).exec()
     return updatedClient
   } catch (e) {
     e.customOrigin = 'Client'
