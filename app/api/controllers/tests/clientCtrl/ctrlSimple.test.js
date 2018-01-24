@@ -1,3 +1,6 @@
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
+
 const clientCtrl = require('../../clientCtrl')
 
 jest.mock('../../../models/Client')
@@ -40,7 +43,8 @@ describe('clientCtrl -> create', () => {
       reject(err)
     }))
 
-    clientCtrl.create(clientToSend).catch(err => {
+    clientCtrl.create(clientToSend).then(() => { expect(1).toBe(0) })
+    .catch(err => {
       expect(err.message).toBe('Faked Error')
       expect(err.name).toBe('ValidationError')
       expect(err.customMessage).toBe('Validation Error')
@@ -56,7 +60,8 @@ describe('clientCtrl -> create', () => {
       reject(err)
     }))
 
-    clientCtrl.create(clientToSend).catch(err => {
+    clientCtrl.create(clientToSend).then(() => { expect(1).toBe(0) })
+    .catch(err => {
       expect(err.message).toBe('Faked Error')
       expect(err.name).toBe('DuplicationError')
       expect(err.customMessage).toBe('Duplicated Email')
@@ -73,7 +78,8 @@ describe('clientCtrl -> create', () => {
       reject(err)
     }))
 
-    clientCtrl.create(clientToSend).catch(err => {
+    clientCtrl.create(clientToSend).then(() => { expect(1).toBe(0) })
+    .catch(err => {
       expect(err.message).toBe('Faked Error')
       expect(err.name).toBe('WhatAnError')
       expect(err.customMessage).toBe('Unexpected Error')
@@ -85,14 +91,65 @@ describe('clientCtrl -> create', () => {
 })
 
 describe('clientCtrl -> remove', () => {
+  let idToSend = new ObjectId('fafafafafafafafafafafafa')
+  let clientToReturn = uSchemas.getValidClient()
   
-  test('Should call Client.findByIdAndRemove')
+  beforeEach(() => {
+    Client.findByIdAndRemove = jest.fn(() => ({
+      exec: () =>  new Promise((resolve, reject) => { resolve(clientToReturn) })
+    }))
+  })
+  
+  test('Should call Client.findByIdAndRemove', async () => {
+    await clientCtrl.remove(idToSend)
 
-  test('Should return the deleted Client')
+    expect(Client.findByIdAndRemove.mock.calls.length).toBe(1)
+    expect(Client.findByIdAndRemove.mock.calls[0][0]).toBe(idToSend)
+  })
 
-  test('Should throw a NotFoundError')
+  test('Should return the deleted Client', async () => {
+    const returnedClient = await clientCtrl.remove(idToSend)
+    expect(returnedClient).toBe(clientToReturn)
+  })
 
-  test('Should throw a UnexpectedError')
+  test('Should throw a NotFoundError', done => {
+    Client.findByIdAndRemove = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'CastError'
+        reject(err)
+      })
+    }))
+
+    clientCtrl.remove(idToSend).then(() => { expect(1).toBe(0) }) // <- Failing test
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('CastError')
+      expect(err.customMessage).toBe(`Client with id: ${idToSend}, not found`)
+      expect(err.customOrigin).toBe('Client')
+      done()
+    })
+  })
+
+  test('Should throw a UnexpectedError with diferent customOrigin', done => { 
+    Client.findByIdAndRemove = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'FakedErrorName'
+        err.customOrigin = 'CustomOrigin12342'
+        reject(err)
+      })
+    }))
+
+    clientCtrl.remove(idToSend).then(() => { expect(1).toBe(0) }) // <- Failing test
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('FakedErrorName')
+      expect(err.customMessage).toBe('Unexpected Error')
+      expect(err.customOrigin).toBe('CustomOrigin12342')
+      done()
+    })
+  })
 
 })
 
