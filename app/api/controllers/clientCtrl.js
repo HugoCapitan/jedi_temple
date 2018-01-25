@@ -215,7 +215,7 @@ async function apiUpdateAddress(req, res) {
       throw notFoundError
     }
 
-    const addressToUpdate = clientToUpdate.addresses.find({ _id: req.params.address_id })
+    const addressToUpdate = clientToUpdate.addresses.find((address) => address._id == req.params.address_id)
     if (!addressToUpdate) {
       const notFoundError = new Error(`Address with id: ${req.params.address_id}, not found for client with id: ${req.params.client_id}`)
       notFoundError.name = 'NotFoundError'
@@ -223,6 +223,8 @@ async function apiUpdateAddress(req, res) {
     }
     Object.assign(addressToUpdate, req.body)
 
+    clientToUpdate.addresses.pull({_id:  req.params.address_id})
+    clientToUpdate.addresses.push(addressToUpdate)
     await clientToUpdate.save()
     res.status(200).json(clientToUpdate)
   } catch (e) {
