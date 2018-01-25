@@ -179,7 +179,7 @@ describe('clientCtrl -> apiAddress', () => {
     })
 
     test('Should send a Address NotFoundError', async () => {
-      foundClient.addresses.find(() => null)
+      foundClient.addresses.find = jest.fn(() => null)
 
       await clientCtrl.apiUpdateAddress(req, res)
 
