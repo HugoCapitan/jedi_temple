@@ -8,4 +8,10 @@ module.exports = app => {
     .get(clientCtrl.apiRead)
     .put(clientCtrl.apiUpdate)
     .delete(clientCtrl.apiRemove)
+
+  app.route('/client/:client_id/addresses/')
+    .post(clientCtrl.apiCreateAddress)
+  app.route('/client/:client_id/addresses/:address_id')
+    .put(clientCtrl.apiUpdateAddress)
+    .delete(clientCtrl.apiRemoveAddress)
 }
