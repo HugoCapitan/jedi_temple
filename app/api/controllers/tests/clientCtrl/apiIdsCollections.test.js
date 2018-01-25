@@ -43,6 +43,7 @@ describe('clientCtrl api ids collections', () => {
     }
   })
   
+
   describe('-> addOrder', () => {
 
     beforeEach(() => {
@@ -115,6 +116,7 @@ describe('clientCtrl api ids collections', () => {
 
   })
 
+
   describe('-> removeOrder', () => {
 
     beforeEach(() => {
@@ -174,7 +176,76 @@ describe('clientCtrl api ids collections', () => {
     })
   }) 
 
+
   describe('-> addReservation', () => {
+
+    beforeEach(() => {
+      req.params.reservation_id = collectionObjIdToSend
+    })
+    
+    test('Should call Client.findById', async () => {
+      await clientCtrl.apiAddReservation(req, res)
+
+      expect(Client.findById.mock.calls.length).toBe(1)
+      expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
+    })
+
+    test('Should push reservation to foundClient.reservations', async () => {
+      await clientCtrl.apiAddReservation(req, res)
+
+      expect(foundClient.reservations.length).toBe(2)
+      expect(foundClient.reservations.find(id => id === collectionObjIdToSend)).toBeTruthy()
+    })
+
+    test('Should call foundClient.save', async () => {
+      await clientCtrl.apiAddReservation(req, res)
+
+      expect(foundClient.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the foundClient updated', async () => {
+      await clientCtrl.apiAddReservation(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundClient)
+    })
+
+    test('Should return NotFoundError', async () => {
+      Client.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(null)
+        })
+      }))
+
+      await clientCtrl.apiAddReservation(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Client with id: ${clientIdToSend}, not found`)
+    })
+
+    test('Should return ValidationError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'ValidationError'
+        reject(err)
+      }))
+
+      await clientCtrl.apiAddReservation(req, res)
+
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe('Validation Error')
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
+
+      await clientCtrl.apiAddReservation(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
 
   })
 
