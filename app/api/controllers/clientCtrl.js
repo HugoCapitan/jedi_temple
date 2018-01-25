@@ -202,7 +202,7 @@ async function apiUpdateAddress(req, res) {
 
     await clientToUpdate.save()
     res.status(200).json(clientToUpdate)
-  } catch (err) {
+  } catch (e) {
     if (e.name === 'NotFoundError')
       sendError(404, e.message, e, res)
     else if (e.name === 'ValidationError')
