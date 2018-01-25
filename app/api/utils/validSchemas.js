@@ -49,7 +49,8 @@ function getValidClient() {
     password: 'arealhardpassword',
     addresses: [getValidAddress()],
     orders: [new ObjectId('fafafafafafafafafafafafa')],
-    wishlist: [new ObjectId('afafafafafafafafafafafaf')]
+    wishlist: [new ObjectId('afafafafafafafafafafafaf')],
+    reservations: [new ObjectId('0f0f0f0f0f0f0f0f0f0f0f0f')]
   }
 }
 
