@@ -30,8 +30,7 @@ describe('clientCtrl api ids collections', () => {
 
     req = {
       params: {
-        client_id: clientIdToSend,
-        address_id: collectionObjIdToSend
+        client_id: clientIdToSend
       }
     }
     res = {
@@ -45,6 +44,10 @@ describe('clientCtrl api ids collections', () => {
   })
   
   describe('-> addOrder', () => {
+
+    beforeEach(() => {
+      req.params.order_id = collectionObjIdToSend
+    })
     
     test('Should call Client.findById', async () => {
       await clientCtrl.apiAddOrder(req, res)
@@ -87,7 +90,7 @@ describe('clientCtrl api ids collections', () => {
     })
 
     test('Should return ValidationError', async () => {
-      Client.save(() => new Promise((resolve, reject) => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
         const err = new Error('Faked Error')
         err.name = 'ValidationError'
         reject(err)
@@ -100,7 +103,7 @@ describe('clientCtrl api ids collections', () => {
     })
 
     test('Should return UnexpectedError', async () => {
-      Client.save(() => new Promise((resolve, reject) => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
         reject(new Error('Faked Error'))
       }))
 
@@ -114,6 +117,61 @@ describe('clientCtrl api ids collections', () => {
 
   describe('-> removeOrder', () => {
 
+    beforeEach(() => {
+      req.params.order_id = collectionObjIdToSend
+    })
+
+    test('Should call Client.findById', async () => {
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(Client.findById.mock.calls.length).toBe(1)
+      expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
+    })
+
+    test('Should pull order from foundClient.orders', async () => {
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(foundClient.orders.pull.mock.calls.length).toBe(1)
+      expect(foundClient.orders.pull.mock.calls[0][0]).toEqual(collectionObjIdToSend)
+      expect(foundClient.orders.length).toBe(0)
+    })
+
+    test('Should call foundClient.save', async () => {
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(foundClient.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the foundClient updated', async () => {
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundClient)
+    })
+
+    test('Should return NotFoundError', async () => {
+      Client.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(null)
+        })
+      }))
+
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Client with id: ${clientIdToSend}, not found`)
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
+
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
   }) 
 
   describe('-> addReservation', () => {
