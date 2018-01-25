@@ -121,12 +121,12 @@ describe('clientCtrl -> apiAddress', () => {
 
     beforeEach(() => {
       addressIdToSend = new ObjectId('fff000fff000fff000fff000')
-      foundAddress = uSchemas.getValidAddress()
+      foundAddress = Object.assign(uSchemas.getValidAddress(), { _id: addressIdToSend })
       addressUpdate = { email: 'new@email.com' }
       updatedAddress = Object.assign({}, foundAddress, addressUpdate)
 
       foundClient.addresses = [...foundClient.addresses, foundAddress]
-      foundClient.addresses.find = jest.fn(() => foundAddress)
+      foundClient.addresses.pull = jest.fn(() => foundClient.addresses.pop())
 
       req.params.address_id = addressIdToSend
       req.body = addressUpdate
@@ -139,19 +139,26 @@ describe('clientCtrl -> apiAddress', () => {
       expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
     })
   
-    test('Should call find on foundClient.addresses with the sent address_id', async() => {
-      const expectedQuery = { _id: addressIdToSend }
+    test('Should call find, pull and push on foundClient.addresses with the sent address_id', async() => {
+      jest.spyOn(foundClient.addresses, 'find')
+      jest.spyOn(foundClient.addresses, 'pull')
+      jest.spyOn(foundClient.addresses, 'push')
 
       await clientCtrl.apiUpdateAddress(req, res)
 
       expect(foundClient.addresses.find.mock.calls.length).toBe(1)
-      expect(foundClient.addresses.find.mock.calls[0][0]).toEqual(expectedQuery)
+      expect(foundClient.addresses.pull.mock.calls.length).toBe(1)
+      expect(foundClient.addresses.pull.mock.calls[0][0]).toEqual({_id: addressIdToSend})
+      expect(foundClient.addresses.push.mock.calls.length).toBe(1)
+      expect(foundClient.addresses.push.mock.calls[0][0]).toEqual(updatedAddress)
     })
 
     test('Should update the desired address', async () => {
       await clientCtrl.apiUpdateAddress(req, res)
 
       expect(foundAddress).toEqual(updatedAddress)
+      expect(foundClient.addresses.length).toBe(2)
+      expect(foundClient.addresses[1]).toEqual(updatedAddress)
     })
 
     test('Should call save on the foundClient', async () => {
