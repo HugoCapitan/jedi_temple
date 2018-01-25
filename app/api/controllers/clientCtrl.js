@@ -162,7 +162,7 @@ async function apiCreateAddress(req, res) {
   try {
     const clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
-      let notFoundError = new Error(`Client with id: ${req.params.id}, not found`)
+      let notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
       throw notFoundError
     }
@@ -187,7 +187,7 @@ async function apiUpdateAddress(req, res) {
   try {
     const clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
-      const notFoundError = new Error(`Client with id: ${req.params.id}, not found`)
+      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
       throw notFoundError
     }
