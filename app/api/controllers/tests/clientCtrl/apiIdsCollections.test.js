@@ -116,67 +116,6 @@ describe('clientCtrl api ids collections', () => {
 
   })
 
-
-  describe('-> removeOrder', () => {
-
-    beforeEach(() => {
-      req.params.order_id = collectionObjIdToSend
-    })
-
-    test('Should call Client.findById', async () => {
-      await clientCtrl.apiRemoveOrder(req, res)
-
-      expect(Client.findById.mock.calls.length).toBe(1)
-      expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
-    })
-
-    test('Should pull order from foundClient.orders', async () => {
-      await clientCtrl.apiRemoveOrder(req, res)
-
-      expect(foundClient.orders.pull.mock.calls.length).toBe(1)
-      expect(foundClient.orders.pull.mock.calls[0][0]).toEqual(collectionObjIdToSend)
-      expect(foundClient.orders.length).toBe(0)
-    })
-
-    test('Should call foundClient.save', async () => {
-      await clientCtrl.apiRemoveOrder(req, res)
-
-      expect(foundClient.save.mock.calls.length).toBe(1)
-    })
-
-    test('Should return the foundClient updated', async () => {
-      await clientCtrl.apiRemoveOrder(req, res)
-
-      expect(res.statusCode).toBe(200)
-      expect(res.data).toBe(foundClient)
-    })
-
-    test('Should return NotFoundError', async () => {
-      Client.findById = jest.fn(() => ({
-        exec: () => new Promise((resolve, reject) => {
-          resolve(null)
-        })
-      }))
-
-      await clientCtrl.apiRemoveOrder(req, res)
-
-      expect(res.statusCode).toBe(404)
-      expect(res.data).toBe(`Client with id: ${clientIdToSend}, not found`)
-    })
-
-    test('Should return UnexpectedError', async () => {
-      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
-        reject(new Error('Faked Error'))
-      }))
-
-      await clientCtrl.apiRemoveOrder(req, res)
-
-      expect(res.statusCode).toBe(500)
-      expect(res.data).toBe('Unexpected Error')
-    })
-  }) 
-
-
   describe('-> addReservation', () => {
 
     beforeEach(() => {
@@ -249,16 +188,254 @@ describe('clientCtrl api ids collections', () => {
 
   })
 
-  describe('-> removeReservation', () => {
+  describe('-> addWish', () => {
+
+    beforeEach(() => {
+      req.params.wish_id = collectionObjIdToSend
+    })
+    
+    test('Should call Client.findById', async () => {
+      await clientCtrl.apiAddWish(req, res)
+
+      expect(Client.findById.mock.calls.length).toBe(1)
+      expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
+    })
+
+    test('Should push reservation to foundClient.wishlist', async () => {
+      await clientCtrl.apiAddWish(req, res)
+
+      expect(foundClient.wishlist.length).toBe(2)
+      expect(foundClient.wishlist.find(id => id === collectionObjIdToSend)).toBeTruthy()
+    })
+
+    test('Should call foundClient.save', async () => {
+      await clientCtrl.apiAddWish(req, res)
+
+      expect(foundClient.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the foundClient updated', async () => {
+      await clientCtrl.apiAddWish(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundClient)
+    })
+
+    test('Should return NotFoundError', async () => {
+      Client.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(null)
+        })
+      }))
+
+      await clientCtrl.apiAddWish(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Client with id: ${clientIdToSend}, not found`)
+    })
+
+    test('Should return ValidationError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'ValidationError'
+        reject(err)
+      }))
+
+      await clientCtrl.apiAddWish(req, res)
+
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe('Validation Error')
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
+
+      await clientCtrl.apiAddWish(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
 
   })
 
-  describe('-> addWish', () => {
 
+  describe('-> removeOrder', () => {
+
+    beforeEach(() => {
+      req.params.order_id = collectionObjIdToSend
+    })
+
+    test('Should call Client.findById', async () => {
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(Client.findById.mock.calls.length).toBe(1)
+      expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
+    })
+
+    test('Should pull order from foundClient.orders', async () => {
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(foundClient.orders.pull.mock.calls.length).toBe(1)
+      expect(foundClient.orders.pull.mock.calls[0][0]).toEqual(collectionObjIdToSend)
+      expect(foundClient.orders.length).toBe(0)
+    })
+
+    test('Should call foundClient.save', async () => {
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(foundClient.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the foundClient updated', async () => {
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundClient)
+    })
+
+    test('Should return NotFoundError', async () => {
+      Client.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(null)
+        })
+      }))
+
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Client with id: ${clientIdToSend}, not found`)
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
+
+      await clientCtrl.apiRemoveOrder(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+  }) 
+
+  describe('-> removeReservation', () => {
+
+    beforeEach(() => {
+      req.params.reservation_id = collectionObjIdToSend
+    })
+
+    test('Should call Client.findById', async () => {
+      await clientCtrl.apiRemoveReservation(req, res)
+
+      expect(Client.findById.mock.calls.length).toBe(1)
+      expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
+    })
+
+    test('Should pull order from foundClient.reservations', async () => {
+      await clientCtrl.apiRemoveReservation(req, res)
+
+      expect(foundClient.reservations.pull.mock.calls.length).toBe(1)
+      expect(foundClient.reservations.pull.mock.calls[0][0]).toEqual(collectionObjIdToSend)
+      expect(foundClient.reservations.length).toBe(0)
+    })
+
+    test('Should call foundClient.save', async () => {
+      await clientCtrl.apiRemoveReservation(req, res)
+
+      expect(foundClient.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the foundClient updated', async () => {
+      await clientCtrl.apiRemoveReservation(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundClient)
+    })
+
+    test('Should return NotFoundError', async () => {
+      Client.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(null)
+        })
+      }))
+
+      await clientCtrl.apiRemoveReservation(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Client with id: ${clientIdToSend}, not found`)
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
+
+      await clientCtrl.apiRemoveReservation(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
   })
 
   describe('-> removeWish', () => {
 
+    beforeEach(() => {
+      req.params.wish_id = collectionObjIdToSend
+    })
+
+    test('Should call Client.findById', async () => {
+      await clientCtrl.apiRemoveWish(req, res)
+
+      expect(Client.findById.mock.calls.length).toBe(1)
+      expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
+    })
+
+    test('Should pull order from foundClient.wishlist', async () => {
+      await clientCtrl.apiRemoveWish(req, res)
+
+      expect(foundClient.wishlist.pull.mock.calls.length).toBe(1)
+      expect(foundClient.wishlist.pull.mock.calls[0][0]).toEqual(collectionObjIdToSend)
+      expect(foundClient.wishlist.length).toBe(0)
+    })
+
+    test('Should call foundClient.save', async () => {
+      await clientCtrl.apiRemoveWish(req, res)
+
+      expect(foundClient.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the foundClient updated', async () => {
+      await clientCtrl.apiRemoveWish(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundClient)
+    })
+
+    test('Should return NotFoundError', async () => {
+      Client.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(null)
+        })
+      }))
+
+      await clientCtrl.apiRemoveWish(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Client with id: ${clientIdToSend}, not found`)
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
+
+      await clientCtrl.apiRemoveWish(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
   })
 
 })
