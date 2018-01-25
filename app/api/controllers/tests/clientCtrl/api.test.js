@@ -18,6 +18,8 @@ describe('API', () => {
 
     beforeEach(() => {
       clients = [ uSchemas.getValidClient(), uSchemas.getValidClient() ]
+      clients[0].salt = 'heyhey'
+      clients[1].salt = 'aloalo'
       Client.find = jest.fn(() => ({
         exec: () => new Promise((resolve, reject) => {
           resolve(clients)
@@ -35,6 +37,16 @@ describe('API', () => {
 
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(clients)
+    })
+
+    test('None of the clients should have password nor salt', async () => {
+      await clientCtrl.apiAll(req, res)
+
+      expect(res.statusCode).toBe(200)
+      for (const client of res.data) {
+        expect(client.salt).toBeFalsy()
+        expect(client.password).toBeFalsy()
+      }
     })
   
     test('Should throw a UnexpectedError', async () => {
@@ -145,11 +157,15 @@ describe('API', () => {
       expect(Client.findById.mock.calls[0][0]).toBe(req.params.id)
     })
   
-    test('Should send the retrieved client formatted', async () => {
+    test('Should send the retrieved client formatted without password nor salt', async () => {
+      clientToReturn.salt = 'heyhey'
+
       await clientCtrl.apiRead(req, res)
   
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(clientToReturn)
+      expect(res.data.salt).toBeFalsy()
+      expect(res.data.password).toBeFalsy()
     })
   
     test('Should send "Client with: <recieved_id>, not found"', async () => {
