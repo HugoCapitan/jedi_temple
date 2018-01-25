@@ -213,6 +213,70 @@ describe('clientCtrl -> apiAddress', () => {
 
   })
 
-  describe('-> apiRemoveAddress', () => {})
+  describe('-> apiRemoveAddress', () => {
+    let addressIdToSend, updatedClient
+
+    beforeEach(() => {
+      addressIdToSend = new ObjectId('aaa000aaa000aaa000aaa000')
+      updatedClient = Object.assign({}, foundClient, { addresses: [] })
+      req.params.address_id = addressIdToSend
+      foundClient.addresses.pull = jest.fn(() => { foundClient.addresses.pop() })
+
+    }) 
+
+    test('Should call client.findById with sent client_id', async () => {
+      await clientCtrl.apiRemoveAddress(req, res)
+
+      expect(Client.findById.mock.calls.length).toBe(1)
+      expect(Client.findById.mock.call[0][0]).toBe(clientIdToSend)
+    })
+
+    test('Should call foundClient.addresses.pull with sent addresd_id', async () => {
+      const expectedQuery = { _id: addressIdToSend }
+      
+      await clientCtrl.apiRemoveAddress(res, res)
+
+      expect(foundClient.addresses.pull.mock.calls.length).toBe(1)
+      expect(foundClient.addresses.pull.mock.calls[0][0]).toEqual(addressIdToSend)
+    })
+
+    test('Should call save on foundClient', async () => {
+      await clientCtrl.apiRemoveAddress(req, res)
+
+      expect(foundClient.addresses.length).toBe(0)
+      expect(foundClient.save.mock.calls.length).toBe(1)
+    })
+    
+    test('Should return the updated client', async () => {
+      await clientCtrl.apiRemoveAddress()
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundClient)
+      expect(res.data).toEqual(updatedClient)
+    })
+
+    test('Should return client NotFound Error', async () => {
+      Client.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
+
+      await clientCtrl.apiRemoveAddress(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Client with id: ${clientIdToSend}, not found`)
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundClient.save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Faked Error')) 
+      }))
+
+      await clientCtrl.apiRemoveAddress(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })
 
 })
