@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 const Client = require('../models/Client')
 
 const { sendError } = require('../utils/http')
@@ -83,6 +85,10 @@ async function update(id, newClient) {
 async function apiAll(req, res) {
   try {
     let all = await Client.find().exec()
+    for (const client of all) {
+      delete client.password
+      delete client.salt
+    }
     res.status(200).json(all)
   } catch (e) {
     sendError(500, 'Unexpected Error', e, res)
@@ -111,6 +117,9 @@ async function apiRead(req, res) {
       notFoundError.name = 'NotFoundError'
       throw notFoundError
     }
+
+    delete foundClient.salt
+    delete foundClient.password
 
     res.status(200).json(foundClient)
   } catch(e) {
