@@ -275,7 +275,25 @@ async function apiAddReservation(req, res) {
 }
 
 async function apiAddWish(req, res) {
-  
+  try {
+    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    if (!clientToUpdate) {
+      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
+      notFoundError.name = "NotFoundError"
+      throw notFoundError
+    }
+
+    clientToUpdate.wishlist.push(req.params.wish_id)
+    await clientToUpdate.save()
+    res.status(200).json(clientToUpdate)
+  } catch (e) {
+    if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else if (e.name === 'ValidationError')
+      sendError(403, 'Validation Error', e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
 }
 
 
