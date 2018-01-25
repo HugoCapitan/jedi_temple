@@ -84,10 +84,9 @@ async function update(id, newClient) {
 
 async function apiAll(req, res) {
   try {
-    let all = await Client.find().exec()
+    const all = await Client.find().exec()
     for (const client of all) {
-      delete client.password
-      delete client.salt
+      Object.assign(client, {password: undefined, salt: undefined})
     }
     res.status(200).json(all)
   } catch (e) {
@@ -118,8 +117,7 @@ async function apiRead(req, res) {
       throw notFoundError
     }
 
-    delete foundClient.salt
-    delete foundClient.password
+    Object.assign(foundClient, {password: undefined, salt: undefined})
 
     res.status(200).json(foundClient)
   } catch(e) {
