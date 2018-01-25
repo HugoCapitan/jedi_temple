@@ -145,7 +145,7 @@ describe('clientCtrl -> apiAddress', () => {
       await clientCtrl.apiUpdateAddress(req, res)
 
       expect(foundClient.addresses.find.mock.calls.length).toBe(1)
-      expect(foundClient.addresses.find.mock.calls[0][0]).toBe(expectedQuery)
+      expect(foundClient.addresses.find.mock.calls[0][0]).toEqual(expectedQuery)
     })
 
     test('Should update the desired address', async () => {
@@ -163,7 +163,7 @@ describe('clientCtrl -> apiAddress', () => {
     test('Should return the saved client', async () => {
       await clientCtrl.apiUpdateAddress(req, res)
       
-      expect(res.status).toBe(200)
+      expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
     })
 
