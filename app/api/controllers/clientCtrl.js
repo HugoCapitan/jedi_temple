@@ -171,7 +171,7 @@ async function apiCreateAddress(req, res) {
     res.status(200).json(clientToUpdate)
   } catch (e) {
     if (e.name === 'NotFoundError')
-      sendError(404, `Client with id: ${req.params.client_id}, not found`, e, res)
+      sendError(404, e.message, e, res)
     else if (e.name === 'ValidationError')
       sendError(403, 'Validation Error', e, res)
     else
@@ -180,7 +180,32 @@ async function apiCreateAddress(req, res) {
 }
 
 async function apiRemoveAddress(req, res) {
-  
+  try {
+    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    if (!clientToUpdate) {
+      const notFoundError = new Error(`Client with id: ${req.params.id}, not found`)
+      notFoundError.name = "NotFoundError"
+      throw notFoundError
+    }
+
+    const addressToUpdate = clientToUpdate.addresses.find({ _id: req.params.address_id })
+    if (!addressToUpdate) {
+      const notFoundError = new Error(`Address with id: ${req.params.address_id}, not found for client with id: ${req.params.client_id}`)
+      notFoundError.name = 'NotFoundError'
+      throw notFoundError
+    }
+    Object.assign(addressToUpdate, req.body)
+
+    await clientToUpdate.save()
+    res.status(200).json(clientToUpdate)
+  } catch (err) {
+    if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else if (e.name === 'ValidationError')
+      sendError(403, 'Validation Error', e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
 }
 
 async function apiUpdateAddress(req, res) {
