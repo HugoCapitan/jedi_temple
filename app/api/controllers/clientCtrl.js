@@ -180,6 +180,10 @@ async function apiCreateAddress(req, res) {
 }
 
 async function apiRemoveAddress(req, res) {
+  
+}
+
+async function apiUpdateAddress(req, res) {
   try {
     const clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
@@ -206,10 +210,6 @@ async function apiRemoveAddress(req, res) {
     else
       sendError(500, 'Unexpected Error', e, res)
   }
-}
-
-async function apiUpdateAddress(req, res) {
-  
 }
 
 
