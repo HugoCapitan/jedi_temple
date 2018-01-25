@@ -319,9 +319,41 @@ async function apiRemoveOrder(req, res) {
 }
 
 async function apiRemoveReservation(req, res) {
-  
+  try {
+    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    if (!clientToUpdate) {
+      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
+      notFoundError.name = "NotFoundError"
+      throw notFoundError
+    }
+
+    clientToUpdate.reservations.pull(req.params.reservation_id)
+    await clientToUpdate.save()
+    res.status(200).json(clientToUpdate)
+  } catch (e) {
+    if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
 }
 
 async function apiRemoveWish(req, res) {
-  
+  try {
+    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    if (!clientToUpdate) {
+      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
+      notFoundError.name = "NotFoundError"
+      throw notFoundError
+    }
+
+    clientToUpdate.wishlist.pull(req.params.wish_id)
+    await clientToUpdate.save()
+    res.status(200).json(clientToUpdate)
+  } catch (e) {
+    if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
 }
