@@ -187,13 +187,13 @@ async function apiRemoveAddress(req, res) {
       notFoundError.name = "NotFoundError"
       throw notFoundError
     }
-
     clientToUpdate.addresses.pull({ _id: req.params.address_id })
+
     await clientToUpdate.save()
     res.status(200).json(clientToUpdate)
   } catch (e) {
-    if (e.name === 'ValidationError')
-      sendError(403, 'Validation Error', e, res)
+    if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
