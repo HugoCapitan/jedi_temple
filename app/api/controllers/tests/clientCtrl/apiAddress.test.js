@@ -221,23 +221,22 @@ describe('clientCtrl -> apiAddress', () => {
       updatedClient = Object.assign({}, foundClient, { addresses: [] })
       req.params.address_id = addressIdToSend
       foundClient.addresses.pull = jest.fn(() => { foundClient.addresses.pop() })
-
     }) 
 
     test('Should call client.findById with sent client_id', async () => {
       await clientCtrl.apiRemoveAddress(req, res)
 
       expect(Client.findById.mock.calls.length).toBe(1)
-      expect(Client.findById.mock.call[0][0]).toBe(clientIdToSend)
+      expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
     })
 
     test('Should call foundClient.addresses.pull with sent addresd_id', async () => {
       const expectedQuery = { _id: addressIdToSend }
       
-      await clientCtrl.apiRemoveAddress(res, res)
+      await clientCtrl.apiRemoveAddress(req, res)
 
       expect(foundClient.addresses.pull.mock.calls.length).toBe(1)
-      expect(foundClient.addresses.pull.mock.calls[0][0]).toEqual(addressIdToSend)
+      expect(foundClient.addresses.pull.mock.calls[0][0]).toEqual(expectedQuery)
     })
 
     test('Should call save on foundClient', async () => {
@@ -248,11 +247,10 @@ describe('clientCtrl -> apiAddress', () => {
     })
     
     test('Should return the updated client', async () => {
-      await clientCtrl.apiRemoveAddress()
+      await clientCtrl.apiRemoveAddress(req, res)
 
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
-      expect(res.data).toEqual(updatedClient)
     })
 
     test('Should return client NotFound Error', async () => {
