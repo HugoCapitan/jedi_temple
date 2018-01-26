@@ -18,6 +18,16 @@ const HMProductSchema = new Schema({
     unique: true
   },
   materials: [HandmadeMaterialSchema],
+  models: [{
+    model_name: {
+      type: String,
+      required: true
+    },
+    material_id: {
+      type: Schema.Types.ObjectId,
+      required: true
+    }
+  }],
   created_at: Date,
   updated_at: Date
 })

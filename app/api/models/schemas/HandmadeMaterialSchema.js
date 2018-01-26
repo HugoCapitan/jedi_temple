@@ -10,6 +10,5 @@ module.exports = new Schema({
   price: {
     type: Number,
     required: true
-  },
-  models: [String]
+  }
 })
