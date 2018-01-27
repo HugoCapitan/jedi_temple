@@ -70,20 +70,38 @@ describe('CustomFieldCtrl -> create()', () => {
     })
   })
 
-  test('Should send "Unexpected Error" with custom origin', async () => {
+  test('Should send "Unexpected Error"', done => {
     CustomField.prototype.save = jest.fn(() => new Promise((resolve, reject) => {
       const err = new Error('Faked Error')
-      err.customOrigin = 'ACustomOrigin'
       err.name = 'WhatAnError'
       reject(err)
     }))
 
-    customFieldCtrl.create(clientToSend).then(() => { expect(1).toBe(0) })
+    customFieldCtrl.create(fieldToSend).then(() => { expect(1).toBe(0) })
     .catch(err => {
       expect(err.message).toBe('Faked Error')
       expect(err.name).toBe('WhatAnError')
       expect(err.customMessage).toBe('Unexpected Error')
-      expect(err.customOrigin).toBe('ACustomOrigin')
+      expect(err.customOrigin).toBe('Field')
+      done()
+    })
+  })
+
+  test('Should send a CustomOrigin erorr', done => {
+    CustomField.prototype.save = jest.fn(() => new Promise((resolve, reject) => {
+      const err = new Error('Faked Error')
+      err.name = 'WhatAnError'
+      err.customOrigin = 'SUPSUP'
+      err.customMessage = 'JERUR'
+      reject(err)
+    }))
+
+    customFieldCtrl.create(fieldToSend).then(() => { expect(1).toBe(0) })
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('WhatAnError')
+      expect(err.customMessage).toBe('JERUR')
+      expect(err.customOrigin).toBe('SUPSUP')
       done()
     })
   })
