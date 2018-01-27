@@ -81,7 +81,7 @@ async function update(id, newFieldObj) {
 
 async function apiAll(req, res) {
   try {
-    let customFields = await CustomField.find()
+    const customFields = await CustomField.find().exec()
     res.status(200).json(customFields)
   } catch (e) {
     sendError(500, 'Unexpected Error', e, res)
