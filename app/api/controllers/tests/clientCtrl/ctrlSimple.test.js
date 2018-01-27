@@ -260,4 +260,4 @@ describe('clientCtrl -> update', () => {
     })
   })
 
-}) 
+})
