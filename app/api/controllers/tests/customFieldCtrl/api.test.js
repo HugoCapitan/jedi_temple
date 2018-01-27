@@ -135,4 +135,57 @@ describe('customFieldCtrl -> API', () => {
 
   })
 
+  describe('apiRead', () => {
+    let idToSend, customFieldToReturn
+
+    beforeEach(() => {
+      idToSend = new ObjectId('aaafffaaafffaaafffaaafff')
+      customFieldToReturn = uSchemas.getValidNumberCustom()
+      req.params = {
+        id: idToSend
+      }
+
+      CustomField.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(customFieldToReturn)
+        })
+      }))
+    })
+
+    test('Should call CustomField.findById with the id in req.params.id', async () => {
+      await customFieldCtrl.apiRead(req, res)
+  
+      expect(CustomField.findById.mock.calls.length).toBe(1)
+      expect(CustomField.findById.mock.calls[0][0]).toBe(req.params.id)
+    })
+  
+    test('Should send the retrieved CustomField', async () => {
+      await customFieldCtrl.apiRead(req, res)
+  
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(customFieldToReturn)
+    })
+  
+    test('Should send "CustomField with: <recieved_id>, not found"', async () => {
+      CustomField.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
+  
+      await customFieldCtrl.apiRead(req, res)
+  
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`CustomField with id: ${idToSend}, not found`)
+    })
+  
+    test('Should send "Unexpected Error"', async () => {
+      CustomField.findById = jest.fn(id => {throw new Error('Faked Error')})
+  
+      await customFieldCtrl.apiRead(req, res)
+  
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })
+
 })
