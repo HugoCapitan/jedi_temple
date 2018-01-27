@@ -70,11 +70,13 @@ describe('clientCtrl api ids collections', () => {
       expect(foundClient.save.mock.calls.length).toBe(1)
     })
 
-    test('Should return the foundClient updated', async () => {
+    test('Should return the foundClient updated without password nor salt', async () => {
       await clientCtrl.apiAddOrder(req, res)
 
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()
     })
 
     test('Should return NotFoundError', async () => {
@@ -142,11 +144,13 @@ describe('clientCtrl api ids collections', () => {
       expect(foundClient.save.mock.calls.length).toBe(1)
     })
 
-    test('Should return the foundClient updated', async () => {
+    test('Should return the foundClient updated without password nor salt', async () => {
       await clientCtrl.apiAddReservation(req, res)
 
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()
     })
 
     test('Should return NotFoundError', async () => {
@@ -214,11 +218,13 @@ describe('clientCtrl api ids collections', () => {
       expect(foundClient.save.mock.calls.length).toBe(1)
     })
 
-    test('Should return the foundClient updated', async () => {
+    test('Should return the foundClient updated without password nor salt', async () => {
       await clientCtrl.apiAddWish(req, res)
 
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()
     })
 
     test('Should return NotFoundError', async () => {
@@ -288,11 +294,13 @@ describe('clientCtrl api ids collections', () => {
       expect(foundClient.save.mock.calls.length).toBe(1)
     })
 
-    test('Should return the foundClient updated', async () => {
+    test('Should return the foundClient updated without password nor salt', async () => {
       await clientCtrl.apiRemoveOrder(req, res)
 
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()
     })
 
     test('Should return NotFoundError', async () => {
@@ -347,11 +355,13 @@ describe('clientCtrl api ids collections', () => {
       expect(foundClient.save.mock.calls.length).toBe(1)
     })
 
-    test('Should return the foundClient updated', async () => {
+    test('Should return the foundClient updated without password nor salt', async () => {
       await clientCtrl.apiRemoveReservation(req, res)
 
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()      
     })
 
     test('Should return NotFoundError', async () => {
@@ -406,11 +416,13 @@ describe('clientCtrl api ids collections', () => {
       expect(foundClient.save.mock.calls.length).toBe(1)
     })
 
-    test('Should return the foundClient updated', async () => {
+    test('Should return the foundClient updated without password nor salt', async () => {
       await clientCtrl.apiRemoveWish(req, res)
 
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()
     })
 
     test('Should return NotFoundError', async () => {
