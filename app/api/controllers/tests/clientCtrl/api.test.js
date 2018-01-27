@@ -33,23 +33,13 @@ describe('API', () => {
     })
   
     test('Should send the returned clients without salt or pswd', async () => {
-      clients = clients.map(client => Object.assign(client, {
+      expectedClients = clients.map(client => Object.assign(client, {
         password: undefined, salt: undefined
       }))
       await clientCtrl.apiAll(req, res)
 
       expect(res.statusCode).toBe(200)
-      expect(res.data).toEqual(clients)
-    })
-
-    test('None of the clients should have password nor salt', async () => {
-      await clientCtrl.apiAll(req, res)
-
-      expect(res.statusCode).toBe(200)
-      for (const client of res.data) {
-        expect(client.salt).toBeFalsy()
-        expect(client.password).toBeFalsy()
-      }
+      expect(res.data).toEqual(expectedClients)
     })
   
     test('Should throw a UnexpectedError', async () => {
