@@ -84,10 +84,9 @@ async function update(id, newClient) {
 
 async function apiAll(req, res) {
   try {
-    const all = await Client.find().exec()
-    for (const client of all) {
-      Object.assign(client, {password: undefined, salt: undefined})
-    }
+    let all = await Client.find().exec()
+    all = all.map(removePswd)
+
     res.status(200).json(all)
   } catch (e) {
     sendError(500, 'Unexpected Error', e, res)
@@ -97,6 +96,7 @@ async function apiAll(req, res) {
 async function apiCreate(req, res) {
   try {
     let newClient = await new Client(req.body).save()
+    newClient = removePswd(newClient)
     res.status(200).json(newClient)
   } catch (e) {
     if (e.name === 'ValidationError')
@@ -365,4 +365,11 @@ async function apiRemoveWish(req, res) {
     else
       sendError(500, 'Unexpected Error', e, res)
   }
+}
+
+
+function removePswd(client) {
+  Object.assign(client, { password: undefined, salt: undefined })
+
+  return client
 }
