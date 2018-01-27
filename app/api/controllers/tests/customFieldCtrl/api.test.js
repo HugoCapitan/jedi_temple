@@ -188,4 +188,65 @@ describe('customFieldCtrl -> API', () => {
 
   })
 
+  describe('apiRemove', () => {
+    let idToSend, removedCustomField
+
+    beforeEach(() => {
+      idToSend = new ObjectId('fffaaafffaaafffaaafffaaa')
+      removedCustomField = uSchemas.getValidStringCustom()
+      req.params = {
+        id: idToSend
+      }
+
+      CustomField.findByIdAndRemove = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(removedCustomField)
+        })
+      }))
+    })
+
+    test('Should call CustomField.findByIdAndRemove() with the sent id', async () => {
+      await customFieldCtrl.apiRemove(req, res)
+  
+      expect(CustomField.findByIdAndRemove.mock.calls.length).toBe(1)
+      expect(CustomField.findByIdAndRemove.mock.calls[0][0]).toBe(req.params.id)
+    })
+  
+    test('Should send the removed CustomField', async () => {
+      await customFieldCtrl.apiRemove(req, res)
+  
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(removedCustomField)
+    })    
+  
+    test('Should send 404 "CustomField with id: <sent_id>, not found', async () => {
+      CustomField.findByIdAndRemove = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          let castErr = new Error('Faked Error')
+          castErr.name = "CastError"
+          reject(castErr)
+        })
+      }))
+  
+      await customFieldCtrl.apiRemove(req, res)
+  
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`CustomField with id: ${idToSend}, not found`)
+    })
+  
+    test('Should send "Unexpected Error"', async () => {
+      CustomField.findByIdAndRemove = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          reject(new Error('Faked Error'))
+        })
+      }))
+  
+      await customFieldCtrl.apiRemove(req, res)
+  
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })
+
 })
