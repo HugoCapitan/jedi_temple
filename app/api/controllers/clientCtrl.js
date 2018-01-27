@@ -32,8 +32,9 @@ async function create(newClient) {
     const addedClient = await new Client(newClient).save()
     return addedClient
   } catch (e) {
-    if (!e.customOrigin) e.customOrigin = 'Client'
+    if (e.customOrigin) throw e
 
+    e.customOrigin = 'Client'
     if (e.name === 'ValidationError') {
       e.customMessage = 'Validation Error'
     } else if (e.code === 11000) {
@@ -51,7 +52,9 @@ async function remove(id) {
     const deletedClient = await Client.findByIdAndRemove(id).exec()
     return deletedClient
   } catch (e) {
-    if (!e.customOrigin) e.customOrigin = 'Client'
+    if (e.customOrigin) throw e
+    
+    e.customOrigin = 'Client'
     if (e.name === 'CastError')
       e.customMessage = `Client with id: ${id}, not found`
     else
@@ -63,10 +66,12 @@ async function remove(id) {
 
 async function update(id, newClient) {
   try {
-    const updatedClient = await Client.findByIdAndUpdate(id, newClient).exec()
-    return Object.assign(updatedClient, newClient)
+    const updatedClient = await Client.findByIdAndUpdate(id, newClient, {new: true}).exec()
+    return updatedClient
   } catch (e) {
-    if (!e.customOrigin) e.customOrigin = 'Client'
+    if (e.customOrigin) throw e
+    
+    e.customOrigin = 'Client'
     if (e.name === 'ValidationError')
       e.customMessage = 'Validation Error'
     else if (e.name === "CastError")
