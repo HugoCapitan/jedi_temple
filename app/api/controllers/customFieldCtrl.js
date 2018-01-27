@@ -185,10 +185,10 @@ async function apiCreateValue (req, res) {
 
 async function apiRemoveValue (req, res) {
   try {
-    const customFieldToUpdate = await CustomField.findById(req.params.custom_id)
+    const customFieldToUpdate = await CustomField.findById(req.params.custom_id).exec()
 
     if (!customFieldToUpdate) {
-      let notFoundError = new Error(`CustomField ${req.params.custom_id} not found`)
+      let notFoundError = new Error(`CustomField with id: ${req.params.custom_id}, not found`)
       notFoundError.name = 'NotFoundError'
       throw notFoundError
     }
@@ -202,7 +202,7 @@ async function apiRemoveValue (req, res) {
     if (e.customOrigin === 'Product')
       sendError(500, 'Products Update Error', e, res)
     else if (e.name === 'CastError' || e.name === 'NotFoundError')
-      sendError(404, `CustomField ${req.params.custom_id} not found`, e, res)
+      sendError(404, e.message, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }

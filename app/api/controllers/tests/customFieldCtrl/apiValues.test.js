@@ -119,4 +119,68 @@ describe('customFieldCtrl -> apiValues', () => {
 
   })
 
+  describe('-> apiRemoveValue', () => {
+    let valueIdToSend, updatedCustomField
+
+    beforeEach(() => {
+      valueIdToSend = new ObjectId('aaa000aaa000aaa000aaa000')
+      updatedCustomField = Object.assign({}, foundCustomField, { values: [ foundCustomField.values[0] ] })
+      req.params.value_id = valueIdToSend
+      foundCustomField.values.pull = jest.fn(() => { foundCustomField.values.pop() })
+    }) 
+
+    test('Should call client.findById with sent client_id', async () => {
+      await customFieldCtrl.apiRemoveValue(req, res)
+
+      expect(CustomField.findById.mock.calls.length).toBe(1)
+      expect(CustomField.findById.mock.calls[0][0]).toBe(customFieldIdToSend)
+    })
+
+    test('Should call foundCustomField.values.pull with sent addresd_id', async () => {
+      const expectedQuery = { _id: valueIdToSend }
+      
+      await customFieldCtrl.apiRemoveValue(req, res)
+
+      expect(foundCustomField.values.pull.mock.calls.length).toBe(1)
+      expect(foundCustomField.values.pull.mock.calls[0][0]).toEqual(expectedQuery)
+    })
+
+    test('Should call save on foundCustomField', async () => {
+      await customFieldCtrl.apiRemoveValue(req, res)
+
+      expect(foundCustomField.values.length).toBe(1)
+      expect(foundCustomField.save.mock.calls.length).toBe(1)
+    })
+    
+    test('Should return the updated CustomField', async () => {
+      await customFieldCtrl.apiRemoveValue(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundCustomField)
+    })
+
+    test('Should return CustomField NotFound Error', async () => {
+      CustomField.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
+
+      await customFieldCtrl.apiRemoveValue(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`CustomField with id: ${customFieldIdToSend}, not found`)
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundCustomField.save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Faked Error')) 
+      }))
+
+      await customFieldCtrl.apiRemoveValue(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })
+
 })
