@@ -192,33 +192,36 @@ describe('clientCtrl -> remove', () => {
 })
 
 describe('clientCtrl -> update', () => {
-  let idToSend, update, updateReturn, updated
+  let idToSend, update, foundClient, updated
 
   beforeEach(() => {
     idToSend = new ObjectId('aaffaaffaaffaaffaaffaaff')
     update = { name: 'John Doe' }
-    updateReturn = uSchemas.getValidClient()
-    updated = Object.assign({}, updateReturn, {
+    foundClient = uSchemas.getValidClient()
+    updated = Object.assign({}, foundClient, {
       name: 'John Doe'
     })
     Client.findByIdAndUpdate = jest.fn(() => ({
       exec: () => new Promise((resolve, reject) => {
-        resolve(updateReturn)
+        resolve(updated)
       })
     }))
   })
 
   test('Should call Client.findByIdAndUpdate', async () => {
+    const expectedOptions = {new: true}
+
     await clientCtrl.update(idToSend, update)
 
     expect(Client.findByIdAndUpdate.mock.calls.length).toBe(1)
     expect(Client.findByIdAndUpdate.mock.calls[0][0]).toBe(idToSend)
     expect(Client.findByIdAndUpdate.mock.calls[0][1]).toBe(update)
+    expect(Client.findByIdAndUpdate.mock.calls[0][2]).toEqual(expectedOptions)
   })
 
   test('Should form the updated object return it', async () => {
     const returnedClient = await clientCtrl.update(idToSend, update)
-    expect(returnedClient).toEqual(updated)
+    expect(returnedClient).toBe(updated)
   })
 
   test('Should throw a ValidationError', done => {
