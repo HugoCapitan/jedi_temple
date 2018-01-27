@@ -71,12 +71,15 @@ describe('clientCtrl -> apiAddress', () => {
       expect(foundClient.save.mock.calls.length).toBe(1)
     })
 
-    test('Should return the saved Client', async () => {
+    test('Should return the saved Client without password nor salt', async () => {
+      Object.assign(updatedClient, {password: undefined, salt: undefined})
       await clientCtrl.apiCreateAddress(req, res)
       
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
       expect(res.data).toEqual(updatedClient)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()
     })
     
     test('Should send a NotFoundError', async () => {
@@ -167,11 +170,13 @@ describe('clientCtrl -> apiAddress', () => {
       expect(foundClient.save.mock.calls.length).toBe(1)
     })
 
-    test('Should return the saved client', async () => {
+    test('Should return the saved client without password nor salt', async () => {
       await clientCtrl.apiUpdateAddress(req, res)
       
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()      
     })
 
     test('Should send a Client NotFoundError', async () => {
@@ -253,11 +258,13 @@ describe('clientCtrl -> apiAddress', () => {
       expect(foundClient.save.mock.calls.length).toBe(1)
     })
     
-    test('Should return the updated client', async () => {
+    test('Should return the updated client without password nor salt', async () => {
       await clientCtrl.apiRemoveAddress(req, res)
 
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundClient)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()
     })
 
     test('Should return client NotFound Error', async () => {
