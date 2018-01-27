@@ -159,10 +159,9 @@ async function apiUpdate (req, res) {
 }
 
 
-
 async function apiCreateValue (req, res) {
   try {
-    const customFieldToUpdate = await CustomField.findById(req.params.custom_id)
+    const customFieldToUpdate = await CustomField.findById(req.params.custom_id).exec()
 
     if (!customFieldToUpdate) {
       let notFoundError = new Error(`CustomField ${req.params.custom_id} not found`)
@@ -170,13 +169,15 @@ async function apiCreateValue (req, res) {
       throw notFoundError
     }
 
-    customFieldToUpdate.values.push({ value: req.body.value })
+    customFieldToUpdate.values.push(req.body)
     await customFieldToUpdate.save()
 
     res.status(200).json(customFieldToUpdate)
   } catch (e) {
     if (e.name === 'NotFoundError')
-      sendError(404, `CustomField ${req.params.id} not found`, e, res)
+      sendError(404, `CustomField with id: ${req.params.custom_id}, not found`, e, res)
+    else if (e.name === 'ValidationError')
+      sendError(403, 'Validation Error', e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
