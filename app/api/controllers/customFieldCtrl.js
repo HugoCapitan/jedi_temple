@@ -25,12 +25,15 @@ async function create(fieldObj) {
     const newCustomField = await new CustomField(fieldObj).save()
     return newCustomField
   } catch (e) {
+    if (e.customOrigin) throw e
+    
     e.customOrigin = 'Field'
     if (e.name === 'ValidationError')
       e.customMessage = 'Validation Error'
-    else if (e.code === 11000)
+    else if (e.code === 11000) {
+      e.name = 'DuplicationError'
       e.customMessage = 'Duplicated Name'
-    else
+    } else
       e.customMessage = 'Unexpected Error'
 
     throw e
@@ -39,14 +42,14 @@ async function create(fieldObj) {
 
 async function remove(id) {
   try {
-    const delCustomField = await CustomField.findByIdAndRemove(id)
+    const delCustomField = await CustomField.findByIdAndRemove(id).exec()
     return delCustomField
   } catch (e) {
-    if (e.customOrigin) throw e // <- error from product
-
+    if (e.customOrigin) throw e
+    
     e.customOrigin = 'Field'
     if (e.name === 'CastError')
-      e.customMessage = `CustomField ${id} not found`
+      e.customMessage = `CustomField with id: ${id}, not found`
     else
       e.customMessage = 'Unexpected Error'
 
@@ -56,8 +59,7 @@ async function remove(id) {
 
 async function update(id, newFieldObj) {
   try {
-    await CustomField.findByIdAndUpdate(id, newFieldObj)
-    const updatedCustomField = await CustomField.findById(id)
+    const updatedCustomField = await CustomField.findByIdAndUpdate(id, newFieldObj, {new: true}).exec()
     return updatedCustomField
   } catch (e) {
     if (e.customOrigin) throw e
@@ -66,10 +68,11 @@ async function update(id, newFieldObj) {
     if (e.name === 'ValidationError')
       e.customMessage = 'Validation Error'
     else if (e.name === 'CastError')
-      e.customMessage = `CustomField ${id} not found`
-    else if (e.code === 11000)
+      e.customMessage = `CustomField with id: ${id}, not found`
+    else if (e.code === 11000) {
+      e.name = 'DuplicationError'
       e.customMessage = 'Duplicated Name'
-    else
+    } else
       e.customMessage = 'Unexpected Error'
     
     throw e
