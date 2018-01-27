@@ -70,7 +70,7 @@ describe('clientCtrl -> create', () => {
     })
   })
 
-  test('Should throw a UnexpectedError', done => {
+  test('Should throw a UnexpectedError with a customOrigin', done => {
     Client.prototype.save = jest.fn(() => new Promise((resolve, reject) => {
       const err = new Error('Faked Error')
       err.customOrigin = 'ACustomOrigin'
