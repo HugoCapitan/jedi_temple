@@ -102,31 +102,9 @@ async function apiCreate (req, res) {
   }
 }
 
-async function apiCreateValue (req, res) {
-  try {
-    const customFieldToUpdate = await CustomField.findById(req.params.custom_id)
-
-    if (!customFieldToUpdate) {
-      let notFoundError = new Error(`CustomField ${req.params.custom_id} not found`)
-      notFoundError.name = 'NotFoundError'
-      throw notFoundError
-    }
-
-    customFieldToUpdate.values.push({ value: req.body.value })
-    await customFieldToUpdate.save()
-
-    res.status(200).json(customFieldToUpdate)
-  } catch (e) {
-    if (e.name === 'NotFoundError')
-      sendError(404, `CustomField ${req.params.id} not found`, e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
-  }
-}
-
 async function apiRead (req, res) {
   try {
-    const foundCustomField = await CustomField.findById(req.params.id)
+    const foundCustomField = await CustomField.findById(req.params.id).exec()
     if (!foundCustomField) {
       let notFoundError = new Error(`CustomField ${req.params.id} not found`)
       notFoundError.name = 'NotFoundError'
@@ -136,7 +114,7 @@ async function apiRead (req, res) {
     res.status(200).json(foundCustomField)
   } catch(e) {
     if (e.name === 'NotFoundError')
-      sendError(404, `CustomField ${req.params.id} not found`, e, res)
+      sendError(404, `CustomField with id: ${req.params.id}, not found`, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
@@ -144,7 +122,7 @@ async function apiRead (req, res) {
 
 async function apiRemove (req, res) {
   try {
-    const removedCustomField = await CustomField.findByIdAndRemove(req.params.id)
+    const removedCustomField = await CustomField.findByIdAndRemove(req.params.id).exec()
 
     if (!removedCustomField) {
       let notFoundError = new Error(`CustomField ${req.params.id} not found`)
@@ -152,42 +130,15 @@ async function apiRemove (req, res) {
       throw notFoundError
     }
 
-    res.status(200).send(`CustomField ${removedCustomField._id} deleted`)
+    res.status(200).json(removedCustomField)
   } catch (e) {
     if (e.customOrigin === 'Product')
       sendError(500, 'Products Update Error', e, res)
     else if (e.name === 'CastError' || e.name === 'NotFoundError')
-      sendError(404, `CustomField ${req.params.id} not found`, e, res)
+      sendError(404, `CustomField with id: ${req.params.id}, not found`, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
-}
-
-
-async function apiRemoveValue (req, res) {
-  try {
-    const customFieldToUpdate = await CustomField.findById(req.params.custom_id)
-
-    if (!customFieldToUpdate) {
-      let notFoundError = new Error(`CustomField ${req.params.custom_id} not found`)
-      notFoundError.name = 'NotFoundError'
-      throw notFoundError
-    }
-
-    customFieldToUpdate.values.pull({ _id: req.params.value_id })
-    await customFieldToUpdate.save()
-
-    res.status(200).json(customFieldToUpdate)
-    
-  } catch(e) {
-    if (e.customOrigin === 'Product')
-      sendError(500, 'Products Update Error', e, res)
-    else if (e.name === 'CastError' || e.name === 'NotFoundError')
-      sendError(404, `CustomField ${req.params.custom_id} not found`, e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
-  }
-
 }
 
 async function apiUpdate (req, res) {
@@ -218,6 +169,56 @@ async function apiUpdate (req, res) {
       sendError(500, 'Unexpected Error', e, res)
 
   }
+}
+
+
+
+async function apiCreateValue (req, res) {
+  try {
+    const customFieldToUpdate = await CustomField.findById(req.params.custom_id)
+
+    if (!customFieldToUpdate) {
+      let notFoundError = new Error(`CustomField ${req.params.custom_id} not found`)
+      notFoundError.name = 'NotFoundError'
+      throw notFoundError
+    }
+
+    customFieldToUpdate.values.push({ value: req.body.value })
+    await customFieldToUpdate.save()
+
+    res.status(200).json(customFieldToUpdate)
+  } catch (e) {
+    if (e.name === 'NotFoundError')
+      sendError(404, `CustomField ${req.params.id} not found`, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
+
+async function apiRemoveValue (req, res) {
+  try {
+    const customFieldToUpdate = await CustomField.findById(req.params.custom_id)
+
+    if (!customFieldToUpdate) {
+      let notFoundError = new Error(`CustomField ${req.params.custom_id} not found`)
+      notFoundError.name = 'NotFoundError'
+      throw notFoundError
+    }
+
+    customFieldToUpdate.values.pull({ _id: req.params.value_id })
+    await customFieldToUpdate.save()
+
+    res.status(200).json(customFieldToUpdate)
+    
+  } catch(e) {
+    if (e.customOrigin === 'Product')
+      sendError(500, 'Products Update Error', e, res)
+    else if (e.name === 'CastError' || e.name === 'NotFoundError')
+      sendError(404, `CustomField ${req.params.custom_id} not found`, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+
 }
 
 async function apiUpdateValue(req, res) {
@@ -252,5 +253,4 @@ async function apiUpdateValue(req, res) {
       sendError(500, 'Unexpected Error', e, res)
   }
 
-  
 }
