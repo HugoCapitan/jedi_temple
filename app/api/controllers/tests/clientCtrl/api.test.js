@@ -32,11 +32,14 @@ describe('API', () => {
       expect(Client.find.mock.calls.length).toBe(1)
     })
   
-    test('Should send the returned clients', async () => {
+    test('Should send the returned clients without salt or pswd', async () => {
+      clients = clients.map(client => Object.assign(client, {
+        password: undefined, salt: undefined
+      }))
       await clientCtrl.apiAll(req, res)
 
       expect(res.statusCode).toBe(200)
-      expect(res.data).toBe(clients)
+      expect(res.data).toEqual(clients)
     })
 
     test('None of the clients should have password nor salt', async () => {
@@ -87,11 +90,13 @@ describe('API', () => {
       expect(Client.prototype.save.mock.calls.length).toBe(1)
     })
 
-    test('Should send back the saved Client', async () => {
+    test('Should send back the saved Client without password nor salt', async () => {
       await clientCtrl.apiCreate(req, res)
   
       expect(res.statusCode).toBe(200)
       expect(res.data).toEqual(savedClient)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()
     })
 
     test('Should send a ValidationError', async () => {
@@ -279,11 +284,13 @@ describe('API', () => {
       expect(Client.findByIdAndUpdate.mock.calls[0][2]).toEqual({new: true})
     })
 
-    test('Should send the updated client', async () => {
+    test('Should send the updated client without password nor salt', async () => {
       await clientCtrl.apiUpdate(req, res)
   
       expect(res.statusCode).toBe(200)
       expect(res.data).toEqual(updateReturn)
+      expect(res.data.password).toBeFalsy()      
+      expect(res.data.salt).toBeFalsy()      
     })
 
     test('Should send 404 "CustomField <sent_id> not found"', async () => {
