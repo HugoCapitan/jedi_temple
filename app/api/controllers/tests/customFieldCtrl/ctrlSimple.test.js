@@ -87,7 +87,7 @@ describe('CustomFieldCtrl -> create()', () => {
     })
   })
 
-  test('Should send a CustomOrigin erorr', done => {
+  test('Should send a CustomOrigin error without modifying it', done => {
     CustomField.prototype.save = jest.fn(() => new Promise((resolve, reject) => {
       const err = new Error('Faked Error')
       err.name = 'WhatAnError'
@@ -153,13 +153,12 @@ describe('CustomFieldCtrl -> remove()', () => {
     })
   })
 
-  test('Should send "Unexpected Error" with custom origin', done => {
+  test('Should send "Unexpected Error"', done => {
     CustomField.findByIdAndRemove = jest.fn(() => ({
       exec: () => new Promise((resolve, reject) => {
         const err = new Error('Faked Error')
-        err.name('WhatAnError')
-        err.customOrigin('WASAAAA')
-        reject()
+        err.name = 'WhatAnError'
+        reject(err)
       })
     }))
 
@@ -167,8 +166,29 @@ describe('CustomFieldCtrl -> remove()', () => {
     .catch(e => {
       expect(e.message).toBe('Faked Error')
       expect(e.name).toBe('WhatAnError')
-      expect(e.customOrigin).toBe('WASAAAA')
+      expect(e.customOrigin).toBe('Field')
       expect(e.customMessage).toBe('Unexpected Error')
+      done()
+    })
+  })
+
+  test('Should send a CustomOrigin error without modifying it', done => {
+    CustomField.findByIdAndRemove = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'WhatAnError'
+        err.customOrigin = 'SUPSUP'
+        err.customMessage = 'JERUR'
+        reject(err)
+      })
+    }))
+
+    customFieldCtrl.remove(idToRemove).then(() => { expect(1).toBe(0) })
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('WhatAnError')
+      expect(err.customMessage).toBe('JERUR')
+      expect(err.customOrigin).toBe('SUPSUP')
       done()
     })
   })
