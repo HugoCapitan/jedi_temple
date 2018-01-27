@@ -240,7 +240,7 @@ describe('CustomFieldCtrl -> update()', () => {
       })
     }))
 
-    customFieldCtrl.update(idToSend, fieldToSend).then(() => { expect(1).toBe(0) })
+    customFieldCtrl.update(idToSend, update).then(() => { expect(1).toBe(0) })
     .catch(e => {
       expect(e.message).toBe('Faked Error')
       expect(e.name).toBe('CastError')
@@ -259,7 +259,7 @@ describe('CustomFieldCtrl -> update()', () => {
       })
     }))
 
-    customFieldCtrl.update(idToSend, fieldToSend).then(() => { expect(1).toBe(0) })
+    customFieldCtrl.update(idToSend, update).then(() => { expect(1).toBe(0) })
     .catch(e => {
       expect(e.message).toBe('Faked Error')
       expect(e.name).toBe('ValidationError')
@@ -274,11 +274,11 @@ describe('CustomFieldCtrl -> update()', () => {
       exec: () => new Promise((resolve, reject) => {
         let dupErr = new Error('Faked Error')
         dupErr.code = 11000
-        rejectdupErr
+        reject(dupErr)
       })
     }))
 
-    customFieldCtrl.update(idToSend, fieldToSend).then(() => { expect(1).toBe(0) })
+    customFieldCtrl.update(idToSend, update).then(() => { expect(1).toBe(0) })
     .catch(e => {
       expect(e.message).toBe('Faked Error')
       expect(e.name).toBe('DuplicationError')
@@ -288,22 +288,42 @@ describe('CustomFieldCtrl -> update()', () => {
     })
   })
 
-  test('Should throw an "Unexpected Error" Error with custom origin', done => {
+  test('Should throw an "Unexpected Error"', done => {
     CustomField.findByIdAndUpdate = jest.fn(() => ({
       exec: () => new Promise((resolve, reject) => {
         const err = new Error('Faked Error')
         err.name = 'WhatAnError'
-        err.customOrigin = 'AHAAA'
         reject(err)
       })
     }))
 
-    customFieldCtrl.update(idToSend, fieldToSend).then(() => { expect(1).toBe(0) })
+    customFieldCtrl.update(idToSend, update).then(() => { expect(1).toBe(0) })
     .catch(e => {
       expect(e.message).toBe('Faked Error')
       expect(e.name).toBe('WhatAnError')
-      expect(e.customOrigin).toBe('AHAAA')
+      expect(e.customOrigin).toBe('Field')
       expect(e.customMessage).toBe('Unexpected Error')
+      done()
+    })
+  })
+
+  test('Should send a CustomOrigin error without modifying it', done => {
+    CustomField.findByIdAndUpdate = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'WhatAnError'
+        err.customOrigin = 'SUPSUP'
+        err.customMessage = 'JERUR'
+        reject(err)
+      })
+    }))
+
+    customFieldCtrl.update(idToSend, update).then(() => { expect(1).toBe(0) })
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('WhatAnError')
+      expect(err.customMessage).toBe('JERUR')
+      expect(err.customOrigin).toBe('SUPSUP')
       done()
     })
   })
