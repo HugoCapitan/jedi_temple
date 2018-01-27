@@ -11,7 +11,17 @@ const uSchemas = require('../../../utils/validSchemas')
 describe('API', () => {
   let req, res
 
-  beforeEach(() => {setupTests()})
+  beforeEach(() => {
+    req = {}
+    res = {
+      send(data) { this.data = data },
+      json(data) { this.data = data },
+      status(code) {
+        this.statusCode = code
+        return this
+      }
+    }
+  })
 
   describe('apiAll', () => {
     let clients
@@ -341,15 +351,4 @@ describe('API', () => {
 
   })
 
-  function setupTests() {
-    req = {}
-    res = {
-      send(data) { this.data = data },
-      json(data) { this.data = data },
-      status(code) {
-        this.statusCode = code
-        return this
-      }
-    }
-  }
 })
