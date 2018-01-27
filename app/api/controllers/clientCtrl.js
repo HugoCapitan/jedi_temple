@@ -149,8 +149,8 @@ async function apiRemove(req, res) {
 
 async function apiUpdate(req, res) {
   try {
-    const updatedClient = await Client.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
-
+    let updatedClient = await Client.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
+    updatedClient = removePswd(updatedClient)
     res.status(200).json(updatedClient)
   } catch (e) {
     if (e.name === 'ValidationError')
@@ -167,7 +167,7 @@ async function apiUpdate(req, res) {
 
 async function apiCreateAddress(req, res) {
   try {
-    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    let clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
       let notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
@@ -175,6 +175,7 @@ async function apiCreateAddress(req, res) {
     }
     clientToUpdate.addresses.push(req.body)
     await clientToUpdate.save()
+    clientToUpdate = removePswd(clientToUpdate)
     res.status(200).json(clientToUpdate)
   } catch (e) {
     if (e.name === 'NotFoundError')
@@ -188,7 +189,7 @@ async function apiCreateAddress(req, res) {
 
 async function apiRemoveAddress(req, res) {
   try {
-    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    let clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
       const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
@@ -197,6 +198,7 @@ async function apiRemoveAddress(req, res) {
     clientToUpdate.addresses.pull({ _id: req.params.address_id })
 
     await clientToUpdate.save()
+    clientToUpdate = removePswd(clientToUpdate)
     res.status(200).json(clientToUpdate)
   } catch (e) {
     if (e.name === 'NotFoundError')
@@ -208,7 +210,7 @@ async function apiRemoveAddress(req, res) {
 
 async function apiUpdateAddress(req, res) {
   try {
-    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    let clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
       const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
@@ -225,6 +227,8 @@ async function apiUpdateAddress(req, res) {
 
     clientToUpdate.addresses.pull({_id:  req.params.address_id})
     clientToUpdate.addresses.push(addressToUpdate)
+
+    clientToUpdate = removePswd(clientToUpdate)
     await clientToUpdate.save()
     res.status(200).json(clientToUpdate)
   } catch (e) {
