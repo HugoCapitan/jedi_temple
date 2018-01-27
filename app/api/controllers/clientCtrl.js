@@ -245,7 +245,7 @@ async function apiUpdateAddress(req, res) {
 
 async function apiAddOrder(req, res) {
   try {
-    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    let clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
       const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
@@ -254,6 +254,8 @@ async function apiAddOrder(req, res) {
 
     clientToUpdate.orders.push(req.params.order_id)
     await clientToUpdate.save()
+
+    clientToUpdate = removePswd(clientToUpdate)
     res.status(200).json(clientToUpdate)
   } catch (e) {
     if (e.name === 'NotFoundError')
@@ -267,7 +269,7 @@ async function apiAddOrder(req, res) {
 
 async function apiAddReservation(req, res) {
   try {
-    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    let clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
       const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
@@ -276,6 +278,7 @@ async function apiAddReservation(req, res) {
 
     clientToUpdate.reservations.push(req.params.reservation_id)
     await clientToUpdate.save()
+    clientToUpdate = removePswd(clientToUpdate)
     res.status(200).json(clientToUpdate)
   } catch (e) {
     if (e.name === 'NotFoundError')
@@ -289,7 +292,7 @@ async function apiAddReservation(req, res) {
 
 async function apiAddWish(req, res) {
   try {
-    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    let clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
       const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
@@ -298,6 +301,7 @@ async function apiAddWish(req, res) {
 
     clientToUpdate.wishlist.push(req.params.wish_id)
     await clientToUpdate.save()
+    clientToUpdate = removePswd(clientToUpdate)
     res.status(200).json(clientToUpdate)
   } catch (e) {
     if (e.name === 'NotFoundError')
@@ -313,7 +317,7 @@ async function apiAddWish(req, res) {
 
 async function apiRemoveOrder(req, res) {
   try {
-    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    let clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
       const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
@@ -322,6 +326,7 @@ async function apiRemoveOrder(req, res) {
 
     clientToUpdate.orders.pull(req.params.order_id)
     await clientToUpdate.save()
+    clientToUpdate = removePswd(clientToUpdate)
     res.status(200).json(clientToUpdate)
   } catch (e) {
     if (e.name === 'NotFoundError')
@@ -333,7 +338,7 @@ async function apiRemoveOrder(req, res) {
 
 async function apiRemoveReservation(req, res) {
   try {
-    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    let clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
       const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
@@ -342,6 +347,7 @@ async function apiRemoveReservation(req, res) {
 
     clientToUpdate.reservations.pull(req.params.reservation_id)
     await clientToUpdate.save()
+    clientToUpdate = removePswd(clientToUpdate)
     res.status(200).json(clientToUpdate)
   } catch (e) {
     if (e.name === 'NotFoundError')
@@ -353,7 +359,7 @@ async function apiRemoveReservation(req, res) {
 
 async function apiRemoveWish(req, res) {
   try {
-    const clientToUpdate = await Client.findById(req.params.client_id).exec()
+    let clientToUpdate = await Client.findById(req.params.client_id).exec()
     if (!clientToUpdate) {
       const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
       notFoundError.name = "NotFoundError"
@@ -362,6 +368,7 @@ async function apiRemoveWish(req, res) {
 
     clientToUpdate.wishlist.pull(req.params.wish_id)
     await clientToUpdate.save()
+    clientToUpdate = removePswd(clientToUpdate)
     res.status(200).json(clientToUpdate)
   } catch (e) {
     if (e.name === 'NotFoundError')
