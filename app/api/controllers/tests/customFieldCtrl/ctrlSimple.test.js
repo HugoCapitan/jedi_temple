@@ -1,3 +1,5 @@
+import { resolve } from 'path';
+
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId
 
@@ -36,45 +38,56 @@ describe('CustomFieldCtrl -> create()', () => {
     expect(returnedField).toEqual(fieldToSend)
   })
 
-  test('Should throw "Validation Error"', async () => {
-    CustomField.prototype.save = jest.fn(prod => {
+  test('Should throw "Validation Error"', done => {
+    CustomField.prototype.save = jest.fn(prod => new Promise((resolve, reject) => {
       let valError = new Error('Faked Error')
       valError.name = "ValidationError"
-      throw valError
-    })
+      reject(valError)
+    }))
 
-    try {
-      await customFieldCtrl.create(fieldToSend)
-    } catch(e) {
+    customFieldCtrl.create(fieldToSend).then(() => { expect(1).toBe(0) }) // Failing
+    .catch(e => {
+      expect(e.message).toBe('Faked Error')
+      expect(e.name).toBe('ValidationError')
       expect(e.customOrigin).toBe('Field')
       expect(e.customMessage).toBe('Validation Error')
-    }
+      done()
+    })
   })
 
-  test('Should throw "Duplicated Name"', async () => {
-    CustomField.prototype.save = jest.fn(prod => {
+  test('Should throw "Duplicated Name"', done => {
+    CustomField.prototype.save = jest.fn(prod => new Promise((resolve, reject) => {
       let dupError = new Error('Faked Error')
       dupError.code = 11000
-      throw dupError
-    })
+      reject(dupError)
+    }))
 
-    try {
-      await customFieldCtrl.create(fieldToSend)      
-    } catch (e) {
+    customFieldCtrl.create(fieldToSend).then(() => { expect(1).toBe(0) })
+    .catch(e => {
+      expect(e.message).toBe('Faked Error')
+      expect(e.name).toBe('DuplicationError')
       expect(e.customOrigin).toBe('Field')
       expect(e.customMessage).toBe('Duplicated Name')
-    }
+      done()
+    })
   })
 
-  test('Should send "Unexpected Error"', async () => {
-    CustomField.prototype.save = jest.fn(prod => {throw new Error('Faked Error')})
+  test('Should send "Unexpected Error" with custom origin', async () => {
+    CustomField.prototype.save = jest.fn(() => new Promise((resolve, reject) => {
+      const err = new Error('Faked Error')
+      err.customOrigin = 'ACustomOrigin'
+      err.name = 'WhatAnError'
+      reject(err)
+    }))
 
-    try {
-      await customFieldCtrl.create(fieldToSend)      
-    } catch (e) {
-      expect(e.customOrigin).toBe('Field')
-      expect(e.customMessage).toBe('Unexpected Error')
-    }    
+    customFieldCtrl.create(clientToSend).then(() => { expect(1).toBe(0) })
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('WhatAnError')
+      expect(err.customMessage).toBe('Unexpected Error')
+      expect(err.customOrigin).toBe('ACustomOrigin')
+      done()
+    })
   })
 
 })
@@ -105,44 +118,43 @@ describe('CustomFieldCtrl -> remove()', () => {
     expect(deleted).toEqual(deletedField)
   })
 
-  test('Should throw an Error with customOrigin == "Product"', async () => {
-    CustomField.findByIdAndRemove = jest.fn(() => {
-      let prodsErr = new Error('Faked Error')
-      prodsErr.customOrigin = 'Product'
-      throw prodsErr
-    })
+  test('Should throw a "CustomField <sent_id> not found" Error with customOrigin', done => {
+    CustomField.findByIdAndRemove = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        let castErr = new Error('Faked Error')
+        castErr.name = "CastError"
+        reject(castErr)
+      })
+    }))
 
-    try {
-      await customFieldCtrl.remove(idToRemove)
-    } catch (e) {
-      expect(e.customOrigin).toBe('Product')
-    }
+    customFieldCtrl.remove(idToRemove).then(() => { expect(1).toBe(0) })
+    .catch(e => {
+      expect(e.message).toBe('Faked Error')
+      expect(e.name).toBe('CastError')
+      expect(e.customOrigin).toBe('Field')
+      expect(e.customMessage).toBe(`CustomField with id: ${idToRemove}, not found`)
+      done()
+    })
   })
 
-  test('Should throw a "CustomField <sent_id> not found" Error with customOrigin', async () => {
-    CustomField.findByIdAndRemove = jest.fn(() => {
-      let castErr = new Error('Faked Error')
-      castErr.name = "CastError"
-      throw castErr
-    })
+  test('Should send "Unexpected Error" with custom origin', done => {
+    CustomField.findByIdAndRemove = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name('WhatAnError')
+        err.customOrigin('WASAAAA')
+        reject()
+      })
+    }))
 
-    try {
-      await customFieldCtrl.remove(idToRemove)
-    } catch (e) {
-      expect(e.customOrigin).toBe('Field')
-      expect(e.customMessage).toBe(`CustomField ${idToRemove} not found`)
-    }
-  })
-
-  test('Should send "Unexpected Error"', async () => {
-    CustomField.findByIdAndRemove = jest.fn(() => {throw Error('Faked Error')})
-
-    try {
-      await customFieldCtrl.remove(idToRemove)
-    } catch (e) {
-      expect(e.customOrigin).toBe('Field')
+    customFieldCtrl.remove(idToRemove).then(() => { expect(1).toBe(0) })
+    .catch(e => {
+      expect(e.message).toBe('Faked Error')
+      expect(e.name).toBe('WhatAnError')
+      expect(e.customOrigin).toBe('WASAAAA')
       expect(e.customMessage).toBe('Unexpected Error')
-    }
+      done()
+    })
   })
 
 })
@@ -183,90 +195,81 @@ describe('CustomFieldCtrl -> update()', () => {
     expect(returnedField).toEqual(updatedField)
   })
   
-  test('Should throw a "CustomField <sent_id> not found" Error with customOrigin', async () => {
-    CustomField.findByIdAndUpdate = jest.fn(() => {
-      let notFoundErr = new Error('Faked Error')
-      notFoundErr.name = "CastError"
-      throw notFoundErr
-    })
+  test('Should throw a "CustomField <sent_id> not found" Error with customOrigin', done => {
+    CustomField.findByIdAndUpdate = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        let notFoundErr = new Error('Faked Error')
+        notFoundErr.name = "CastError"
+        reject(notFoundErr)
+      })
+    }))
 
-    try {
-      await customFieldCtrl.update(idToSend, fieldToSend)
-    } catch (e) {
+    customFieldCtrl.update(idToSend, fieldToSend).then(() => { expect(1).toBe(0) })
+    .catch(e => {
+      expect(e.message).toBe('Faked Error')
+      expect(e.name).toBe('CastError')
       expect(e.customOrigin).toBe('Field')
-      expect(e.customMessage).toBe(`CustomField ${idToSend} not found`)
-    }
+      expect(e.customMessage).toBe(`CustomField with id: ${idToSend}, not found`)
+      done()
+    })
   })
 
-  test('Should throw a "Validation Error"', async () => {
-    CustomField.findByIdAndUpdate = jest.fn(() => {
-      let valErr = new Error('Faked Error')
-      valErr.name = "ValidationError"
-      throw valErr
-    })
+  test('Should throw a "Validation Error"', done => {
+    CustomField.findByIdAndUpdate = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        let valErr = new Error('Faked Error')
+        valErr.name = "ValidationError"
+        reject(valErr)
+      })
+    }))
 
-    try {
-      await customFieldCtrl.update(idToSend, fieldToSend)
-    } catch (e) {
+    customFieldCtrl.update(idToSend, fieldToSend).then(() => { expect(1).toBe(0) })
+    .catch(e => {
+      expect(e.message).toBe('Faked Error')
+      expect(e.name).toBe('ValidationError')
       expect(e.customOrigin).toBe('Field')
       expect(e.customMessage).toBe('Validation Error')
-    }
+      done()
+    })
   })
 
-  test('Should throw a "Duplicated Name" Error', async () => {
-    CustomField.findByIdAndUpdate = jest.fn(() => {
-      let dupErr = new Error('Faked Error')
-      dupErr.code = 11000
-      throw dupErr
-    })
+  test('Should throw a "Duplicated Name" Error', done => {
+    CustomField.findByIdAndUpdate = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        let dupErr = new Error('Faked Error')
+        dupErr.code = 11000
+        rejectdupErr
+      })
+    }))
 
-    try {
-      await customFieldCtrl.update(idToSend, fieldToSend)
-    } catch (e) {
+    customFieldCtrl.update(idToSend, fieldToSend).then(() => { expect(1).toBe(0) })
+    .catch(e => {
+      expect(e.message).toBe('Faked Error')
+      expect(e.name).toBe('DuplicationError')
       expect(e.customOrigin).toBe('Field')
       expect(e.customMessage).toBe('Duplicated Name')
-    }
-  })
-
-  test('Should throw an "Unexpected Error" Error with custom origin', async () => {
-    CustomField.findByIdAndUpdate = jest.fn(() => {throw new Error('Faked Error')})
-
-    try {
-      await customFieldCtrl.update(idToSend, fieldToSend)
-    } catch (e) {
-      expect(e.customOrigin).toBe('Field')
-      expect(e.customMessage).toBe('Unexpected Error')
-    }
-  })
-
-  function setupTest() {
-    fieldToSend = {
-      name: 'New Name',
-      show: true
-    }
-    oldField = {
-      name: 'Old Name',
-      slug: 'old_name',
-      show: false
-    }
-    updatedField = {
-      name: 'New Name',
-      slug: 'new_name',
-      show: true
-    }
-
-    idToSend = 'expected_id'
-
-    CustomField.findByIdAndUpdate = jest.fn(() => _.clone(oldField))
-    CustomField.findById = jest.fn(() => _.clone(updatedField))
-
-    productCtrl.updateAllProductsCustom = jest.fn(() => {
-      return new Promise((resolve, reject) => {
-        resolve()
-      })
+      done()
     })
+  })
 
-    jest.spyOn(utils, 'slugify')
-  }
+  test('Should throw an "Unexpected Error" Error with custom origin', done => {
+    CustomField.findByIdAndUpdate = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'WhatAnError'
+        err.customOrigin = 'AHAAA'
+        reject(err)
+      })
+    }))
+
+    customFieldCtrl.update(idToSend, fieldToSend).then(() => { expect(1).toBe(0) })
+    .catch(e => {
+      expect(e.message).toBe('Faked Error')
+      expect(e.name).toBe('WhatAnError')
+      expect(e.customOrigin).toBe('AHAAA')
+      expect(e.customMessage).toBe('Unexpected Error')
+      done()
+    })
+  })
 
 })
