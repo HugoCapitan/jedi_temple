@@ -70,20 +70,38 @@ describe('clientCtrl -> create', () => {
     })
   })
 
-  test('Should throw a UnexpectedError with a customOrigin', done => {
+  test('Should throw a UnexpectedError with diferent customOrigin', done => { 
     Client.prototype.save = jest.fn(() => new Promise((resolve, reject) => {
       const err = new Error('Faked Error')
-      err.customOrigin = 'ACustomOrigin'
-      err.name = 'WhatAnError'
+      err.name = 'FakedErrorName'
       reject(err)
     }))
 
-    clientCtrl.create(clientToSend).then(() => { expect(1).toBe(0) })
+    clientCtrl.create(clientToSend).then(() => { expect(1).toBe(0) }) // <- Failing test
     .catch(err => {
       expect(err.message).toBe('Faked Error')
-      expect(err.name).toBe('WhatAnError')
+      expect(err.name).toBe('FakedErrorName')
       expect(err.customMessage).toBe('Unexpected Error')
-      expect(err.customOrigin).toBe('ACustomOrigin')
+      expect(err.customOrigin).toBe('Client')
+      done()
+    })
+  })
+
+  test('Should throw am error with diferent customOrigin', done => { 
+    Client.prototype.save = jest.fn(() => new Promise((resolve, reject) => {
+      const err = new Error('Faked Error')
+      err.name = 'FakedErrorName'
+      err.customOrigin = 'CustomOrigin12342'
+      err.customMessage = 'HAHAHAYOUFOOLasd'
+      reject(err)
+    }))
+
+    clientCtrl.create(clientToSend).then(() => { expect(1).toBe(0) }) // <- Failing test
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('FakedErrorName')
+      expect(err.customMessage).toBe('HAHAHAYOUFOOLasd')
+      expect(err.customOrigin).toBe('CustomOrigin12342')
       done()
     })
   })
@@ -136,7 +154,6 @@ describe('clientCtrl -> remove', () => {
       exec: () => new Promise((resolve, reject) => {
         const err = new Error('Faked Error')
         err.name = 'FakedErrorName'
-        err.customOrigin = 'CustomOrigin12342'
         reject(err)
       })
     }))
@@ -146,6 +163,27 @@ describe('clientCtrl -> remove', () => {
       expect(err.message).toBe('Faked Error')
       expect(err.name).toBe('FakedErrorName')
       expect(err.customMessage).toBe('Unexpected Error')
+      expect(err.customOrigin).toBe('Client')
+      done()
+    })
+  })
+
+  test('Should throw am error with diferent customOrigin', done => { 
+    Client.findByIdAndRemove = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'FakedErrorName'
+        err.customOrigin = 'CustomOrigin12342'
+        err.customMessage = 'HAHAHAYOUFOOLasd'
+        reject(err)
+      })
+    }))
+
+    clientCtrl.remove(idToSend).then(() => { expect(1).toBe(0) }) // <- Failing test
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('FakedErrorName')
+      expect(err.customMessage).toBe('HAHAHAYOUFOOLasd')
       expect(err.customOrigin).toBe('CustomOrigin12342')
       done()
     })
@@ -197,6 +235,7 @@ describe('clientCtrl -> update', () => {
       expect(err.message).toBe('Faked Error')
       expect(err.name).toBe('ValidationError')
       expect(err.customMessage).toBe('Validation Error')
+      expect(err.customOrigin).toBe('Client')
       done()
     })
   })
@@ -240,12 +279,11 @@ describe('clientCtrl -> update', () => {
     })
   })
 
-  test('Should throw a UnexpectedError with different custom origin', done => {
+  test('Should throw a UnexpectedError with diferent customOrigin', done => { 
     Client.findByIdAndUpdate = jest.fn(() => ({
       exec: () => new Promise((resolve, reject) => {
         const err = new Error('Faked Error')
         err.name = 'FakedErrorName'
-        err.customOrigin = 'CustomOrigin1123'
         reject(err)
       })
     }))
@@ -255,7 +293,28 @@ describe('clientCtrl -> update', () => {
       expect(err.message).toBe('Faked Error')
       expect(err.name).toBe('FakedErrorName')
       expect(err.customMessage).toBe('Unexpected Error')
-      expect(err.customOrigin).toBe('CustomOrigin1123')
+      expect(err.customOrigin).toBe('Client')
+      done()
+    })
+  })
+
+  test('Should throw am error with diferent customOrigin', done => { 
+    Client.findByIdAndUpdate = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'FakedErrorName'
+        err.customOrigin = 'CustomOrigin12342'
+        err.customMessage = 'HAHAHAYOUFOOLasd'
+        reject(err)
+      })
+    }))
+
+    clientCtrl.update(idToSend, update).then(() => { expect(1).toBe(0) }) // <- Failing test
+    .catch(err => {
+      expect(err.message).toBe('Faked Error')
+      expect(err.name).toBe('FakedErrorName')
+      expect(err.customMessage).toBe('HAHAHAYOUFOOLasd')
+      expect(err.customOrigin).toBe('CustomOrigin12342')
       done()
     })
   })
