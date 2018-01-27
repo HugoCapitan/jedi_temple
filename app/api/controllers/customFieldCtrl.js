@@ -132,9 +132,7 @@ async function apiRemove (req, res) {
 
     res.status(200).json(removedCustomField)
   } catch (e) {
-    if (e.customOrigin === 'Product')
-      sendError(500, 'Products Update Error', e, res)
-    else if (e.name === 'CastError' || e.name === 'NotFoundError')
+    if (e.name === 'CastError' || e.name === 'NotFoundError')
       sendError(404, `CustomField with id: ${req.params.id}, not found`, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
@@ -143,28 +141,17 @@ async function apiRemove (req, res) {
 
 async function apiUpdate (req, res) {
   try {
-    if (req.body.values) {
-      let err = new Error('Values should not be updated in this endpoint')
-      err.name = 'Malformed Request'
-      throw err
-    }
-
-    await CustomField.findByIdAndUpdate(req.params.id, req.body)
-    const updatedCustomField = await CustomField.findById(req.params.id)
+    const updatedCustomField = await CustomField.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
 
     res.status(200).json(updatedCustomField)
   } catch (e) {
 
-    if (e.customOrigin === 'Product') 
-      sendError(500, 'Products Update Error', e, res)
-    else if (e.name === 'ValidationError')
+    if (e.name === 'ValidationError')
       sendError(403, 'Validation Error', e, res)
     else if (e.name === 'CastError')
-      sendError(404, `CustomField ${req.params.id} not found`, e, res)
+      sendError(404, `CustomField with id: ${req.params.id}, not found`, e, res)
     else if (e.code === 11000)
       sendError(409, 'Duplicated Name', e, res)
-    else if (e.name === 'Malformed Request')
-      sendError(400, 'Malformed Request', e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
 
