@@ -129,7 +129,7 @@ describe('customFieldCtrl -> apiValues', () => {
       foundCustomField.values.pull = jest.fn(() => { foundCustomField.values.pop() })
     }) 
 
-    test('Should call client.findById with sent client_id', async () => {
+    test('Should call CustomField.findById with sent CustomField_id', async () => {
       await customFieldCtrl.apiRemoveValue(req, res)
 
       expect(CustomField.findById.mock.calls.length).toBe(1)
@@ -176,6 +176,105 @@ describe('customFieldCtrl -> apiValues', () => {
       }))
 
       await customFieldCtrl.apiRemoveValue(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })
+
+  describe('-> apiUpdateValue', () => {
+    let valueIdToSend, foundValue, valueUpdate, updatedValue
+
+    beforeEach(() => {
+      valueIdToSend = new ObjectId('fff000fff000fff000fff000')
+      foundValue = { _id: valueIdToSend, value: 'waaaat' }
+      valueUpdate = { value: 'newwaaaat' }
+      updatedValue = Object.assign({}, foundValue, valueUpdate)
+
+      foundCustomField.values = [...foundCustomField.values, foundValue]
+      foundCustomField.values.id = jest.fn(() => foundValue)
+
+      req.params.value_id = valueIdToSend
+      req.body = valueUpdate
+    })
+
+    test('Should call CustomField.findById with the sent custom_id', async () => {
+      await customFieldCtrl.apiUpdateValue(req, res)
+
+      expect(CustomField.findById.mock.calls.length).toBe(1)
+      expect(CustomField.findById.mock.calls[0][0]).toBe(customFieldIdToSend)
+    })
+  
+    test('Should call foundCustomField.values.id with the sent value_id', async() => {
+      await customFieldCtrl.apiUpdateValue(req, res)
+
+      expect(foundCustomField.values.id.mock.calls.length).toBe(1)
+      expect(foundCustomField.values.id.mock.calls[0][0]).toBe(valueIdToSend)
+    })
+
+    test('Should update the desired value', async () => {
+      await customFieldCtrl.apiUpdateValue(req, res)
+
+      expect(foundValue).toEqual(updatedValue)
+      expect(foundCustomField.values.length).toBe(3)
+      expect(foundCustomField.values[2]).toEqual(updatedValue)
+    })
+
+    test('Should call save on the foundCustomField', async () => {
+      await customFieldCtrl.apiUpdateValue(req, res)
+      
+      expect(foundCustomField.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the saved CustomField', async () => {
+      await customFieldCtrl.apiUpdateValue(req, res)
+      
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundCustomField)
+      expect(res.data.password).toBeFalsy()
+      expect(res.data.salt).toBeFalsy()      
+    })
+
+    test('Should send a CustomField NotFoundError', async () => {
+      CustomField.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
+
+      await customFieldCtrl.apiUpdateValue(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`CustomField with id: ${customFieldIdToSend}, not found`)
+    })
+
+    test('Should send a value NotFoundError', async () => {
+      foundCustomField.values.id = jest.fn(() => null)
+
+      await customFieldCtrl.apiUpdateValue(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Value with id: ${valueIdToSend}, not found for CustomField with id: ${customFieldIdToSend}`)
+    })
+
+    test('Should throw a ValidationError', async () => {
+      foundCustomField.save = jest.fn(() => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'ValidationError'
+        reject(err)
+      }))
+
+      await customFieldCtrl.apiUpdateValue(req, res)
+
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe('Validation Error')
+    })
+
+    test('Should send a UnexpectedError', async () => {
+      foundCustomField.save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Faked Error')) 
+      }))
+
+      await customFieldCtrl.apiUpdateValue(req, res)
 
       expect(res.statusCode).toBe(500)
       expect(res.data).toBe('Unexpected Error')
