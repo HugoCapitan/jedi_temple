@@ -63,7 +63,6 @@ describe('models utils', () => {
       const password = 'tecate_light'
 
       crypto.pbkdf2 = jest.fn((psw, salt, iters, length, dig, callback) => {
-        console.log('Hi dude')
         let error = new Error('Hash it babe')
         callback(error)
       })
