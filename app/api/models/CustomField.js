@@ -36,13 +36,13 @@ const CustomFieldSchema = new Schema({
   },
   values: {
     type: [CustomValueSchema],
-    required() { return validate.saysString(this.type) },
-    validate(val) { return validate.saysString(this.type) && val.length },
+    // required() { return validate.saysString(this.type) },
+    validate(val) { return validate.saysString(this.type) },
     default: undefined
   },
   _values: {
     type: [String],
-    validate(val) { return validate.saysString(this.type) && val.length },
+    validate(val) { return validate.saysString(this.type) },
     default: undefined
   },
   min: {

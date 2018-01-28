@@ -4,8 +4,7 @@ const Schema = mongoose.Schema
 const CustomValueSchema = new Schema({
   value: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   }
 })
 
