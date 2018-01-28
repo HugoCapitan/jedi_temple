@@ -211,22 +211,22 @@ async function apiRemoveValue (req, res) {
 
 async function apiUpdateValue(req, res) {
   try {
-    const oldCustomField = await CustomField.findById(req.params.custom_id)
-    if (!oldCustomField) {
-      let notFoundError = new Error(`CustomField ${req.params.custom_id} not found`)
+    const customFieldToUpdate = await CustomField.findById(req.params.custom_id).exec()
+    if (!customFieldToUpdate) {
+      let notFoundError = new Error(`CustomField with id: ${req.params.custom_id}, not found`)
       notFoundError.name = 'NotFoundError'
       throw notFoundError
     }
 
-    const oldValue = oldCustomField.values.id( req.params.value_id )
+    const oldValue = customFieldToUpdate.values.id( req.params.value_id )
     if (!oldValue) {
-      let notFoundError = new Error(`Value with id ${ req.params.value_id } not found for CustomField ${ req.params.custom_id }`)
+      let notFoundError = new Error(`Value with id: ${ req.params.value_id }, not found for CustomField with id: ${ req.params.custom_id }`)
       notFoundError.name = 'NotFoundError'
       throw notFoundError
     } else {
       oldValue.value = req.body.value
-      oldCustomField.save()
-      res.status(200).json(oldCustomField)      
+      await customFieldToUpdate.save()
+      res.status(200).json(customFieldToUpdate)      
     }
   } catch (e) {
     if (e.customOrigin === 'Product') 
