@@ -192,6 +192,7 @@ describe('Order model', () => {
 
     test('Should correctly populate products fields', done => {
       const context = validOrder
+      context.products.unshift({ is_populated: true })
       const boundMiddleware = bindMiddleware(context)
       const expectedFirstProduct = {
         code: new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
@@ -224,8 +225,9 @@ describe('Order model', () => {
 
       const next = err => {
         expect(err).toBeFalsy()
-        expect(context.products[0]).toEqual(expectedFirstProduct)
-        expect(context.products[1]).toEqual(expectedSecondProduct)
+        expect(context.products[0]).toEqual({ is_populated: true })
+        expect(context.products[1]).toEqual(expectedFirstProduct)
+        expect(context.products[2]).toEqual(expectedSecondProduct)
         done()
       }
 
