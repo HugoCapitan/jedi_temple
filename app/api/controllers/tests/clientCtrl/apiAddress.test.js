@@ -192,10 +192,10 @@ describe('clientCtrl -> apiAddress', () => {
       addressIdToSend = new ObjectId('fff000fff000fff000fff000')
       foundAddress = Object.assign(uSchemas.getValidAddress(), { _id: addressIdToSend })
       addressUpdate = { email: 'new@email.com' }
-      updatedAddress = Object.assign({}, foundAddress, addressUpdate)
+      updatedAddress = Object.assign(uSchemas.getValidAddress(), addressUpdate, { _id: addressIdToSend })
 
       foundClient.addresses = [...foundClient.addresses, foundAddress]
-      foundClient.addresses.pull = jest.fn(() => foundClient.addresses.pop())
+      foundClient.addresses.id = jest.fn(() => foundAddress)
 
       req.params.address_id = addressIdToSend
       req.body = addressUpdate
@@ -208,18 +208,11 @@ describe('clientCtrl -> apiAddress', () => {
       expect(Client.findById.mock.calls[0][0]).toBe(clientIdToSend)
     })
   
-    test('Should call find, pull and push on foundClient.addresses with the sent address_id', async() => {
-      jest.spyOn(foundClient.addresses, 'find')
-      jest.spyOn(foundClient.addresses, 'pull')
-      jest.spyOn(foundClient.addresses, 'push')
-
+    test('Should call foundClient.addresses._id with the sent address_id', async() => {
       await clientCtrl.apiUpdateAddress(req, res)
 
-      expect(foundClient.addresses.find.mock.calls.length).toBe(1)
-      expect(foundClient.addresses.pull.mock.calls.length).toBe(1)
-      expect(foundClient.addresses.pull.mock.calls[0][0]).toEqual({_id: addressIdToSend})
-      expect(foundClient.addresses.push.mock.calls.length).toBe(1)
-      expect(foundClient.addresses.push.mock.calls[0][0]).toEqual(updatedAddress)
+      expect(foundClient.addresses.id.mock.calls.length).toBe(1)
+      expect(foundClient.addresses.id.mock.calls[0][0]).toEqual(addressIdToSend)
     })
 
     test('Should update the desired address', async () => {
@@ -257,7 +250,7 @@ describe('clientCtrl -> apiAddress', () => {
     })
 
     test('Should send a Address NotFoundError', async () => {
-      foundClient.addresses.find = jest.fn(() => null)
+      foundClient.addresses.id = jest.fn(() => null)
 
       await clientCtrl.apiUpdateAddress(req, res)
 
