@@ -183,4 +183,101 @@ describe('hmProductCtrl -> apiMaterials', () => {
 
   })
 
+  describe('-> apiUpdateMaterial', () => {
+    let materialIdToSend, foundMaterial, materialUpdate, updatedMaterial
+
+    beforeEach(() => {
+      materialIdToSend = new ObjectId('fff000fff000fff000fff000')
+      foundMaterial = { _id: materialIdToSend, material_name: 'waaaat', material_price: 788 }
+      materialUpdate = { material_name: 'newwaaaat' }
+      updatedMaterial = Object.assign({}, foundMaterial, materialUpdate)
+
+      foundHMProduct.materials = [...foundHMProduct.materials, foundMaterial]
+      foundHMProduct.materials.id = jest.fn(() => foundMaterial)
+
+      req.params.material_id = materialIdToSend
+      req.body = materialUpdate
+    })
+
+    test('Should call HMProduct.findById with the sent hmproduct_id', async () => {
+      await hmProductCtrl.apiUpdateMaterial(req, res)
+
+      expect(HMProduct.findById.mock.calls.length).toBe(1)
+      expect(HMProduct.findById.mock.calls[0][0]).toBe(hmProductIdToSend)
+    })
+  
+    test('Should call foundHMProduct.materials.id with the sent material_id', async() => {
+      await hmProductCtrl.apiUpdateMaterial(req, res)
+
+      expect(foundHMProduct.materials.id.mock.calls.length).toBe(1)
+      expect(foundHMProduct.materials.id.mock.calls[0][0]).toBe(materialIdToSend)
+    })
+
+    test('Should update the desired material', async () => {
+      await hmProductCtrl.apiUpdateMaterial(req, res)
+
+      expect(foundMaterial).toEqual(updatedMaterial)
+      expect(foundHMProduct.materials.length).toBe(2)
+      expect(foundHMProduct.materials[1]).toEqual(updatedMaterial)
+    })
+
+    test('Should call save on the foundHMProduct', async () => {
+      await hmProductCtrl.apiUpdateMaterial(req, res)
+      
+      expect(foundHMProduct.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the saved HMProduct', async () => {
+      await hmProductCtrl.apiUpdateMaterial(req, res)
+      
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundHMProduct)
+    })
+
+    test('Should send a HMProduct NotFoundError', async () => {
+      HMProduct.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
+
+      await hmProductCtrl.apiUpdateMaterial(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`HMProduct with id: ${hmProductIdToSend}, not found`)
+    })
+
+    test('Should send a material NotFoundError', async () => {
+      foundHMProduct.materials.id = jest.fn(() => null)
+
+      await hmProductCtrl.apiUpdateMaterial(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Value with id: ${materialIdToSend}, not found for HMProduct with id: ${hmProductIdToSend}`)
+    })
+
+    test('Should throw a ValidationError', async () => {
+      foundHMProduct.save = jest.fn(() => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'ValidationError'
+        reject(err)
+      }))
+
+      await hmProductCtrl.apiUpdateMaterial(req, res)
+
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe('Validation Error')
+    })
+
+    test('Should send a UnexpectedError', async () => {
+      foundHMProduct.save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Faked Error')) 
+      }))
+
+      await hmProductCtrl.apiUpdateMaterial(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })
+
 })

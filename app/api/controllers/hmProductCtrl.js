@@ -201,7 +201,38 @@ async function apiRemoveMaterial(req, res) {
   }
 }
 
-async function apiUpdateMaterial(req, res) {}
+async function apiUpdateMaterial(req, res) {
+  try {
+    const hmProductToUpdate = await HMProduct.findById(req.params.hmproduct_id).exec()
+    if (!hmProductToUpdate) {
+      let notFoundError = new Error(`HMProduct with id: ${req.params.hmproduct_id}, not found`)
+      notFoundError.name = 'NotFoundError'
+      throw notFoundError
+    }
+
+    const oldMaterial = hmProductToUpdate.materials.id( req.params.material_id )
+    if (!oldMaterial) {
+      let notFoundError = new Error(`Value with id: ${ req.params.material_id }, not found for HMProduct with id: ${ req.params.hmproduct_id }`)
+      notFoundError.name = 'NotFoundError'
+      throw notFoundError
+    } else {
+      Object.assign(oldMaterial, req.body)
+      await hmProductToUpdate.save()
+      res.status(200).json(hmProductToUpdate)      
+    }
+  } catch (e) {
+    if (e.customOrigin === 'Product') 
+      sendError(500, 'Products Update Error', e, res)
+    else if (e.name === 'ValidationError')
+      sendError(403, 'Validation Error', e, res)
+    else if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else if (e.name === 'Malformed Request')
+      sendError(400, 'Malformed Request', e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
 
 
 async function apiCreateModel(req, res) {}
