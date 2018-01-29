@@ -28,8 +28,8 @@ describe('customFieldCtrl -> API', () => {
   
     beforeEach(() => {
       hmProducts = [
-        uSchemas.getValidNumberCustom(),
-        uSchemas.getValidStringCustom()
+        uSchemas.getValidHMProduct(),
+        uSchemas.getValidHMProduct()
       ]
   
       HMProduct.find = jest.fn(() => ({
@@ -63,6 +63,76 @@ describe('customFieldCtrl -> API', () => {
       expect(res.data).toBe('Unexpected Error')
     })
   
+  })
+
+  describe('apiCreate', () => {
+    let hmProductToSend, savedHMProduct
+
+    beforeEach(() => {
+      hmProductToSend = uSchemas.getValidHMProduct()
+      savedHMProduct  = uSchemas.getValidHMProduct()
+      req.body = hmProductToSend
+      HMProduct.prototype.save = jest.fn(() => new Promise((resolve, reject) => {
+        resolve(savedHMProduct)
+      }))
+    })
+
+    test('Should instantiate a HMProduct with the sent body', async () => {
+      await customFieldCtrl.apiCreate(req, res)
+
+      expect(HMProduct.mock.calls.length).toBe(1)
+      expect(HMProduct.mock.calls[0][0]).toBe(hmProductToSend)
+    })
+
+    test('Should call HMProduct.prototype.save', async () => {
+      await customFieldCtrl.apiCreate(req, res)
+      expect(HMProduct.prototype.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should send back the saved HMProduct', async () => {
+      await customFieldCtrl.apiCreate(req, res)
+  
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toEqual(savedHMProduct)
+    })
+
+    test('Should send a ValidationError', async () => {
+      HMProduct.prototype.save = jest.fn(prod => new Promise((resolve, reject) => {
+        const valError = new Error('Faked Error')
+        valError.name = "ValidationError"
+        reject(valError)
+      }))
+  
+      await customFieldCtrl.apiCreate(req, res)
+  
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe("Validation Error")
+    })
+
+    test('Should send a DuplicationError', async () => {
+      HMProduct.prototype.save = jest.fn(prod => new Promise((resolve, reject) => {
+        const dupError = new Error('Faked Error')
+        dupError.code = 11000
+        reject(dupError)
+      }))
+  
+      await customFieldCtrl.apiCreate(req, res)
+  
+      expect(res.statusCode).toBe(409)
+      expect(res.data).toBe('Duplicated Name')
+    })
+
+    test('Should send a UnexpectedError', async () => {
+      HMProduct.prototype.save = jest.fn(prod => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
+  
+      await customFieldCtrl.apiCreate(req, res)
+  
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
   })
 
 })
