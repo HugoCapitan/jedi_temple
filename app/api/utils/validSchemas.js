@@ -55,16 +55,17 @@ function getValidClient() {
 }
 
 function getValidHMProduct() {
-  const product = new Product( getValidProduct() )
-
+  const materialId = new ObjectId('aaafffaaafffaaafffaaafff')
   return { 
     name: 'Bracelet',
     materials: [{
-      name: '24K Gold',
-      price: 999.99,
-      models: [
-        product._id
-      ]
+      _id: materialId,
+      material_name: '24K Gold',
+      material_price: 999.99
+    }],
+    models: [{
+      model_name: 'A Gold Model',
+      material_id: materialId
     }]
   }
 }
