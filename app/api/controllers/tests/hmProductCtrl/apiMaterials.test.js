@@ -119,5 +119,68 @@ describe('hmProductCtrl -> apiMaterials', () => {
 
   })
 
+  describe('-> apiRemoveMaterial', () => {
+    let materialIdToSend, updatedHMProduct
+
+    beforeEach(() => {
+      materialIdToSend = new ObjectId('aaa000aaa000aaa000aaa000')
+      updatedHMProduct = Object.assign({}, foundHMProduct, { materials: [] })
+      req.params.material_id = materialIdToSend
+      foundHMProduct.materials.pull = jest.fn(() => { foundHMProduct.materials.pop() })
+    }) 
+
+    test('Should call HMProduct.findById with sent hmproduct_id', async () => {
+      await hmProductCtrl.apiRemoveMaterial(req, res)
+
+      expect(HMProduct.findById.mock.calls.length).toBe(1)
+      expect(HMProduct.findById.mock.calls[0][0]).toBe(hmProductIdToSend)
+    })
+
+    test('Should call foundHMProduct.materials.pull with sent material_id', async () => {
+      const expectedQuery = { _id: materialIdToSend }
+      
+      await hmProductCtrl.apiRemoveMaterial(req, res)
+
+      expect(foundHMProduct.materials.pull.mock.calls.length).toBe(1)
+      expect(foundHMProduct.materials.pull.mock.calls[0][0]).toEqual(expectedQuery)
+    })
+
+    test('Should call save on foundHMProduct', async () => {
+      await hmProductCtrl.apiRemoveMaterial(req, res)
+
+      expect(foundHMProduct.materials.length).toBe(0)
+      expect(foundHMProduct.save.mock.calls.length).toBe(1)
+    })
+    
+    test('Should return the updated HMProduct', async () => {
+      await hmProductCtrl.apiRemoveMaterial(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundHMProduct)
+    })
+
+    test('Should return HMProduct NotFound Error', async () => {
+      HMProduct.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
+
+      await hmProductCtrl.apiRemoveMaterial(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`HMProduct with id: ${hmProductIdToSend}, not found`)
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundHMProduct.save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Faked Error')) 
+      }))
+
+      await hmProductCtrl.apiRemoveMaterial(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })
 
 })

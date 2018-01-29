@@ -176,7 +176,30 @@ async function apiCreateMaterial(req, res) {
   }
 }
 
-async function apiRemoveMaterial(req, res) {}
+async function apiRemoveMaterial(req, res) {
+  try {
+    const hmProductToUpdate = await HMProduct.findById(req.params.hmproduct_id).exec()
+
+    if (!hmProductToUpdate) {
+      let notFoundError = new Error(`HMProduct with id: ${req.params.hmproduct_id}, not found`)
+      notFoundError.name = 'NotFoundError'
+      throw notFoundError
+    }
+
+    hmProductToUpdate.materials.pull({ _id: req.params.material_id })
+    await hmProductToUpdate.save()
+
+    res.status(200).json(hmProductToUpdate)
+    
+  } catch(e) {
+    if (e.customOrigin === 'Product')
+      sendError(500, 'Products Update Error', e, res)
+    else if (e.name === 'CastError' || e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
 
 async function apiUpdateMaterial(req, res) {}
 
