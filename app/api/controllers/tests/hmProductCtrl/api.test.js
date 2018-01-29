@@ -188,4 +188,65 @@ describe('hmProductCtrl -> API', () => {
 
   })
 
+  describe('apiRemove', () => {
+    let idToSend, removedHMProduct
+
+    beforeEach(() => {
+      idToSend = new ObjectId('fffaaafffaaafffaaafffaaa')
+      removedHMProduct = uSchemas.getValidHMProduct()
+      req.params = {
+        id: idToSend
+      }
+
+      HMProduct.findByIdAndRemove = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(removedHMProduct)
+        })
+      }))
+    })
+
+    test('Should call HMProduct.findByIdAndRemove() with the sent id', async () => {
+      await hmProductCtrl.apiRemove(req, res)
+  
+      expect(HMProduct.findByIdAndRemove.mock.calls.length).toBe(1)
+      expect(HMProduct.findByIdAndRemove.mock.calls[0][0]).toBe(req.params.id)
+    })
+  
+    test('Should send the removed HMProduct', async () => {
+      await hmProductCtrl.apiRemove(req, res)
+  
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(removedHMProduct)
+    })    
+  
+    test('Should send 404 "HMProduct with id: <sent_id>, not found', async () => {
+      HMProduct.findByIdAndRemove = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          let castErr = new Error('Faked Error')
+          castErr.name = "CastError"
+          reject(castErr)
+        })
+      }))
+  
+      await hmProductCtrl.apiRemove(req, res)
+  
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`HMProduct with id: ${idToSend}, not found`)
+    })
+  
+    test('Should send "Unexpected Error"', async () => {
+      HMProduct.findByIdAndRemove = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          reject(new Error('Faked Error'))
+        })
+      }))
+  
+      await hmProductCtrl.apiRemove(req, res)
+  
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })
+
 })

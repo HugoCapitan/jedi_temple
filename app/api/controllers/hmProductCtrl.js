@@ -108,7 +108,7 @@ async function apiRead(req, res) {
 
 async function apiRemove(req, res) {
   try {
-    const removedHMProduct = await HMProduct.findByIdAndRemove(req.params.id)
+    const removedHMProduct = await HMProduct.findByIdAndRemove(req.params.id).exec()
 
     if (!removedHMProduct) {
       let notFoundError = new Error(`HMProduct ${req.params.id} not found`)
@@ -116,10 +116,10 @@ async function apiRemove(req, res) {
       throw notFoundError
     }
 
-    res.status(200).send(`HMProduct ${removedHMProduct._id} deleted`)
+    res.status(200).json(removedHMProduct)
   } catch (e) {
     if (e.name === 'CastError' || e.name === 'NotFoundError')
-      sendError(404, `HMProduct ${req.params.id} not found`, e, res)
+      sendError(404, `HMProduct with id: ${req.params.id}, not found`, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
