@@ -104,9 +104,7 @@ function preSaveValidation(self) {
 
     modelsIndexesToRemove = []
     const modelsCount = self.models.reduce((modacc, model, index) => {
-      if (!self.materials.find(selfMaterial => {
-        return _.isEqual(model.material_id , selfMaterial._id)
-      })) {
+      if (!self.materials.find(selfMaterial => _.isEqual(model.material_id , selfMaterial._id))) {
         modelsIndexesToRemove.push(index)
         return modacc
       }
