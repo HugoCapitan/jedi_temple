@@ -67,7 +67,7 @@ async function update(id, newHMProduct) {
 
 async function apiAll(req, res) {
   try {
-    let all = await HMProduct.find()
+    let all = await HMProduct.find().exec()
     res.status(200).json(all)
   } catch (e) {
     sendError(500, 'Unexpected Error', e, res)
