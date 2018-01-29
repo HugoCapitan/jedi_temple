@@ -27,15 +27,19 @@ const HMProductSchema = new Schema({
 HMProductSchema._middlewareFuncs = {
   preSave(next) {
     const self = this
-    const currentDate = new Date()
 
-    self.updated_at = currentDate
-    if (!self.created_at) self.created_at = currentDate
+    preSaveValidation(self)
+    .then(() => {
+      const currentDate = new Date()
 
-    self.slug = uCommon.slugify(self.name)
+      self.updated_at = currentDate
+      if (!self.created_at) self.created_at = currentDate
 
+      self.slug = uCommon.slugify(self.name)
 
-    return next()
+      return next()
+    })
+    .catch(e => next(e))
   },
   preUpdate(next) {
     const self = this
@@ -91,17 +95,19 @@ function preSaveValidation(self) {
       reject(err)
     }
 
-    const modelsCount = models.reduce((modacc, model) => {
+    modelsIndexesToRemove = []
+    const modelsCount = self.models.reduce((modacc, model, index) => {
       if (!self.materials.find(selfMaterial => model.material_id == selfMaterial._id)) {
-        const err = new Error(`Model with nonexisting material_id in materials of: ${self.name} HMProduct`)
-        err.name = 'ValidationError'
-        reject(err)
+        modelsIndexesToRemove.push(index)
+        return modacc
       }
 
       const modelIdentificator = `${model.material_id}:${model.model_name}`
       !!modacc[modelIdentificator] ? ++modacc[modelIdentificator] : modacc[modelIdentificator] = 1
       return modacc
     }, {})
+
+    self.models = self.models.filter((m, index) => modelsIndexesToRemove.find(val => val == index))
   
     if (Object.values( modelsCount ).find( v => v > 1 )) {
       const err = new Error(`Duplicated value for model in ${self.name} HMProduct`)
