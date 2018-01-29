@@ -10,7 +10,13 @@ module.exports = {
   apiCreate, 
   apiRead, 
   apiRemove, 
-  apiUpdate
+  apiUpdate,
+
+  apiUpdateBillingAddress,
+  apiUpdateShippingAddress,
+
+  apiAddProduct,
+  apiRemoveProduct
 }
 
 async function create(newOrder) {
@@ -142,4 +148,20 @@ async function apiUpdate(req, res) {
       sendError(500, 'Unexpected Error', e, res)
 
   }
+}
+
+async function apiUpdateBillingAddress(req, res) {
+
+} 
+
+async function apiUpdateShippingAddress(req, res) {
+
+}
+
+async function apiAddProduct(req, res) {
+
+}
+
+async function apiRemoveProduct(req, res) {
+
 }
