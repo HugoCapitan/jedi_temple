@@ -6,11 +6,20 @@ module.exports = {
   create, 
   remove, 
   update,
+
   apiAll, 
   apiCreate, 
   apiRead, 
   apiRemove, 
-  apiUpdate
+  apiUpdate,
+
+  apiCreateMaterial,
+  apiRemoveMaterial,
+  apiUpdateMaterial,
+
+  apiCreateModel,
+  apiRemoveModel,
+  apiUpdateModel
 }
 
 async function create(newHMProduct) {
@@ -143,7 +152,29 @@ async function apiUpdate(req, res) {
   }
 }
 
-async function apiCreateMaterial(req, res) {}
+async function apiCreateMaterial(req, res) {
+  try {
+    const hmProductToUpdate = await HMProduct.findById(req.params.hmproduct_id).exec()
+
+    if (!hmProductToUpdate) {
+      let notFoundError = new Error(`HMProduct ${req.params.hmproduct_id} not found`)
+      notFoundError.name = 'NotFoundError'
+      throw notFoundError
+    }
+
+    hmProductToUpdate.materials.push(req.body)
+    await hmProductToUpdate.save()
+
+    res.status(200).json(hmProductToUpdate)
+  } catch (e) {
+    if (e.name === 'NotFoundError')
+      sendError(404, `HMProduct with id: ${req.params.hmproduct_id}, not found`, e, res)
+    else if (e.name === 'ValidationError')
+      sendError(403, 'Validation Error', e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
 
 async function apiRemoveMaterial(req, res) {}
 
