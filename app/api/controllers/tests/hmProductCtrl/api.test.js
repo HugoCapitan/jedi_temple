@@ -1,14 +1,14 @@
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId
 
-const customFieldCtrl = require('../../hmProductCtrl')
+const hmProductCtrl = require('../../hmProductCtrl')
 
 jest.mock('../../../models/HMProduct')
 const HMProduct = require('../../../models/HMProduct')
 
 const uSchemas = require('../../../utils/validSchemas')
 
-describe('customFieldCtrl -> API', () => {
+describe('hmProductCtrl -> API', () => {
   let req, res
 
   beforeEach(() => {
@@ -40,12 +40,12 @@ describe('customFieldCtrl -> API', () => {
     })
   
     test('Should call HMProduct.find', async () => {
-      await customFieldCtrl.apiAll(req, res)
+      await hmProductCtrl.apiAll(req, res)
       expect(HMProduct.find.mock.calls.length).toBe(1)
     })
   
     test('Should send the returned hmProducts', async () => {
-      await customFieldCtrl.apiAll(req, res)
+      await hmProductCtrl.apiAll(req, res)
   
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(hmProducts)
@@ -57,7 +57,7 @@ describe('customFieldCtrl -> API', () => {
           reject(new Error('Faked Error'))
         })
       }))
-      await customFieldCtrl.apiAll(req, res)
+      await hmProductCtrl.apiAll(req, res)
   
       expect(res.statusCode).toBe(500)
       expect(res.data).toBe('Unexpected Error')
@@ -78,19 +78,19 @@ describe('customFieldCtrl -> API', () => {
     })
 
     test('Should instantiate a HMProduct with the sent body', async () => {
-      await customFieldCtrl.apiCreate(req, res)
+      await hmProductCtrl.apiCreate(req, res)
 
       expect(HMProduct.mock.calls.length).toBe(1)
       expect(HMProduct.mock.calls[0][0]).toBe(hmProductToSend)
     })
 
     test('Should call HMProduct.prototype.save', async () => {
-      await customFieldCtrl.apiCreate(req, res)
+      await hmProductCtrl.apiCreate(req, res)
       expect(HMProduct.prototype.save.mock.calls.length).toBe(1)
     })
 
     test('Should send back the saved HMProduct', async () => {
-      await customFieldCtrl.apiCreate(req, res)
+      await hmProductCtrl.apiCreate(req, res)
   
       expect(res.statusCode).toBe(200)
       expect(res.data).toEqual(savedHMProduct)
@@ -103,7 +103,7 @@ describe('customFieldCtrl -> API', () => {
         reject(valError)
       }))
   
-      await customFieldCtrl.apiCreate(req, res)
+      await hmProductCtrl.apiCreate(req, res)
   
       expect(res.statusCode).toBe(403)
       expect(res.data).toBe("Validation Error")
@@ -116,7 +116,7 @@ describe('customFieldCtrl -> API', () => {
         reject(dupError)
       }))
   
-      await customFieldCtrl.apiCreate(req, res)
+      await hmProductCtrl.apiCreate(req, res)
   
       expect(res.statusCode).toBe(409)
       expect(res.data).toBe('Duplicated Name')
@@ -127,7 +127,60 @@ describe('customFieldCtrl -> API', () => {
         reject(new Error('Faked Error'))
       }))
   
-      await customFieldCtrl.apiCreate(req, res)
+      await hmProductCtrl.apiCreate(req, res)
+  
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })
+
+  describe('apiRead', () => {
+    let idToSend, hmProductToReturn
+
+    beforeEach(() => {
+      idToSend = new ObjectId('aaafffaaafffaaafffaaafff')
+      hmProductToReturn = uSchemas.getValidHMProduct()
+      req.params = {
+        id: idToSend
+      }
+
+      HMProduct.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(hmProductToReturn)
+        })
+      }))
+    })
+
+    test('Should call HMProduct.findById with the id in req.params.id', async () => {
+      await hmProductCtrl.apiRead(req, res)
+  
+      expect(HMProduct.findById.mock.calls.length).toBe(1)
+      expect(HMProduct.findById.mock.calls[0][0]).toBe(req.params.id)
+    })
+  
+    test('Should send the retrieved HMProduct', async () => {
+      await hmProductCtrl.apiRead(req, res)
+  
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(hmProductToReturn)
+    })
+  
+    test('Should send "HMProduct with: <recieved_id>, not found"', async () => {
+      HMProduct.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
+  
+      await hmProductCtrl.apiRead(req, res)
+  
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`HMProduct with id: ${idToSend}, not found`)
+    })
+  
+    test('Should send "Unexpected Error"', async () => {
+      HMProduct.findById = jest.fn(id => {throw new Error('Faked Error')})
+  
+      await hmProductCtrl.apiRead(req, res)
   
       expect(res.statusCode).toBe(500)
       expect(res.data).toBe('Unexpected Error')

@@ -90,7 +90,7 @@ async function apiCreate(req, res) {
 
 async function apiRead(req, res) {
   try {
-    const foundHMProduct = await HMProduct.findById(req.params.id)
+    const foundHMProduct = await HMProduct.findById(req.params.id).exec()
     if (!foundHMProduct) {
       let notFoundError = new Error(`HMProduct ${req.params.id} not found`)
       notFoundError.name = 'NotFoundError'
@@ -100,7 +100,7 @@ async function apiRead(req, res) {
     res.status(200).json(foundHMProduct)
   } catch(e) {
     if (e.name === 'NotFoundError')
-      sendError(404, `HMProduct ${req.params.id} not found`, e, res)
+      sendError(404, `HMProduct with id: ${req.params.id}, not found`, e, res)
     else
       sendError(500, 'Unexpected Error', e, res)
   }
