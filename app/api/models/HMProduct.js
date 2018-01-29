@@ -51,6 +51,11 @@ HMProductSchema._middlewareFuncs = {
       err.name = 'ValidationError'
       return next(err)
     }
+    if (self._update.models) {
+      const err = new Error('Models should be updated via HMProduct.save')
+      err.name = 'ValidationError'
+      return next(err)
+    }
 
     return next()
   },

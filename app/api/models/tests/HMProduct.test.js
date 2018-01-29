@@ -224,13 +224,26 @@ describe('HMProduct Model', () => {
       const context = { materials: [] }
       const boundMiddlewareFunc = bindMiddleware({ _update: context })
       const next = err => {
-        expect(err.name).toBe('ValidationError')
         expect(err.message).toBe('Materials should be updated via HMProduct.save')
+        expect(err.name).toBe('ValidationError')
         done()
       }
 
       boundMiddlewareFunc(next)
-    })    
+    })
+    
+    test('Should throw error if models', done => {
+      const context = { models: [] }
+      const boundMiddleware = bindMiddleware({ _update: context })
+
+      const next = err => {
+        expect(err.message).toBe('Models should be updated via HMProduct.save')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
   })
 
