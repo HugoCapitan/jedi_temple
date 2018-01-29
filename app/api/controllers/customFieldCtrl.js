@@ -6,9 +6,6 @@ const productCtrl = require('./productCtrl')
 const { sendError } = require('../utils/http')
 
 module.exports = {
-  create,
-  remove,
-  update,
   apiAll,
   apiCreate,
   apiRead,
@@ -18,65 +15,6 @@ module.exports = {
   apiCreateValue,
   apiRemoveValue,
   apiUpdateValue
-}
-
-async function create(fieldObj) {
-  try {
-    const newCustomField = await new CustomField(fieldObj).save()
-    return newCustomField
-  } catch (e) {
-    if (e.customOrigin) throw e
-    
-    e.customOrigin = 'Field'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.code === 11000) {
-      e.name = 'DuplicationError'
-      e.customMessage = 'Duplicated Name'
-    } else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function remove(id) {
-  try {
-    const delCustomField = await CustomField.findByIdAndRemove(id).exec()
-    return delCustomField
-  } catch (e) {
-    if (e.customOrigin) throw e
-    
-    e.customOrigin = 'Field'
-    if (e.name === 'CastError')
-      e.customMessage = `CustomField with id: ${id}, not found`
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function update(id, newFieldObj) {
-  try {
-    const updatedCustomField = await CustomField.findByIdAndUpdate(id, newFieldObj, {new: true}).exec()
-    return updatedCustomField
-  } catch (e) {
-    if (e.customOrigin) throw e
-
-    e.customOrigin = 'Field'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.name === 'CastError')
-      e.customMessage = `CustomField with id: ${id}, not found`
-    else if (e.code === 11000) {
-      e.name = 'DuplicationError'
-      e.customMessage = 'Duplicated Name'
-    } else
-      e.customMessage = 'Unexpected Error'
-    
-    throw e
-  }
 }
 
 async function apiAll(req, res) {

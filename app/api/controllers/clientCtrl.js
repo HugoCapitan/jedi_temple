@@ -5,9 +5,6 @@ const Client = require('../models/Client')
 const { sendError } = require('../utils/http')
 
 module.exports = {
-  create, 
-  remove, 
-  update,
   apiAll, 
   apiCreate,
   apiRead, 
@@ -15,76 +12,17 @@ module.exports = {
   apiUpdate,
 
   apiCreateAddress,
-  apiAddOrder,
-  apiAddReservation,
-  apiAddWish,
-
   apiRemoveAddress,
+  apiUpdateAddress,
+
+  apiAddOrder,
   apiRemoveOrder,
+
+  apiAddReservation,
   apiRemoveReservation,
-  apiRemoveWish,
 
-  apiUpdateAddress
-}
-
-async function create(newClient) {
-  try {
-    const addedClient = await new Client(newClient).save()
-    return addedClient
-  } catch (e) {
-    if (e.customOrigin) throw e
-
-    e.customOrigin = 'Client'
-    if (e.name === 'ValidationError') {
-      e.customMessage = 'Validation Error'
-    } else if (e.code === 11000) {
-      e.name = 'DuplicationError'
-      e.customMessage = 'Duplicated Email'
-    } else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function remove(id) {
-  try {
-    const deletedClient = await Client.findByIdAndRemove(id).exec()
-    return deletedClient
-  } catch (e) {
-    if (e.customOrigin) throw e
-    
-    e.customOrigin = 'Client'
-    if (e.name === 'CastError')
-      e.customMessage = `Client with id: ${id}, not found`
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function update(id, newClient) {
-  try {
-    const updatedClient = await Client.findByIdAndUpdate(id, newClient, {new: true}).exec()
-    return updatedClient
-  } catch (e) {
-    if (e.customOrigin) throw e
-    
-    e.customOrigin = 'Client'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.name === "CastError")
-      e.customMessage = `Client with id: ${id}, not found`
-    else if (e.code === 11000) {
-      e.customMessage = 'Duplicated Email'
-      e.name = 'DuplicationError'
-    }
-    else
-      e.customMessage = 'Unexpected Error'
-    
-    throw e
-  }
+  apiAddWish,
+  apiRemoveWish
 }
 
 async function apiAll(req, res) {

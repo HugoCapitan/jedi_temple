@@ -2,67 +2,11 @@ const Picture = require('../models/Picture')
 
 const { sendError } = require('../utils/http')
 
-module.exports = {
-  create, 
-  remove, 
-  update,
-  apiAll, 
+module.exports = {apiAll, 
   apiCreate, 
   apiRead, 
   apiRemove, 
   apiUpdate
-}
-
-async function create(newPicture) {
-  try {
-    const addedPicture = await new Picture(newPicture).save()
-    return addedPicture
-  } catch (e) {
-    e.customOrigin = 'Picture'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function remove(id) {
-  try {
-    const deletedPicture = await Picture.findByIdAndRemove(id)
-    return deletedPicture
-  } catch (e) {
-    e.customOrigin = 'Picture'
-    if (e.name === 'CastError')
-      e.customMessage = `Picture ${id} not found`
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function update(id, newPicture) {
-  try {
-    await Picture.find ({_id: slug}, newPicture)
-    const updatedPicture = await Picture.findById(id)
-    return updatedPicture
-  } catch (e) {
-    e.customOrigin = 'Picture'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.name === "CastError")
-      e.customMessage = `Picture ${id} not found`
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
-      e.customMessage = 'Unexpected Error'
-    
-    throw e
-  }
 }
 
 async function apiAll(req, res) {

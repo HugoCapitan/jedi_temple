@@ -3,66 +3,11 @@ const Reservation = require('../models/Reservation')
 const { sendError } = require('../utils/http')
 
 module.exports = {
-  create, 
-  remove, 
-  update,
   apiAll, 
   apiCreate, 
   apiRead, 
   apiRemove, 
   apiUpdate
-}
-
-async function create(newReservation) {
-  try {
-    const addedReservation = await new Reservation(newReservation).save()
-    return addedReservation
-  } catch (e) {
-    e.customOrigin = 'Reservation'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function remove(id) {
-  try {
-    const deletedReservation = await Reservation.findByIdAndRemove(id)
-    return deletedReservation
-  } catch (e) {
-    e.customOrigin = 'Reservation'
-    if (e.name === 'CastError')
-      e.customMessage = `Reservation ${id} not found`
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function update(id, newReservation) {
-  try {
-    await Reservation.find ({_id: slug}, newReservation)
-    const updatedReservation = await Reservation.findById(id)
-    return updatedReservation
-  } catch (e) {
-    e.customOrigin = 'Reservation'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.name === "CastError")
-      e.customMessage = `Reservation ${id} not found`
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
-      e.customMessage = 'Unexpected Error'
-    
-    throw e
-  }
 }
 
 async function apiAll(req, res) {

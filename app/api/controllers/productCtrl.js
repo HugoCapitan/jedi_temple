@@ -3,66 +3,11 @@ const Product = require('../models/Product')
 const { sendError } = require('../utils/http')
 
 module.exports = {
-  create, 
-  remove, 
-  update,
   apiAll, 
   apiCreate, 
   apiRead, 
   apiRemove, 
   apiUpdate
-}
-
-async function create(newProduct) {
-  try {
-    const addedProduct = await new Product(newProduct).save()
-    return addedProduct
-  } catch (e) {
-    e.customOrigin = 'Product'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function remove(id) {
-  try {
-    const deletedProduct = await Product.findByIdAndRemove(id)
-    return deletedProduct
-  } catch (e) {
-    e.customOrigin = 'Product'
-    if (e.name === 'CastError')
-      e.customMessage = `Product ${id} not found`
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function update(id, newProduct) {
-  try {
-    await Product.find ({_id: slug}, newProduct)
-    const updatedProduct = await Product.findById(id)
-    return updatedProduct
-  } catch (e) {
-    e.customOrigin = 'Product'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.name === "CastError")
-      e.customMessage = `Product ${id} not found`
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
-      e.customMessage = 'Unexpected Error'
-    
-    throw e
-  }
 }
 
 async function apiAll(req, res) {

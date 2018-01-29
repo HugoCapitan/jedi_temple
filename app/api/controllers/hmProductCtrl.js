@@ -3,10 +3,6 @@ const HMProduct = require('../models/HMProduct')
 const { sendError } = require('../utils/http')
 
 module.exports = {
-  create, 
-  remove, 
-  update,
-
   apiAll, 
   apiCreate, 
   apiRead, 
@@ -20,58 +16,6 @@ module.exports = {
   apiCreateModel,
   apiRemoveModel,
   apiUpdateModel
-}
-
-async function create(newHMProduct) {
-  try {
-    const addedHMProduct = await new HMProduct(newHMProduct).save()
-    return addedHMProduct
-  } catch (e) {
-    e.customOrigin = 'HMProduct'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function remove(id) {
-  try {
-    const deletedHMProduct = await HMProduct.findByIdAndRemove(id)
-    return deletedHMProduct
-  } catch (e) {
-    e.customOrigin = 'HMProduct'
-    if (e.name === 'CastError')
-      e.customMessage = `HMProduct ${id} not found`
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function update(id, newHMProduct) {
-  try {
-    await HMProduct.find ({_id: slug}, newHMProduct)
-    const updatedHMProduct = await HMProduct.findById(id)
-    return updatedHMProduct
-  } catch (e) {
-    e.customOrigin = 'HMProduct'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.name === "CastError")
-      e.customMessage = `HMProduct ${id} not found`
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
-      e.customMessage = 'Unexpected Error'
-    
-    throw e
-  }
 }
 
 async function apiAll(req, res) {

@@ -3,66 +3,11 @@ const Text = require('../models/Text')
 const { sendError } = require('../utils/http')
 
 module.exports = {
-  create, 
-  remove, 
-  update,
   apiAll, 
   apiCreate, 
   apiRead, 
   apiRemove, 
   apiUpdate
-}
-
-async function create(newText) {
-  try {
-    const addedText = await new Text(newText).save()
-    return addedText
-  } catch (e) {
-    e.customOrigin = 'Text'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function remove(id) {
-  try {
-    const deletedText = await Text.findByIdAndRemove(id)
-    return deletedText
-  } catch (e) {
-    e.customOrigin = 'Text'
-    if (e.name === 'CastError')
-      e.customMessage = `Text ${id} not found`
-    else
-      e.customMessage = 'Unexpected Error'
-
-    throw e
-  }
-}
-
-async function update(id, newText) {
-  try {
-    await Text.find ({_id: slug}, newText)
-    const updatedText = await Text.findById(id)
-    return updatedText
-  } catch (e) {
-    e.customOrigin = 'Text'
-    if (e.name === 'ValidationError')
-      e.customMessage = 'Validation Error'
-    else if (e.name === "CastError")
-      e.customMessage = `Text ${id} not found`
-    else if (e.code === 11000)
-      e.customMessage = 'Duplicated Name'
-    else
-      e.customMessage = 'Unexpected Error'
-    
-    throw e
-  }
 }
 
 async function apiAll(req, res) {
