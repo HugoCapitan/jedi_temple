@@ -249,4 +249,98 @@ describe('hmProductCtrl -> API', () => {
 
   })
 
+  describe('apiUpdate', () => {
+    let idToSend, update, updateReturn
+
+    beforeEach(() => {
+      idToSend     = new ObjectId('fffaaafffaaafffaaafffaaa')
+      update = JSON.stringify({ name: 'New Name' })
+      updateReturn = Object.assign(uSchemas.getValidHMProduct(), update)
+      req.params = {
+        id: idToSend
+      }
+      req.body = update
+
+      HMProduct.findByIdAndUpdate = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(updateReturn)
+        })
+      }))
+    })
+
+    test('Should call HMProduct.findByIdAndUpdate with sent id and options new: true', async () => {
+      await hmProductCtrl.apiUpdate(req, res)
+
+      expect(HMProduct.findByIdAndUpdate.mock.calls.length).toBe(1)
+      expect(HMProduct.findByIdAndUpdate.mock.calls[0][0]).toBe(idToSend)
+      expect(HMProduct.findByIdAndUpdate.mock.calls[0][1]).toBe(update)
+      expect(HMProduct.findByIdAndUpdate.mock.calls[0][2]).toEqual({new: true})
+    })
+
+    test('Should send the updated HMProduct', async () => {
+      await hmProductCtrl.apiUpdate(req, res)
+  
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toEqual(updateReturn)
+    })
+
+    test('Should send 404 "HMProduct <sent_id> not found"', async () => {
+      HMProduct.findByIdAndUpdate = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          const notFoundErr = new Error('Faked Error')
+          notFoundErr.name = "CastError"
+          reject(notFoundErr)
+        })
+      }))
+  
+      await hmProductCtrl.apiUpdate(req, res)
+  
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`HMProduct with id: ${idToSend}, not found`)
+    })
+  
+    test('Should send 403 "Validation Error"', async () => {
+      HMProduct.findByIdAndUpdate = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          const valErr = new Error('Faked Error')
+          valErr.name = "ValidationError"
+          reject(valErr)
+        })
+      }))
+  
+      await hmProductCtrl.apiUpdate(req, res)
+  
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe('Validation Error')
+    })
+  
+    test('Should send 409 "Duplicated Name"', async () => {
+      HMProduct.findByIdAndUpdate = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          const dupErr = new Error('Faked Error')
+          dupErr.code = 11000
+          reject(dupErr)
+        })
+      }))
+  
+      await hmProductCtrl.apiUpdate(req, res)
+  
+      expect(res.statusCode).toBe(409)
+      expect(res.data).toBe("Duplicated Name")
+    })
+  
+    test('Should send 500 "Unexpected Error"', async () => {
+      HMProduct.findByIdAndUpdate = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {reject(new Error('Faked Error'))})
+      }))
+  
+      await hmProductCtrl.apiUpdate(req, res)
+  
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe("Unexpected Error")
+    })
+
+  })
+
+
 })

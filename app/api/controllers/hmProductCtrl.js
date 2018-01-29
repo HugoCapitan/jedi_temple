@@ -127,15 +127,14 @@ async function apiRemove(req, res) {
 
 async function apiUpdate(req, res) {
   try {
-    await HMProduct.findByIdAndUpdate(req.params.id, req.body)
-    const updatedHMProduct = await HMProduct.findById(req.params.id)
+    const updatedHMProduct = await HMProduct.findByIdAndUpdate(req.params.id, req.body, { new: true }).exec()
 
     res.status(200).json(updatedHMProduct)
   } catch (e) {
     if (e.name === 'ValidationError')
       sendError(403, 'Validation Error', e, res)
     else if (e.name === 'CastError')
-      sendError(404, `HMProduct ${req.params.id} not found`, e, res)
+      sendError(404, `HMProduct with id: ${req.params.id}, not found`, e, res)
     else if (e.code === 11000)
       sendError(409, 'Duplicated Name', e, res)
     else
