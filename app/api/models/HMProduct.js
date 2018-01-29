@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
@@ -45,6 +46,7 @@ HMProductSchema._middlewareFuncs = {
     const self = this
 
     self._update.updated_at = new Date()
+    if (self._update.name) self._update.slug = uCommon.slugify(self._update.name)
 
     if (self._update.materials) {
       const err = new Error('Materials should be updated via HMProduct.save')
@@ -102,7 +104,9 @@ function preSaveValidation(self) {
 
     modelsIndexesToRemove = []
     const modelsCount = self.models.reduce((modacc, model, index) => {
-      if (!self.materials.find(selfMaterial => model.material_id == selfMaterial._id)) {
+      if (!self.materials.find(selfMaterial => {
+        return _.isEqual(model.material_id , selfMaterial._id)
+      })) {
         modelsIndexesToRemove.push(index)
         return modacc
       }
@@ -112,7 +116,7 @@ function preSaveValidation(self) {
       return modacc
     }, {})
 
-    self.models = self.models.filter((m, index) => modelsIndexesToRemove.find(val => val == index))
+    self.models = self.models.filter((m, index) => !_.includes(modelsIndexesToRemove, index))
   
     if (Object.values( modelsCount ).find( v => v > 1 )) {
       const err = new Error(`Duplicated value for model in ${self.name} HMProduct`)
