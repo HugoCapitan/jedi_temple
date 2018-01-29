@@ -143,3 +143,16 @@ async function apiUpdate(req, res) {
 
   }
 }
+
+async function apiCreateMaterial(req, res) {}
+
+async function apiRemoveMaterial(req, res) {}
+
+async function apiUpdateMaterial(req, res) {}
+
+
+async function apiCreateModel(req, res) {}
+
+async function apiRemoveModel(req, res) {}
+
+async function apiUpdateModel(req, res) {}
