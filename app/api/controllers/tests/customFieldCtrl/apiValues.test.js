@@ -58,7 +58,7 @@ describe('customFieldCtrl -> apiValues', () => {
       expect(CustomField.findById.mock.calls[0][0]).toBe(customFieldIdToSend)
     })
 
-    test('Should push sent address to found CustomField\'s values array', async () => {
+    test('Should push sent value to found CustomField\'s values array', async () => {
       await customFieldCtrl.apiCreateValue(req, res)
 
       expect(foundCustomField.values.length).toBe(3)
@@ -71,7 +71,7 @@ describe('customFieldCtrl -> apiValues', () => {
       expect(foundCustomField.save.mock.calls.length).toBe(1)
     })
 
-    test('Should return the saved CustomFieldt', async () => {
+    test('Should return the saved CustomField', async () => {
       Object.assign(updatedCustomField, {password: undefined, salt: undefined})
       await customFieldCtrl.apiCreateValue(req, res)
       
@@ -136,7 +136,7 @@ describe('customFieldCtrl -> apiValues', () => {
       expect(CustomField.findById.mock.calls[0][0]).toBe(customFieldIdToSend)
     })
 
-    test('Should call foundCustomField.values.pull with sent addresd_id', async () => {
+    test('Should call foundCustomField.values.pull with sent value_id', async () => {
       const expectedQuery = { _id: valueIdToSend }
       
       await customFieldCtrl.apiRemoveValue(req, res)
