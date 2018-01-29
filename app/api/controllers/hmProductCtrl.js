@@ -259,6 +259,28 @@ async function apiCreateModel(req, res) {
   }
 }
 
-async function apiRemoveModel(req, res) {}
+async function apiRemoveModel(req, res) {
+  try {
+    const hmProductToUpdate = await HMProduct.findById(req.params.hmproduct_id).exec()
+
+    if (!hmProductToUpdate) {
+      let notFoundError = new Error(`HMProduct with id: ${req.params.hmproduct_id}, not found`)
+      notFoundError.name = 'NotFoundError'
+      throw notFoundError
+    }
+
+    hmProductToUpdate.models.pull({ _id: req.params.model_id })
+    await hmProductToUpdate.save()
+
+    res.status(200).json(hmProductToUpdate)
+  } catch(e) {
+    if (e.customOrigin === 'Product')
+      sendError(500, 'Products Update Error', e, res)
+    else if (e.name === 'CastError' || e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
 
 async function apiUpdateModel(req, res) {}
