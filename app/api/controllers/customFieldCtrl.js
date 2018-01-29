@@ -206,7 +206,6 @@ async function apiRemoveValue (req, res) {
     else
       sendError(500, 'Unexpected Error', e, res)
   }
-
 }
 
 async function apiUpdateValue(req, res) {
