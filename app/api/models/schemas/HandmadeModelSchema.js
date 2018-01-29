@@ -2,12 +2,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 module.exports = new Schema({
-  material_name: {
+  model_name: {
     type: String,
     required: true
   },
-  material_price: {
-    type: Number,
+  material_id: {
+    type: Schema.Types.ObjectId,
     required: true
   }
 })
