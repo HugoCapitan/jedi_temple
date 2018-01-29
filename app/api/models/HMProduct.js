@@ -6,6 +6,7 @@ const Store = require('./Store')
 const uCommon = require('../utils')
 
 const HandmadeMaterialSchema = require('./schemas/HandmadeMaterialSchema')
+const HandmadeModelSchema = require('./schemas/HandmadeModelSchema')
 
 const HMProductSchema = new Schema({
   name: {
@@ -18,16 +19,7 @@ const HMProductSchema = new Schema({
     unique: true
   },
   materials: [HandmadeMaterialSchema],
-  models: [{
-    model_name: {
-      type: String,
-      required: true
-    },
-    material_id: {
-      type: Schema.Types.ObjectId,
-      required: true
-    }
-  }],
+  models: [HandmadeModelSchema],
   created_at: Date,
   updated_at: Date
 })
@@ -42,31 +34,6 @@ HMProductSchema._middlewareFuncs = {
 
     self.slug = uCommon.slugify(self.name)
 
-    if (self.materials) {
-      const materialsCount = self.materials.reduce((matacc, material) => {
-        !!matacc[material.name] ? ++matacc[material.name] : matacc[material.name] = 1
-        return matacc
-      }, {})
-  
-      if (Object.values( materialsCount ).find( v => v > 1 )) {
-        let err = new Error(`Duplicated value for materials in ${self.name} HMProduct`)
-        err.name = 'ValidationError'
-        return next(err)
-      }
-
-      for (material of self.materials) {
-        const modelsCount = material.models.reduce((modacc, model) => {
-          !!modacc[model] ? ++modacc[model] : modacc[model] = 1
-          return modacc
-        }, {})
-  
-        if (Object.values( modelsCount ).find( v => v > 1 )) {
-          const err = new Error(`Duplicated value for models in material ${material.name} in ${self.name} HMProduct`)
-          err.name = 'ValidationError'
-          return next(err)
-        }
-      }
-    }
 
     return next()
   },
@@ -110,3 +77,38 @@ HMProductSchema.pre('findOneAndRemove', HMProductSchema._middlewareFuncs.preRemo
 const HMProduct = mongoose.model('HMProduct', HMProductSchema)
 
 module.exports = HMProduct
+
+function preSaveValidation(self) {
+  return new Promise((resolve, reject) => {
+    const materialsCount = self.materials.reduce((matacc, material) => {
+      !!matacc[material.material_name] ? ++matacc[material.material_name] : matacc[material.material_name] = 1
+      return matacc
+    }, {})
+  
+    if (Object.values( materialsCount ).find( v => v > 1 )) {
+      let err = new Error(`Duplicated value for materials in ${self.name} HMProduct`)
+      err.name = 'ValidationError'
+      reject(err)
+    }
+
+    const modelsCount = models.reduce((modacc, model) => {
+      if (!self.materials.find(selfMaterial => model.material_id == selfMaterial._id)) {
+        const err = new Error(`Model with nonexisting material_id in materials of: ${self.name} HMProduct`)
+        err.name = 'ValidationError'
+        reject(err)
+      }
+
+      const modelIdentificator = `${model.material_id}:${model.model_name}`
+      !!modacc[modelIdentificator] ? ++modacc[modelIdentificator] : modacc[modelIdentificator] = 1
+      return modacc
+    }, {})
+  
+    if (Object.values( modelsCount ).find( v => v > 1 )) {
+      const err = new Error(`Duplicated value for model in ${self.name} HMProduct`)
+      err.name = 'ValidationError'
+      reject(err)
+    }
+
+    resolve()
+  })
+}
