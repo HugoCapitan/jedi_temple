@@ -72,14 +72,11 @@ describe('hmProductCtrl -> apiMaterials', () => {
     })
 
     test('Should return the saved HMProduct', async () => {
-      Object.assign(updatedHMProduct, {password: undefined, salt: undefined})
       await hmProductCtrl.apiCreateMaterial(req, res)
       
       expect(res.statusCode).toBe(200)
       expect(res.data).toBe(foundHMProduct)
       expect(res.data).toEqual(updatedHMProduct)
-      expect(res.data.password).toBeFalsy()
-      expect(res.data.salt).toBeFalsy()
     })
     
     test('Should send a NotFoundError', async () => {
