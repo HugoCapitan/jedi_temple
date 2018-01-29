@@ -91,8 +91,19 @@ OrderSchema._middlewareFuncs = {
   },
   preUpdate(next) {
     const self = this
-    if (self._update.hasOwnProperty('order_code')) {
-      const err = new Error('Order code is read-only')
+
+    if (self._update.products) {
+      const err = new Error('Addresses and products should be updated via save')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if (self._update.billing_address) {
+      const err = new Error('Addresses and products should be updated via save')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if (self._update.shipping_address) {
+      const err = new Error('Addresses and products should be updated via save')
       err.name = 'ValidationError'
       return next(err)
     }

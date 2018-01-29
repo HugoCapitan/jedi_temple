@@ -392,15 +392,39 @@ describe('Order model', () => {
       boundMiddleware(next)
     })
 
-    test('Should prevent code modification', done => {
-      const _update = { order_code: 'something' }
+    test('Should throw error if billing_address', done => {
+      const _update = { billing_address: {} }
       const boundMiddleware = bindMiddleware({ _update })
       const next = err => {
-        expect(err.message).toBe('Order code is read-only')
+        expect(err.message).toBe('Addresses and products should be updated via save')
         expect(err.name).toBe('ValidationError')
         done()
       }
+      
+      boundMiddleware(next)
+    })
 
+    test('Should throw error if billing_address', done => {
+      const _update = { shipping_address: {} }
+      const boundMiddleware = bindMiddleware({ _update })
+      const next = err => {
+        expect(err.message).toBe('Addresses and products should be updated via save')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
+      
+      boundMiddleware(next)
+    })
+
+    test('Should throw error if products', done => {
+      const _update = { products: [] }
+      const boundMiddleware = bindMiddleware({ _update })
+      const next = err => {
+        expect(err.message).toBe('Addresses and products should be updated via save')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
+      
       boundMiddleware(next)
     })
 
