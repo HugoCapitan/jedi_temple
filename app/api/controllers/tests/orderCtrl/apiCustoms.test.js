@@ -169,7 +169,6 @@ describe('orderCtrl -> api custom methods', () => {
        expect(res.statusCode).toBe(403)
        expect(res.data).toBe('Validation Error')
      })
-
     
      test('Should return UnexpectedError', async () => {
       foundOrder.save = jest.fn(() => new Promise((resole, reject) => { 
@@ -196,6 +195,7 @@ describe('orderCtrl -> api custom methods', () => {
         quantity: 4
       }
       updatedProducts = [...foundOrder.products, productToSend]
+      req.body = productToSend
     })
 
     test('Should call Order.findById', async () => {
@@ -209,7 +209,7 @@ describe('orderCtrl -> api custom methods', () => {
       await orderCtrl.apiAddProduct(req, res)
 
       expect(foundOrder.products.length).toBe(3)
-      expect(foundOrder.products[3]).toEqual(productToSend)
+      expect(foundOrder.products[2]).toEqual(productToSend)
     })
 
     test('Should call foundOrder.save', async () => {
@@ -219,8 +219,9 @@ describe('orderCtrl -> api custom methods', () => {
     })
 
     test('Should return updated Order', async () => {
-      const expectedOrder = uSchemas.getValidOrder()
-      expectedOrder.products.push(productToSend)
+      const expectedOrder = Object.assign({}, foundOrder, { 
+        products: [...foundOrder.products, productToSend] 
+      })
 
       await orderCtrl.apiAddProduct(req, res)
 
@@ -228,11 +229,41 @@ describe('orderCtrl -> api custom methods', () => {
       expect(res.data).toEqual(expectedOrder)
     })
 
-    test('Should return NotFoundError')
+    test('Should return NotFoundError', async () => {
+      Order.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => resolve(null))
+      }))
 
-    test('Should return ValidationError')
+      await orderCtrl.apiAddProduct(req, res)
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Order with id: ${orderIdToSend}, not found`)
+    })
 
-    test('Should return UnexpectedError')
+    test('Should return ValidationError', async () => {
+      foundOrder.save = jest.fn(() => new Promise((resole, reject) => { 
+        const err = new Error('Faked Error')
+        err.name = 'ValidationError'
+        reject(err)
+      }))
+
+      await orderCtrl.apiAddProduct(req, res)
+
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe('Validation Error')
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundOrder.save = jest.fn(() => new Promise((resole, reject) => { 
+        const err = new Error('Faked Error')
+        err.name = 'WHATATATA'
+        reject(err)
+      }))
+
+      await orderCtrl.apiAddProduct(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
 
   })
 
