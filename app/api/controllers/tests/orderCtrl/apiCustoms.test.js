@@ -268,18 +268,65 @@ describe('orderCtrl -> api custom methods', () => {
   })
 
   describe('removeProduct', () => {
+    let productIdToSend, updatedProducts
 
-    test('Should call Order.findById')
+    beforeEach(() => {
+      productIdToSend = new ObjectId('ffffffffffffaaaaaaaaaaaa')
+      foundOrder.products.pull = jest.fn(() => foundOrder.products.pop())
+      req.params.product_id = productIdToSend
+    })
 
-    test('Should pull product id from foundOrder.products')
+    test('Should call Order.findById', async () => {
+      await orderCtrl.apiRemoveProduct(req, res)
 
-    test('Should call foundOrder.save')
+      expect(Order.findById.mock.calls.length).toBe(1)
+      expect(Order.findById.mock.calls[0][0]).toBe(orderIdToSend)
+    })
 
-    test('Should return updated Order')
+    test('Should pull product id from foundOrder.products', async () => {
+      await orderCtrl.apiRemoveProduct(req, res)
 
-    test('Should return NotFoundError')
+      expect(foundOrder.products.length).toBe(1)
+    })
 
-    test('Should return UnexpectedError')
+    test('Should call foundOrder.save', async () => {
+      await orderCtrl.apiRemoveProduct(req, res)
+
+      expect(foundOrder.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return updated Order', async () => {
+      const expectedOrder = Object.assign({}, foundOrder, { 
+        products: [foundOrder.products[0]] 
+      })
+
+      await orderCtrl.apiRemoveProduct(req, res)
+
+      expect(res.data).toBe(foundOrder)
+    })
+
+    test('Should return NotFoundError', async () => {
+      Order.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => resolve(null))
+      }))
+
+      await orderCtrl.apiRemoveProduct(req, res)
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Order with id: ${orderIdToSend}, not found`)
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundOrder.save = jest.fn(() => new Promise((resole, reject) => { 
+        const err = new Error('Faked Error')
+        err.name = 'WHATATATA'
+        reject(err)
+      }))
+
+      await orderCtrl.apiRemoveProduct(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
 
   })
 

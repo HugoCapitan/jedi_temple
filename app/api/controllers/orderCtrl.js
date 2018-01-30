@@ -155,5 +155,23 @@ async function apiAddProduct(req, res) {
 }
 
 async function apiRemoveProduct(req, res) {
+  try {
+    const orderToUpdate = await Order.findById(req.params.order_id).exec()
+    if (!orderToUpdate) {
+      const err = new Error(`Order with id: ${req.params.order_id}, not found`)
+      err.name = 'NotFoundError'
+      throw err
+    }
 
+    orderToUpdate.products.pull(req.params.product_id)
+    await orderToUpdate.save()
+    res.status(200).json(orderToUpdate)
+  } catch (e) {
+    if (e.name === 'ValidationError')
+      sendError(403, 'Validation Error', e, res)
+    else if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
 }
