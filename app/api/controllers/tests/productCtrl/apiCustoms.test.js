@@ -25,7 +25,7 @@ describe('productCtrl -> apiCustoms', () => {
 
     req = {
       params: {
-        hmproduct_id: productIdToSend
+        product_id: productIdToSend
       }
     }
     res = {
