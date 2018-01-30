@@ -112,20 +112,77 @@ describe('orderCtrl -> api custom methods', () => {
   })
 
   describe('updateShippingAddress', () => {
+    let update, updatedAddress
 
-    test('Should call Order.findById with sent order_id')
+    beforeEach(() => {
+      update = { address_line_1: 'Something new for the line' }
+      updatedAddress = Object.assign({}, foundOrder.shipping_address, update)
+      req.body = update
+    })
 
-    test('Should update foundOrder.shippingAddress')
+    test('Should call Order.findById with sent order_id', async () => {
+      await orderCtrl.apiUpdateShippingAddress(req, res)
 
-    test('Should call foundOrder.save')
+      expect(Order.findById.mock.calls.length).toBe(1)
+      expect(Order.findById.mock.calls[0][0]).toBe(orderIdToSend)
+    })
 
-    test('Should return updated Order')
+    test('Should update foundOrder.shippingAddress', async () => {
+      await orderCtrl.apiUpdateShippingAddress(req, res)
 
-    test('Should return NotFoundError')
+      expect(foundOrder.shipping_address).toEqual(updatedAddress)
+    })
 
-    test('Should return ValidationError')
+    test('Should call foundOrder.save', async () => {
+      await orderCtrl.apiUpdateShippingAddress(req, res)
+      
+      expect(foundOrder.save.mock.calls.length).toBe(1)
+    })
 
-    test('Should return UnexpectedError')
+    test('Should return updated Order', async () => {
+      await orderCtrl.apiUpdateShippingAddress(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundOrder)
+      expect(res.data.shipping_address).toEqual(updatedAddress)
+    })
+
+    test('Should return NotFoundError', async () => {
+      Order.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => resolve(null))
+      }))
+
+      await orderCtrl.apiUpdateShippingAddress(req, res)
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Order with id: ${orderIdToSend}, not found`)
+    })
+
+    test('Should return ValidationError', async () => {
+      foundOrder.save = jest.fn(() => new Promise((resole, reject) => { 
+         const err = new Error('Faked Error')
+         err.name = 'ValidationError'
+         reject(err)
+       }))
+ 
+       await orderCtrl.apiUpdateShippingAddress(req, res)
+ 
+       expect(res.statusCode).toBe(403)
+       expect(res.data).toBe('Validation Error')
+     })
+
+    
+     test('Should return UnexpectedError', async () => {
+      foundOrder.save = jest.fn(() => new Promise((resole, reject) => { 
+        const err = new Error('Faked Error')
+        err.name = 'WHATATATA'
+        reject(err)
+      }))
+
+      await orderCtrl.apiUpdateShippingAddress(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
 
   })
 
