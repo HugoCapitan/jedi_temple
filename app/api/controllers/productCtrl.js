@@ -168,8 +168,73 @@ async function apiUpdateCustom(req, res) {
 }
 
 
-async function apiAddImage(req, res) {}
+async function apiAddImage(req, res) {
+  try {
+    const productToUpdate = await Product.findById(req.params.product_id).exec()
+    if (!productToUpdate) {
+      const err = new Error(`Product with id: ${req.params.product_id}, not found`)
+      err.name = 'NotFoundError'
+      throw err
+    }
 
-async function apiRemoveImage(req, res) {}
+    productToUpdate.images.push(req.body)
+    await productToUpdate.save()
+    res.status(200).json(productToUpdate)
+  } catch(e) {
+    if (e.name === 'ValidationError')
+      sendError(403, 'Validation Error', e, res)
+    else if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
 
-async function apiUpdateImage(req, res) {}
+async function apiRemoveImage(req, res) {
+  try {
+    const productToUpdate = await Product.findById(req.params.product_id).exec()
+    if (!productToUpdate) {
+      const err = new Error(`Product with id: ${req.params.product_id}, not found`)
+      err.name = 'NotFoundError'
+      throw err
+    }
+
+    productToUpdate.images.pull({_id: req.params.image_id})
+    await productToUpdate.save()
+    res.status(200).json(productToUpdate)
+  } catch(e) {
+    if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
+
+async function apiUpdateImage(req, res) {
+  try {
+    const productToUpdate = await Product.findById(req.params.product_id).exec()
+    if (!productToUpdate) {
+      const err = new Error(`Product with id: ${req.params.product_id}, not found`)
+      err.name = 'NotFoundError'
+      throw err
+    }
+
+    const imageToModify = productToUpdate.images.id(req.params.image_id)
+    if (!imageToModify) {
+      let notFoundError = new Error(`Image with id: ${ req.params.image_id }, not found for Product with id: ${ req.params.product_id }`)
+      notFoundError.name = 'NotFoundError'
+      throw notFoundError
+    }
+
+    Object.assign(imageToModify, req.body)
+    await productToUpdate.save()
+    res.status(200).json(productToUpdate)
+  } catch(e) {
+    if (e.name === 'ValidationError')
+      sendError(403, 'Validation Error', e, res)
+    else if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
