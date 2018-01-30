@@ -138,7 +138,34 @@ async function apiRemoveCustom(req, res) {
   }
 }
 
-async function apiUpdateCustom(req, res) {}
+async function apiUpdateCustom(req, res) {
+  try {
+    const productToUpdate = await Product.findById(req.params.product_id).exec()
+    if (!productToUpdate) {
+      const err = new Error(`Product with id: ${req.params.product_id}, not found`)
+      err.name = 'NotFoundError'
+      throw err
+    }
+
+    const customToModify = productToUpdate.customs.id(req.params.custom_id)
+    if (!customToModify) {
+      let notFoundError = new Error(`Custom with id: ${ req.params.custom_id }, not found for Product with id: ${ req.params.product_id }`)
+      notFoundError.name = 'NotFoundError'
+      throw notFoundError
+    }
+
+    Object.assign(customToModify, req.body)
+    await productToUpdate.save()
+    res.status(200).json(productToUpdate)
+  } catch(e) {
+    if (e.name === 'ValidationError')
+      sendError(403, 'Validation Error', e, res)
+    else if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
 
 
 async function apiAddImage(req, res) {}

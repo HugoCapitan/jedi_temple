@@ -51,7 +51,7 @@ describe('productCtrl -> apiCustoms', () => {
       req.body = customToSend
     })
 
-    test('Should call Product.findById with the sent hmproduct_id', async () => {
+    test('Should call Product.findById with the sent product_id', async () => {
       await productCtrl.apiAddCustom(req, res)
 
       expect(Product.findById.mock.calls.length).toBe(1)
@@ -126,7 +126,7 @@ describe('productCtrl -> apiCustoms', () => {
       foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
     }) 
 
-    test('Should call Product.findById with sent hmproduct_id', async () => {
+    test('Should call Product.findById with sent product_id', async () => {
       await productCtrl.apiRemoveCustom(req, res)
 
       expect(Product.findById.mock.calls.length).toBe(1)
@@ -179,6 +179,100 @@ describe('productCtrl -> apiCustoms', () => {
     })
   })
 
-  describe('apiUpdateCustom', () => {})
+  describe('apiUpdateCustom', () => {
+    let customIdToSend, foundCustom, customUpdate, updatedCustom
+
+    beforeEach(() => {
+      customIdToSend = new ObjectId('fff000fff000fff000fff000')
+      foundCustom = { _id: customIdToSend, custom_id: new ObjectId('ffffffffffffaaaaaaaaaaaa'), value: 788 }
+      customUpdate = { value: 7878 }
+      updatedCustom = Object.assign({}, foundCustom, customUpdate)
+
+      foundProduct.customs = [...foundProduct.customs, foundCustom]
+      foundProduct.customs.id = jest.fn(() => foundCustom)
+
+      req.params.custom_id = customIdToSend
+      req.body = customUpdate
+    })
+
+    test('Should call Product.findById with the sent product_id', async () => {
+      await productCtrl.apiUpdateCustom(req, res)
+
+      expect(Product.findById.mock.calls.length).toBe(1)
+      expect(Product.findById.mock.calls[0][0]).toBe(productIdToSend)
+    })
+  
+    test('Should call foundProduct.customs.id with the sent custom_id', async() => {
+      await productCtrl.apiUpdateCustom(req, res)
+
+      expect(foundProduct.customs.id.mock.calls.length).toBe(1)
+      expect(foundProduct.customs.id.mock.calls[0][0]).toBe(customIdToSend)
+    })
+
+    test('Should update the desired custom', async () => {
+      await productCtrl.apiUpdateCustom(req, res)
+
+      expect(foundCustom).toEqual(updatedCustom)
+      expect(foundProduct.customs.length).toBe(2)
+      expect(foundProduct.customs[1]).toEqual(updatedCustom)
+    })
+
+    test('Should call save on the foundProduct', async () => {
+      await productCtrl.apiUpdateCustom(req, res)
+      
+      expect(foundProduct.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the saved Product', async () => {
+      await productCtrl.apiUpdateCustom(req, res)
+      
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundProduct)
+    })
+
+    test('Should send a Product NotFoundError', async () => {
+      Product.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
+
+      await productCtrl.apiUpdateCustom(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Product with id: ${productIdToSend}, not found`)
+    })
+
+    test('Should send a custom NotFoundError', async () => {
+      foundProduct.customs.id = jest.fn(() => null)
+
+      await productCtrl.apiUpdateCustom(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Custom with id: ${customIdToSend}, not found for Product with id: ${productIdToSend}`)
+    })
+
+    test('Should throw a ValidationError', async () => {
+      foundProduct.save = jest.fn(() => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'ValidationError'
+        reject(err)
+      }))
+
+      await productCtrl.apiUpdateCustom(req, res)
+
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe('Validation Error')
+    })
+
+    test('Should send a UnexpectedError', async () => {
+      foundProduct.save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Faked Error')) 
+      }))
+
+      await productCtrl.apiUpdateCustom(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+  })
 
 })
