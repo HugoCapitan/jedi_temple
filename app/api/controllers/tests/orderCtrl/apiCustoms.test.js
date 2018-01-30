@@ -188,14 +188,45 @@ describe('orderCtrl -> api custom methods', () => {
 
 
   describe('addProduct', () => {
+    let productToSend, updatedProducts
 
-    test('Should call Order.findById')
+    beforeEach(() => {
+      productToSend = {
+        code: new ObjectId('aaaaaaaaaaffffffffffaaff'),
+        quantity: 4
+      }
+      updatedProducts = [...foundOrder.products, productToSend]
+    })
 
-    test('Should push product id to foundOrder.products')
+    test('Should call Order.findById', async () => {
+      await orderCtrl.apiAddProduct(req, res)
 
-    test('Should call foundOrder.save')
+      expect(Order.findById.mock.calls.length).toBe(1)
+      expect(Order.findById.mock.calls[0][0]).toBe(orderIdToSend)
+    })
 
-    test('Should return updated Order')
+    test('Should push product id to foundOrder.products', async () => {
+      await orderCtrl.apiAddProduct(req, res)
+
+      expect(foundOrder.products.length).toBe(3)
+      expect(foundOrder.products[3]).toEqual(productToSend)
+    })
+
+    test('Should call foundOrder.save', async () => {
+      await orderCtrl.apiAddProduct(req, res)
+
+      expect(foundOrder.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return updated Order', async () => {
+      const expectedOrder = uSchemas.getValidOrder()
+      expectedOrder.products.push(productToSend)
+
+      await orderCtrl.apiAddProduct(req, res)
+
+      expect(res.data).toBe(foundOrder)
+      expect(res.data).toEqual(expectedOrder)
+    })
 
     test('Should return NotFoundError')
 
