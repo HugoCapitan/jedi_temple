@@ -7,7 +7,15 @@ module.exports = {
   apiCreate, 
   apiRead, 
   apiRemove, 
-  apiUpdate
+  apiUpdate,
+
+  apiAddCustom,
+  apiRemoveCustom,
+  apiUpdateCustom,
+
+  apiAddImage,
+  apiRemoveImage,
+  apiUpdateImage
 }
 
 async function apiAll(req, res) {
@@ -86,3 +94,17 @@ async function apiUpdate(req, res) {
 
   }
 }
+
+
+async function apiAddCustom(req, res) {}
+
+async function apiRemoveCustom(req, res) {}
+
+async function apiUpdateCustom(req, res) {}
+
+
+async function apiAddImage(req, res) {}
+
+async function apiRemoveImage(req, res) {}
+
+async function apiUpdateImage(req, res) {}
