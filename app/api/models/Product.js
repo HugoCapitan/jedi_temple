@@ -27,9 +27,7 @@ const ProductSchema = new Schema({
   },
   description: String,
   images: [ImageSchema],
-  customs: {
-    type: [CustomSchema],
-  },
+  customs: [CustomSchema],
   created_at: Date,
   updated_at: Date
 })
