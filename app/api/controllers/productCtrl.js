@@ -96,7 +96,27 @@ async function apiUpdate(req, res) {
 }
 
 
-async function apiAddCustom(req, res) {}
+async function apiAddCustom(req, res) {
+  try {
+    const productToUpdate = await Product.findById(req.params.product_id).exec()
+    if (!productToUpdate) {
+      const err = new Error(`Product with id: ${req.params.product_id}, not found`)
+      err.name = 'NotFoundError'
+      throw err
+    }
+
+    productToUpdate.customs.push(req.body)
+    await productToUpdate.save()
+    res.status(200).json(productToUpdate)
+  } catch(e) {
+    if (e.name === 'ValidationError')
+      sendError(403, 'Validation Error', e, res)
+    else if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
 
 async function apiRemoveCustom(req, res) {}
 
