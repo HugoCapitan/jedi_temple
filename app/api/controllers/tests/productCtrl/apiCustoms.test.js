@@ -116,7 +116,68 @@ describe('productCtrl -> apiCustoms', () => {
 
   })
 
-  describe('apiRemoveCustom', () => {})
+  describe('apiRemoveCustom', () => {
+    let customIdToSend, updatedProduct
+
+    beforeEach(() => {
+      customIdToSend = new ObjectId('aaa000aaa000aaa000aaa000')
+      updatedProduct = Object.assign({}, foundProduct, { customs: [] })
+      req.params.custom_id = customIdToSend
+      foundProduct.customs.pull = jest.fn(() => { foundProduct.customs.pop() })
+    }) 
+
+    test('Should call Product.findById with sent hmproduct_id', async () => {
+      await productCtrl.apiRemoveCustom(req, res)
+
+      expect(Product.findById.mock.calls.length).toBe(1)
+      expect(Product.findById.mock.calls[0][0]).toBe(productIdToSend)
+    })
+
+    test('Should call foundProduct.customs.pull with sent custom_id', async () => {
+      const expectedQuery = { _id: customIdToSend }
+      
+      await productCtrl.apiRemoveCustom(req, res)
+
+      expect(foundProduct.customs.pull.mock.calls.length).toBe(1)
+      expect(foundProduct.customs.pull.mock.calls[0][0]).toEqual(expectedQuery)
+    })
+
+    test('Should call save on foundProduct', async () => {
+      await productCtrl.apiRemoveCustom(req, res)
+
+      expect(foundProduct.customs.length).toBe(0)
+      expect(foundProduct.save.mock.calls.length).toBe(1)
+    })
+    
+    test('Should return the updated Product', async () => {
+      await productCtrl.apiRemoveCustom(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundProduct)
+    })
+
+    test('Should return Product NotFound Error', async () => {
+      Product.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
+
+      await productCtrl.apiRemoveCustom(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Product with id: ${productIdToSend}, not found`)
+    })
+
+    test('Should return UnexpectedError', async () => {
+      foundProduct.save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Faked Error')) 
+      }))
+
+      await productCtrl.apiRemoveCustom(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+  })
 
   describe('apiUpdateCustom', () => {})
 

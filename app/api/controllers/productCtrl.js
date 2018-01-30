@@ -118,7 +118,25 @@ async function apiAddCustom(req, res) {
   }
 }
 
-async function apiRemoveCustom(req, res) {}
+async function apiRemoveCustom(req, res) {
+  try {
+    const productToUpdate = await Product.findById(req.params.product_id).exec()
+    if (!productToUpdate) {
+      const err = new Error(`Product with id: ${req.params.product_id}, not found`)
+      err.name = 'NotFoundError'
+      throw err
+    }
+
+    productToUpdate.customs.pull({_id: req.params.custom_id})
+    await productToUpdate.save()
+    res.status(200).json(productToUpdate)
+  } catch(e) {
+    if (e.name === 'NotFoundError')
+      sendError(404, e.message, e, res)
+    else
+      sendError(500, 'Unexpected Error', e, res)
+  }
+}
 
 async function apiUpdateCustom(req, res) {}
 
