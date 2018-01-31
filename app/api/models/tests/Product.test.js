@@ -188,7 +188,6 @@ describe('Normal Product Model', () => {
   
   })
 
-
   describe('preRemove Middleware', () => {
     let remove_id
     const bindMiddleware = context => 

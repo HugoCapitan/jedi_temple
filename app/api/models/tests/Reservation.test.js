@@ -17,9 +17,8 @@ describe('Reservation model', () => {
     const m = new Reservation({ })
     const v = m.validateSync()
 
-    expect( howManyKeys(v.errors) ).toBe(5)
+    expect( howManyKeys(v.errors) ).toBe(4)
     expect(v.errors.email).toBeTruthy()
-    expect(v.errors.plan).toBeTruthy()
     expect(v.errors.status).toBeTruthy()
     expect(v.errors.arrive_date).toBeTruthy()
     expect(v.errors.departure_date).toBeTruthy()
@@ -48,20 +47,59 @@ describe('Reservation model', () => {
     expect(v.errors.departure_date).toBeTruthy()
   })
 
-  test('Should be invalid if wrong plan', () => {
-    const m = new Reservation( Object.assign( getValidReservation(), { plan: 'somethingwrong' } ) )
-    const v = m.validateSync()
-
-    expect( howManyKeys(v.errors) ).toBe(1)
-    expect(v.errors.plan).toBeTruthy()
-  })
-
   test('Should be invalid if email is not an email', () => {
     const m = new Reservation( Object.assign( getValidReservation(), { email: 'whatwhat' } ) )
     const v = m.validateSync()
 
     expect( howManyKeys(v.errors) ).toBe(1)
     expect(v.errors.email).toBeTruthy()
+  })
+
+  describe('preSave Middleware', () => {
+
+    const boundMiddleware = context => {
+      if (!context.isModified) context.isModified = prop => false
+      return Reservation._middlewareFuncs.preSave.bind(context)
+    }
+
+    test('Should call next')
+
+    test('Should add dates')
+
+    test('Should update update date')
+
+    test('Should calculate total')
+
+    test('Should call next with UnexpectedError')
+
+  })
+
+  describe('preUpdate Middleware', () => {
+
+    test('Should call next')
+
+    test('Should update update date')
+
+    test('Should prevent modification of arriving')
+
+    test('Should prevent modification of departure')
+
+    test('Should prevent modification of price')
+
+  })
+
+  describe('preRemove Middleware', () => {
+
+    test('Should call next')
+
+    test('Should call Store.find with reservation id')
+
+    test('Should update and save stores')
+
+    test('Should call next with Store.find error')
+
+    test('Should call next with Store.update error')
+
   })
 
 })
