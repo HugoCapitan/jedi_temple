@@ -17,11 +17,12 @@ describe('Reservation model', () => {
     const m = new Reservation({ })
     const v = m.validateSync()
 
-    expect( howManyKeys(v.errors) ).toBe(4)
+    expect( howManyKeys(v.errors) ).toBe(5)
     expect(v.errors.email).toBeTruthy()
     expect(v.errors.status).toBeTruthy()
     expect(v.errors.arrive_date).toBeTruthy()
     expect(v.errors.departure_date).toBeTruthy()
+    expect(v.errors.night_price).toBeTruthy()
   })
 
   test('Should be invalid if arriving or departure not dates', () => {

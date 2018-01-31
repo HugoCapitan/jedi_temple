@@ -139,7 +139,8 @@ function getValidReservation() {
     plan: 'short',
     status: 1,
     arrive_date: moment().add('1', 'days').toDate(),
-    departure_date: moment().add('1', 'weeks').toDate()
+    departure_date: moment().add('1', 'weeks').toDate(),
+    night_price: 499.99
   }
 }
 
