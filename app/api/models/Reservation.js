@@ -28,6 +28,10 @@ const ReservationSchema = new Schema({
   billing_address: {
     type: AddressSchema
   },
+  night_price: {
+    type: Number,
+    required: true
+  },
   total: Number,
   created_at: Date,
   updated_at: Date
