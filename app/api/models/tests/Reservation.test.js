@@ -75,6 +75,9 @@ describe('Reservation model', () => {
   })
 
   describe('preUpdate Middleware', () => {
+    const boundMiddleware = context => {
+      return Reservation._middlewareFuncs.preUpdate.bind(context)
+    }
 
     test('Should call next')
 
@@ -89,6 +92,9 @@ describe('Reservation model', () => {
   })
 
   describe('preRemove Middleware', () => {
+    const boundMiddleware = context => {
+      return Reservation._middlewareFuncs.preRemove.bind(context)
+    }
 
     test('Should call next')
 
