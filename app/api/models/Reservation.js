@@ -28,17 +28,27 @@ const ReservationSchema = new Schema({
   billing_address: {
     type: AddressSchema
   },
-  total: {
-    type: Number,
-    // set
-  },
+  total: Number,
   created_at: Date,
   updated_at: Date
 })
+ReservationSchema._middlewareFuncs = {
+  preSave(next) {
+    next()
+  },
+  preUpdate(next) {
+    next()
+  },
+  preRemove(next) {
+    next()
+  }
+}
 
-ReservationSchema.pre('save', (next) => {
-  next()
-})
+ReservationSchema.pre('save', ReservationSchema._middlewareFuncs.preSave)
+ReservationSchema.pre('update', ReservationSchema._middlewareFuncs.preUpdate)
+ReservationSchema.pre('findOneAndUpdate', ReservationSchema._middlewareFuncs.preUpdate)
+ReservationSchema.pre('remove', ReservationSchema._middlewareFuncs.preRemove)
+ReservationSchema.pre('findOneAndRemove', ReservationSchema._middlewareFuncs.preRemove)
 
 const Reservation = mongoose.model('Reservation', ReservationSchema)
 
