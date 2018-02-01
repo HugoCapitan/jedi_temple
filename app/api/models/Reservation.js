@@ -50,7 +50,27 @@ ReservationSchema._middlewareFuncs = {
     return next()
   },
   preUpdate(next) {
-    next()
+    const self = this
+
+    self._update.updated_at = new Date()
+
+    if (self._update.hasOwnProperty('arrive_date')) {
+      const err = new Error('arrive_date should be updated via Save')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if (self._update.hasOwnProperty('departure_date')) {
+      const err = new Error('departure_date should be updated via Save')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if  (self._update.hasOwnProperty('night_price')) {
+      const err = new Error('night_price should be updated via Save')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+
+    return next()
   },
   preRemove(next) {
     next()

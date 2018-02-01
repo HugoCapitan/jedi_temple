@@ -159,7 +159,7 @@ describe('Reservation model', () => {
         done()
       }
 
-      boundMiddleware()
+      boundMiddleware(next)
     })
 
     test('Should prevent modification of departure', done => {
@@ -170,12 +170,12 @@ describe('Reservation model', () => {
         expect(err.name).toBe('ValidationError')
         done()
       }
-      
-      boundMiddleware()      
+
+      boundMiddleware(next)      
     })
 
     test('Should prevent modification of price', done => {
-      const _update = { arrnight_priceive_date: 0 }
+      const _update = { night_price: 0 }
       const boundMiddleware = bindMiddleware({_update})
       const next = err => {
         expect(err.message).toBe('night_price should be updated via Save')
@@ -183,7 +183,7 @@ describe('Reservation model', () => {
         done()
       }
 
-      boundMiddleware()      
+      boundMiddleware(next)      
     })
 
   })
