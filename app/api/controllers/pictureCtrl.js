@@ -2,7 +2,8 @@ const Picture = require('../models/Picture')
 
 const { sendError } = require('../utils/http')
 
-module.exports = {apiAll, 
+module.exports = {
+  apiAll, 
   apiCreate, 
   apiRead, 
   apiRemove, 
