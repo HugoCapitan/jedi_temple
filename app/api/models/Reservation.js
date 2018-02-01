@@ -1,3 +1,4 @@
+const moment = require('moment')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
@@ -38,6 +39,14 @@ const ReservationSchema = new Schema({
 })
 ReservationSchema._middlewareFuncs = {
   preSave(next) {
+    const self = this
+
+    const currentDate = new Date()
+    self.updated_at = currentDate
+    if (!self.created_at) self.created_at = currentDate
+
+    self.total = moment(self.departure_date).diff(self.arrive_date, 'days') * self.night_price
+
     next()
   },
   preUpdate(next) {
