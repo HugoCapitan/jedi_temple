@@ -63,7 +63,7 @@ async function apiRemove(req, res) {
       throw notFoundError
     }
 
-    res.status(200).send(`Reservation ${removedReservation._id} deleted`)
+    res.status(200).json(removedReservation)
   } catch (e) {
     if (e.name === 'CastError' || e.name === 'NotFoundError')
       sendError(404, `Reservation with id: ${req.params.id}, not found`, e, res)
