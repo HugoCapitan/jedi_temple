@@ -330,7 +330,7 @@ describe('textCtrl', () => {
     })
   
     test('Should send 500 "Unexpected Error"', async () => {
-      ext.findByIdAndUpdate = jest.fn(() => ({
+      Text.findByIdAndUpdate = jest.fn(() => ({
         exec: () => new Promise((resolve, reject) => {reject(new Error('Faked Error'))})
       }))
   
