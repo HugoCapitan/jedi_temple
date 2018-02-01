@@ -202,7 +202,7 @@ describe('Reservation model', () => {
         save: jest.fn(() => new Promise((resolve, reject) => { resolve() })) 
       })
       foundStore.reservations.pull = jest.fn(() => { foundStore.reservations.pop() })
-      anotherStore.reservations.pull = jest.fn(() => { foundStore.reservations.pop() })
+      anotherStore.reservations.pull = jest.fn(() => { anotherStore.reservations.pop() })
       Store.find = jest.fn(() => ({
         exec: () => new Promise((resolve, reject) => {
           resolve([foundStore, anotherStore])
@@ -247,6 +247,8 @@ describe('Reservation model', () => {
         expect(anotherStore.reservations.pull.mock.calls.length).toBe(1)
         expect(foundStore.reservations.pull.mock.calls[0][0]).toEqual(idToSend)
         expect(anotherStore.reservations.pull.mock.calls[0][0]).toEqual(idToSend)
+        expect(foundStore.reservations.length).toBe(0)
+        expect(anotherStore.reservations.length).toBe(0)
         expect(foundStore.save.mock.calls.length).toBe(1)
         expect(anotherStore.save.mock.calls.length).toBe(1)
         done()
