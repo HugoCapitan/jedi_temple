@@ -18,7 +18,7 @@ module.exports = {
     return moment(val).isValid()
   },
   isThisMinute(val) {
-    return moment(val).isSame(moment(), 'minute')
+    return val && moment(val).isSame(moment(), 'minute')
   },
   isEmail(val) {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
