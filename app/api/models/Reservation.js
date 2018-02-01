@@ -2,6 +2,8 @@ const moment = require('moment')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+const Store = require('./Store')
+
 const AddressSchema = require('./schemas/AddressSchema')
 
 const validate = require('../utils/validators')
@@ -73,7 +75,19 @@ ReservationSchema._middlewareFuncs = {
     return next()
   },
   preRemove(next) {
-    next()
+    const self = this
+
+    Store.find({ reservations: self._conditions._id }).exec()
+    .then(storesToModify => {
+      const saves = []
+      for(store of storesToModify) {
+        store.reservations.pull(self._conditions._id)
+        saves.push(store.save())
+      }
+      return Promise.all(saves)
+    })
+    .then(saved => next())
+    .catch(err => next(err))
   }
 }
 
