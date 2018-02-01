@@ -123,19 +123,68 @@ describe('Reservation model', () => {
   })
 
   describe('preUpdate Middleware', () => {
-    const boundMiddleware = context => {
-      return Reservation._middlewareFuncs.preUpdate.bind(context)
+    const bindMiddleware = context => {
+      return Reservation.schema._middlewareFuncs.preUpdate.bind(context)
     }
 
-    test('Should call next')
+    test('Should call next', done => {
+      const _update = { status: 2 }
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err).toBeFalsy()
+        done()
+      }
 
-    test('Should update update date')
+      boundMiddleware(next)
+    })
 
-    test('Should prevent modification of arriving')
+    test('Should update update date', done => {
+      const _update = { status: 2 }
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err).toBeFalsy()
+        expect( uValid.isThisMinute(_update.updated_at) ).toBeTruthy()
+        done()
+      }
 
-    test('Should prevent modification of departure')
+      boundMiddleware(next)
+    })
 
-    test('Should prevent modification of price')
+    test('Should prevent modification of arriving', done => {
+      const _update = { arrive_date: new Date() }
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err.message).toBe('arrive_date should be updated via Save')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
+
+      boundMiddleware()
+    })
+
+    test('Should prevent modification of departure', done => {
+      const _update = { departure_date: new Date() }
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err.message).toBe('departure_date should be updated via Save')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
+      
+      boundMiddleware()      
+    })
+
+    test('Should prevent modification of price', done => {
+      const _update = { arrnight_priceive_date: 0 }
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err.message).toBe('night_price should be updated via Save')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
+
+      boundMiddleware()      
+    })
 
   })
 
