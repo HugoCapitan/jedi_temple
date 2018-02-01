@@ -26,9 +26,9 @@ module.exports = server => {
   // Database
   mongoose.Promise = global.Promise;
 
-  const connection = mongoose.connect('mongodb://localhost/test', {
+  mongoose.connect('mongodb://localhost/test', {
     useMongoClient: true
-  })
+  }).catch(e => { throw e })
 
   routes(server)
 
