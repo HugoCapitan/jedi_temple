@@ -9,5 +9,5 @@ module.exports = app => {
     .put(reservationCtrl.apiUpdate)
     .delete(reservationCtrl.apiRemove)
 
-  api.put('/reservation/:id/specials', reservationCtrl.apiUpdateDatesPrice)
+  app.put('/reservation/:id/specials', reservationCtrl.apiUpdateDatesPrice)
 }
