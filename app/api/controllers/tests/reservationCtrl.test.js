@@ -342,6 +342,94 @@ describe('reservationCtrl', () => {
 
   })
 
-  describe('apiUpdateDatesPrice', () => {})  
+  describe('apiUpdateDatesPrice', () => {
+    let idToSend, foundReservation, update, updatedReservation
+
+    beforeEach(() => {
+      idToSend = new ObjectId('aaafffaaafffaaafffaaafff')
+      foundReservation = Object.assign(uSchemas.getValidReservation(), {
+        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+      })
+      update = { night_price: 8080 }
+
+      updatedReservation = Object.assign({}, foundReservation, update)
+
+      Reservation.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => {
+          resolve(foundReservation)
+        })
+      }))
+
+      req = {
+        params: {
+          id: idToSend
+        },
+        body: update
+      }
+    })
+
+    test('Should call reservation.findById', async () => {
+      await reservationCtrl.apiUpdateDatesPrice(req, res)
+
+      expect(Reservation.findById.mock.calls.length).toBe(1)
+      expect(Reservation.findById.mock.calls[0][0]).toBe(idToSend)
+    })
+
+    test('Should update found reservation', async () => {
+      await reservationCtrl.apiUpdateDatesPrice(req, res)
+
+      expect(foundReservation).toEqual(updatedReservation)
+    })
+
+    test('Should call save on found Reservation', async () => {
+      await reservationCtrl.apiUpdateDatesPrice(req, res)
+
+      expect(foundReservation.save.mock.calls.length).toBe(1)
+    })
+
+    test('Should return the updated reservation', async () => {
+      await reservationCtrl.apiUpdateDatesPrice(req, res)
+
+      expect(res.statusCode).toBe(200)
+      expect(res.data).toBe(foundReservation)
+      expect(res.data).toEqual(updatedReservation)
+    })
+
+    test('Should send NotFoundError', async () => {
+      Reservation.findById = jest.fn(() => ({
+        exec: () => new Promise((resolve, reject) => { resolve(null) })
+      }))
+
+      await reservationCtrl.apiUpdateDatesPrice(req, res)
+
+      expect(res.statusCode).toBe(404)
+      expect(res.data).toBe(`Reservation with id: ${idToSend}, not found`)
+    })
+
+    test('Should send ValidationError', async () => {
+      foundReservation.save = jest.fn(() => new Promise((resolve, reject) => {
+        const err = new Error('Faked Error')
+        err.name = 'ValidationError'
+        reject(err)
+      }))
+
+      await reservationCtrl.apiUpdateDatesPrice(req, res)
+
+      expect(res.statusCode).toBe(403)
+      expect(res.data).toBe('Validation Error')
+    })
+
+    test('Should send UnexpectedError', async () => {
+      foundReservation.save = jest.fn(() => new Promise((resolve, reject) => { 
+        reject(new Error('Faked Error')) 
+      }))
+
+      await reservationCtrl.apiUpdateDatesPrice(req, res)
+
+      expect(res.statusCode).toBe(500)
+      expect(res.data).toBe('Unexpected Error')
+    })
+
+  })  
     
 })
