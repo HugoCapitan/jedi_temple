@@ -116,6 +116,8 @@ describe('Reservation model', () => {
         expect(context.total).toBe(total)
         done()
       }
+
+      boundMiddleware(next)      
     })
 
   })
