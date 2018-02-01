@@ -154,7 +154,7 @@ describe('HMProduct Model', () => {
       const next = err => {
         expect(err).toBeFalsy()
         expect(context.models.length).toBe(1)
-        expect(context.models[0].model_name).toBe('hehe otro rarito')
+        expect(context.models[0].model_name).toBe('hehe modelo rarito')
         done()
       }
 
