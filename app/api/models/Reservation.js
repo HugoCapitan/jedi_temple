@@ -47,7 +47,7 @@ ReservationSchema._middlewareFuncs = {
 
     self.total = moment(self.departure_date).diff(self.arrive_date, 'days') * self.night_price
 
-    next()
+    return next()
   },
   preUpdate(next) {
     next()
