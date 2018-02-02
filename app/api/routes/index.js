@@ -7,6 +7,7 @@ const productRouter     = require('./product')
 const reservationRouter = require('./reservation')
 const storeRouter       = require('./store')
 const textRouter        = require('./text')
+const paypalRouter      = require('./paypal')
 
 module.exports = app => {
   clientRouter(app)
@@ -18,4 +19,5 @@ module.exports = app => {
   reservationRouter(app)
   storeRouter(app)
   textRouter(app)
+  paypalRouter(app)
 }
