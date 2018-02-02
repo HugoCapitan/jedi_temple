@@ -1,8 +1,7 @@
 const express = require('express')
+const http = require('http')
 const path = require('path')
 
-const environment = process.env.NODE_ENV
-const port = (environment === 'production') ? 80 : 8080
 const server = express()
 
 const api = require('./app/api')
@@ -35,6 +34,12 @@ server.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'app/public', 'index.html'))
 })
 
-server.listen(port, () => {
-  console.log(`${environment} server listening on port ${port}`)
-})
+if (process.env.NODE_ENV === 'development') {
+
+  http.Server(server).listen(process.env.NODE_PORT, () => {
+    console.log(`${process.env.NODE_ENV} server listening on port ${process.env.NODE_PORT}`)
+  })
+
+} else if (process.env.NODE_ENV === 'production') {
+
+}

@@ -1,9 +1,10 @@
 {
   "execMap": {
-    "js": "node index.js"
+    "js": "node server.js"
   },
   "env": {
     "NODE_ENV": "development",
+    "NODE_PORT": 8000,
     "ITERATIONS": 1000
   }
 }

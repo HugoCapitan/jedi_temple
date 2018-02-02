@@ -20,12 +20,10 @@ module.exports = server => {
   }))
 
   // Parsers
-  server.use(bodyParser.json());
+  server.use(bodyParser.json())
   server.use(bodyParser.urlencoded({ extended: false }))
 
-  // Database
-  mongoose.Promise = global.Promise;
-
+  mongoose.Promise = global.Promise
   mongoose.connect('mongodb://localhost/test', {
     useMongoClient: true
   }).catch(e => { throw e })
