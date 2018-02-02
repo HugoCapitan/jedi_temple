@@ -6,9 +6,8 @@ module.exports = {
   tokenUrl: 'https://api.sandbox.paypal.com/v1/oauth2/token',
   xpUrl: 'https://api.sandbox.paypal.com/v1/payment-experience/web-profiles',
   payUrl: 'https://api.sandbox.paypal.com/v1/payments/payment',
-  xpUnahilJson: JSON.stringify({
-    name: 'Unahil Payment Test',
-    temporary: true,
+  xpUnahilReq: JSON.stringify({
+    name: 'Unahil Payment',
     presentation: {
       brand_name: 'Unahil',
       locale_code: 'MX'
@@ -21,6 +20,38 @@ module.exports = {
     flow_config: {
       landing_page_type: 'Billing',
       bank_txn_pending_url: "https://unahil.com"
+    }
+  }),
+  xpKampaReq: JSON.stringify({
+    name: 'Kampamocha Store Payment',
+    presentation: {
+      brand_name: 'Kampamocha',
+      locale_code: 'MX'
+    },
+    input_fields: {
+      allow_note: false,
+      no_shipping: 0,
+      address_override: 1
+    },
+    flow_config: {
+      landing_page_type: 'Billing',
+      bank_txn_pending_url: "https://kampamocha.com"
+    }
+  }),
+  xpTuchaReq: JSON.stringify({
+    name: 'TuchaDesigns Store Payment',
+    presentation: {
+      brand_name: 'TuchaDesigns',
+      locale_code: 'MX'
+    },
+    input_fields: {
+      allow_note: false,
+      no_shipping: 0,
+      address_override: 1
+    },
+    flow_config: {
+      landing_page_type: 'Billing',
+      bank_txn_pending_url: "https://tuchadesigns.com"
     }
   })
 }
