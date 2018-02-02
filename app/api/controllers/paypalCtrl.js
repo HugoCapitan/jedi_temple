@@ -6,6 +6,9 @@ let authorization, userRequest, userResponse
 let unahilXP, kampaXP
 
 module.exports = {
+  createPayment: (req, res) {
+
+  },
   tokenEndpoint: (req, res) => {
     getAuthToken()
     .then(token => {res.send(token)})
@@ -93,4 +96,64 @@ async function getAuthToken () {
   }).catch(e => {throw e})
 
   return `Bearer ${tokenResponse.data.access_token}`
+}
+
+function buildPaymentRequest(paymentForm) {
+  // Setting general vars
+  let urls, experienceId
+  if (paymentForm.store == 'unahil') {
+    urls = ppConfig.unahilOpts
+    experienceId = process.env.NODE_PP_UNAHIL_XP.id
+  } else if (paymentForm.store == 'kampamocha') {
+    urls = ppConfig.kampaOpts
+    experienceId = process.env.NODE_PP_KAMPA_XP.id
+  } else if (paymentForm.store == 'tuchadesigns') {
+    urls = ppConfig.tuchaOpts
+    experienceId = process.env.NODE_PP_TUCHA_XP.id
+  }
+
+  // Constructing common payment structure
+  const payment = {
+    intent: 'sale',
+    payer: {
+      payment_method: paymentForm.method
+    },
+    transactions: [{
+      amount: {
+        total: paymentForm.total,
+        currency: 'USD',
+        details: paymentForm.store == 'unahil' ? {
+          night_price: paymentForm.nightPrice
+        } : {
+          subtotal: paymentForm.total
+        },
+        description: paymentForm.store == 'unahil' 
+          ? `${paymentForm.nights} nights`
+          : paymentForm.products.join(', ')
+      }
+    }]
+  }
+
+  // Constructing last part depending on the method
+  if (paymentForm.method === 'paypal') {
+    payment.experience_profile_id = experienceId
+		payment.redirect_urls = {
+			return_url: urls.executeUrl,
+			cancel_url: urls.cancelUrl
+		}
+  } else if (paymentForm.method === 'credit_card') {
+    payment.payer.funding_instruments = [{
+			credit_card: {
+				type: paymentForm.cardType,
+				number: paymentForm.number,
+				expire_month: paymentForm.expireMonth,
+				expire_year: `20${paymentForm.expireYear}`,
+				cvv2: paymentForm.cvv2,
+				first_name: paymentForm.name.split(' ')[0],
+				last_name: paymentForm.name.split(' ')[1]
+			}
+		}]
+  }
+
+  return payment
 }
