@@ -6,8 +6,15 @@ let authorization, userRequest, userResponse
 let unahilXP, kampaXP
 
 module.exports = {
-  createPayment: (req, res) {
+  async createPayment: (req, res) => {
+    try {
+      const token = await getAuthToken()
+      const payment = buildPaymentRequest(req.body)
 
+      // REQUEST PAYMENT CREATION
+    } catch(e) {
+      res.status(500).send(e)
+    }
   },
   tokenEndpoint: (req, res) => {
     getAuthToken()
