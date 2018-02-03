@@ -10,20 +10,19 @@ module.exports = {
     try {
       const payUrl = ppConfig.payUrl
       const token = await getAuthToken()
-      const payment = buildPaymentRequest(req.body)
+      const paymentRequestBody = buildPaymentRequest(req.body)
       const createResponse = await axios({
         url: payUrl,
         method: 'post',
-        data: payment,
+        data: paymentRequestBody,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': token
         }
       })
 
-      const approvalUrl = JSON.stringify(createResponse.data.links).find(link => link.rel === 'approval_url')
-      if (req.body.method === 'paypal' && approvalUrl) {
-        res.headers()
+      if (req.body.method === 'paypal') {
+        const approvalUrl = createResponse.data.links.find(link => link.rel === 'approval_url')
         res.redirect(approvalUrl.href)
       } else if (req.body.method === 'credit_card')
         res.redirect(req.body.paymentSuccess)
@@ -31,7 +30,8 @@ module.exports = {
         throw new Error('Something went wrong')
 
     } catch(e) {
-      res.status(500).send(e)
+      console.log(e.response.data)
+      res.status(500).send(e.response.data)
     }
   },
   tokenEndpoint: (req, res) => {
@@ -142,16 +142,20 @@ function buildPaymentRequest(paymentForm) {
   let urls, experienceId
   if (paymentForm.store == 'unahil') {
     urls = ppConfig.unahilOpts
-    experienceId = process.env.NODE_PP_UNAHIL_XP.id
+    experienceId = JSON.parse(process.env.NODE_PP_UNAHIL_XP).id
   } else if (paymentForm.store == 'kampamocha') {
     urls = ppConfig.kampaOpts
-    experienceId = process.env.NODE_PP_KAMPA_XP.id
+    experienceId = JSON.parse(process.env.NODE_PP_KAMPA_XP).id
   } else if (paymentForm.store == 'tuchadesigns') {
     urls = ppConfig.tuchaOpts
-    experienceId = process.env.NODE_PP_TUCHA_XP.id
+    experienceId = JSON.parse(process.env.NODE_PP_TUCHA_XP).id
   }
 
   // Constructing common payment structure
+  const paymentTotal = paymentForm.shipping 
+  ? paymentForm.subtotal + paymentForm.shipping
+  : paymentForm.subtotal
+
   const payment = {
     intent: 'sale',
     payer: {
@@ -159,17 +163,16 @@ function buildPaymentRequest(paymentForm) {
     },
     transactions: [{
       amount: {
-        total: paymentForm.total,
+        total: paymentTotal,
         currency: 'USD',
-        details: paymentForm.store == 'unahil' ? {
-          night_price: paymentForm.nightPrice
-        } : {
-          subtotal: paymentForm.total
-        },
-        description: paymentForm.store == 'unahil' 
-          ? `${paymentForm.nights} nights`
-          : paymentForm.products.join(', ')
-      }
+        details: {
+          subtotal: paymentForm.subtotal,
+          shipping: paymentForm.shipping
+        }
+      },
+      description: paymentForm.store == 'unahil' 
+      ? `${paymentForm.nights} nights at ${paymentForm.nightPrice} each.`
+      : paymentForm.products.join(', ')
     }]
   }
 
