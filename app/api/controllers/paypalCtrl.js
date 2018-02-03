@@ -6,12 +6,29 @@ let authorization, userRequest, userResponse
 let unahilXP, kampaXP
 
 module.exports = {
-  async createPayment: (req, res) => {
+  createPayment: async (req, res) => {
     try {
+      const payUrl = ppConfig.payUrl
       const token = await getAuthToken()
       const payment = buildPaymentRequest(req.body)
+      const createResponse = await axios({
+        url: payUrl,
+        method: 'post',
+        data: payment,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      })
 
-      // REQUEST PAYMENT CREATION
+      const approvalUrl = JSON.stringify(createResponse.data).links.find(link => link.rel === 'approval_url')
+      if (req.body.method === 'paypal' && approvalUrl) 
+        res.redirect(approvalUrl.href)
+      else if (req.body.method === 'credit_card')
+        res.redirect(req.body.payment_success)
+      else 
+        throw new Error('Something went wrong')
+
     } catch(e) {
       res.status(500).send(e)
     }
