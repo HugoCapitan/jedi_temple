@@ -6,7 +6,7 @@ let authorization, userRequest, userResponse
 let unahilXP, kampaXP
 
 module.exports = {
-  createPayment: async (req, res) => {
+  createPaymentEndpoint: async (req, res) => {
     try {
       const payUrl = ppConfig.payUrl
       const token = await getAuthToken()
@@ -44,13 +44,27 @@ module.exports = {
     .then(data => {res.status(200).send(data)})
     .catch(e => {res.status(500).send(e)})    
   },
-  getXps: (req, res) => {
+  getLocalXpsEndpoint: (req, res) => {
     res.status(200).send({
       kampa: process.env.NODE_PP_KAMPA_XP,
       tucha: process.env.NODE_PP_TUCHA_XP,
       unahil: process.env.NODE_PP_UNAHIL_XP
     })
-  }
+  },
+  getRemoteXps: async () => {
+    const url = ppConfig.xpUrl
+    const token = await getAuthToken()
+    const response = await axios({
+      method: 'get',
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token
+      }
+    })
+    return response.data
+  },
+  initXps
 }
 
 async function initXps () {
