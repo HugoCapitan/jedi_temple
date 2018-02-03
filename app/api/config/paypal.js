@@ -19,8 +19,6 @@ module.exports = {
   unahilOpts: {
     executeUrl: getUrl('unahil', 'exec'), cancelUrl: getUrl('unahil', 'canc')
   },
-  tuchaOpts: {},
-  unahilOpts: {},
   xpKampaReq: JSON.stringify({
     name: 'Kampamocha Store Payment',
     presentation: {
