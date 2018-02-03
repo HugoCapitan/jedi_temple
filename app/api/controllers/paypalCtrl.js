@@ -21,11 +21,12 @@ module.exports = {
         }
       })
 
-      const approvalUrl = JSON.stringify(createResponse.data).links.find(link => link.rel === 'approval_url')
-      if (req.body.method === 'paypal' && approvalUrl) 
+      const approvalUrl = JSON.stringify(createResponse.data.links).find(link => link.rel === 'approval_url')
+      if (req.body.method === 'paypal' && approvalUrl) {
+        res.headers()
         res.redirect(approvalUrl.href)
-      else if (req.body.method === 'credit_card')
-        res.redirect(req.body.payment_success)
+      } else if (req.body.method === 'credit_card')
+        res.redirect(req.body.paymentSuccess)
       else 
         throw new Error('Something went wrong')
 
