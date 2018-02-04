@@ -187,12 +187,12 @@ function buildPaymentRequest(paymentForm) {
     payment.payer.funding_instruments = [{
 			credit_card: {
 				type: paymentForm.cardType,
-				number: paymentForm.number,
-				expire_month: paymentForm.expireMonth,
-				expire_year: `20${paymentForm.expireYear}`,
-				cvv2: paymentForm.cvv2,
-				first_name: paymentForm.name.split(' ')[0],
-				last_name: paymentForm.name.split(' ')[1]
+				number: paymentForm.cardNumber,
+				expire_month: paymentForm.cardExpireMonth,
+				expire_year: `20${paymentForm.cardExpireYear}`,
+				cvv2: paymentForm.cardCvv2,
+				first_name: paymentForm.cardName.split(' ')[0],
+				last_name: paymentForm.cardName.split(' ')[1]
 			}
 		}]
   }
