@@ -43,6 +43,16 @@ describe('paypalCtrl', () => {
   
   describe('getAuthToken', () => {
 
+    test('Should call axios with the right auth data')
+
+    test('Should return the token formatted for instant use')
+
+    test('Should send response error')
+
+    test('Should send request error')
+
+    test('Should send unexpectedError')
+
   })
 
   describe('getLocalXps', () => {
