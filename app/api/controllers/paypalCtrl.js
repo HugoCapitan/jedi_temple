@@ -6,13 +6,15 @@ let authorization, userRequest, userResponse
 let unahilXP, kampaXP
 
 module.exports = {
-  createPaymentEndpoint,
+  createPayment,
   getAuthToken,
-  getAuthTokenEndpoint,
   initExperiences,
+  getRemoteExperiences,
+
+  createPaymentEndpoint,
+  getAuthTokenEndpoint,
   initExperiencesEndpoint,
-  getLocalExperiencesEndpoint,
-  getRemoteExperiences
+  getLocalExperiencesEndpoint
 }
 
 function buildPaymentRequest(paymentForm) {
@@ -78,7 +80,7 @@ function buildPaymentRequest(paymentForm) {
   return payment
 }
 
-async function createPaymentEndpoint(req, res) {
+async function createPayment(paymentForm) {
   try {
     const payUrl = ppConfig.payUrl
     const token = await getAuthToken()
@@ -105,6 +107,10 @@ async function createPaymentEndpoint(req, res) {
     console.log(e.response.data)
     res.status(500).send(e.response.data)
   }
+}
+
+async function createPaymentEndpoint(req, res) {
+
 }
 
 async function getAuthToken() {
@@ -157,6 +163,10 @@ async function getRemoteExperiences() {
   })
 
   return response.data
+}
+
+async function getRemoteExperiencesEndpoint(req, res) {
+  
 }
 
 async function initExperiences () {
