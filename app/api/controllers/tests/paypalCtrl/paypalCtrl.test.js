@@ -1,4 +1,4 @@
-const paypalCtrl = require('../paypalCtrl')
+const paypalCtrl = require('../../paypalCtrl')
 
 jest.mock('axios')
 const axios = require('axios')
