@@ -9,6 +9,8 @@ describe('paypalCtrl', () => {
 
     test('Should return a correct paypal payment obj')
 
+    test('Should return a correct credit_card payment obj')
+
     test('Should return an error malformed paymentForm (method=paypal)')
 
     test('Should return an error malformed paymentForm (method=credit_card)')
@@ -19,7 +21,7 @@ describe('paypalCtrl', () => {
 
   })
 
-  describe('createPaymentEndpoint', () => {
+  describe('createPayment', () => {
 
     test('Should call get token')
 
@@ -30,6 +32,8 @@ describe('paypalCtrl', () => {
     test('Should check on response for redirect url and cal res.redirect (paypal)')
 
     test('Should check on response for redirect url and cal res.redirect (credit_card)')
+
+    test('Should return the createdPayment obj')
 
     test('Should send axios response error correctly formatted')
 
@@ -57,11 +61,26 @@ describe('paypalCtrl', () => {
 
   describe('getLocalXps', () => {
     
+    test('Should return an object with the right xps')
+
+    test('Should return empty object if xps not found')
+
   })
   
   describe('getRemoteExperiences', () => {
     
+    test('Should call getAuthToken')
+
+    test('Should call axios with the right method, headers and auth')
+
+    test('Should return the array of found experiences')
+
+    test('Should return response error')
+
+    test('Should return request error')
+
+    test('Should return unexpected error')
+
   })
-  
 
 })
