@@ -6,6 +6,7 @@ let authorization, userRequest, userResponse
 let unahilXP, kampaXP
 
 module.exports = {
+  buildPaymentRequest,
   createPayment,
   getAuthToken,
   initExperiences,
@@ -110,7 +111,7 @@ async function createPayment(paymentForm) {
 }
 
 async function createPaymentEndpoint(req, res) {
-
+  res.status(200).send('hi')
 }
 
 async function getAuthToken() {
