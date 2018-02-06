@@ -75,6 +75,5 @@ function getUrl(store, opt) {
   if (process.env.NODE_ENV != 'development' && store === 'tuchadesigns')  start = prodTcHost
   if (process.env.NODE_ENV != 'development' && store === 'unahil') start = prodUhHost
   end = opt === 'exec' ? '/payment/success' : '/payment/failed'
-  console.log(store)
   return `${start}${end}`
 }
