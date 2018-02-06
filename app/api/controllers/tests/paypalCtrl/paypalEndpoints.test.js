@@ -41,5 +41,5 @@ describe('paypalCtrl Endpoints', () => {
     test('Should respond (500) with call function\'s error')
 
   })
-  
+
 })

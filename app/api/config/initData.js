@@ -14,7 +14,7 @@ module.exports = async () => {
     if (!MaterialCustom) await saveMaterialCustom()
 
     // get esperiences within this paypal app
-    const experiences = await paypalCtrl.getRemoteXps()
+    const experiences = await paypalCtrl.getRemoteExperiences()
     // reduce to get store experiences
     const storesXps = experiences.reduce((acc, current) => {
       if (current.name === 'TuchaDesigns Store Payment'
@@ -28,7 +28,7 @@ module.exports = async () => {
     // if stores not complete, destroy all and create all
     const destroys = []
     if (storesXps.length != 3) {
-      for (const xp of experiences) { destroys.push(ppConf.destroyXp()) }
+      for (const xp of experiences) { destroys.push(paypalCtrl.destroyExperience(xp)) }
       await Promise.all(destroys)
       await paypalCtrl.initXps()
     } else {
