@@ -8,8 +8,8 @@ describe('paypalCtrl', () => {
   describe('buildPaymentRequest', () => {
     let kampaCdMockPaymentOpts, kampaPpMockPaymentOpts,
         unahCdMockPaymentOpts, unahPpMockPaymentOpts,
-        kampaCdPaymentReq, kampaPpPaymentReq,
-        unahCdPaymentReq, kampaPpPaymentReq
+        kampaCdMockPaymentReq, kampaPpMockPaymentReq,
+        unahCdMockPaymentReq, kampaPpMockPaymentReq
 
     beforeEach(() => {
       createPaymentOtionsObjects()
@@ -122,17 +122,76 @@ function createOptionsObjects() {
 }
 
 function createPaymentRequestsObjects() {
-
+  kampaCdMockPaymentReq = {
+    intent: 'sale',
+    payer: getCardRequest(),
+    transactions: [{
+      ammount: getRequestTransactionAmmount(969.97, 5),
+      description: '2x Pretty Bangles, 1x Prettier Necklace'
+    }],
+  }
+  kampaPpMockPaymentReq = {
+    intent: 'sale',
+    experience_profile_id: 'An-awesome-exp-id-kampamocha',
+    payer: { payment_method: 'paypal' },
+    transactions: [{
+      ammount: getRequestTransactionAmmount(969.97, 5),
+      description: '2x Pretty Bangles, 1x Prettier Necklace'
+    }],
+    redirect_urls: {
+      return_url: 'https://kampamocha.com/payment/success',
+      cancel_url: 'https://kampamocha.com/payment/failed'
+    }
+  }
+  
+  unahCdMockPaymentReq = {
+    intent: 'sale',
+    payer: getCardRequest(),
+    transactions: [{
+      ammount: getRequestTransactionAmmount(559),
+      description: '4 nights at US$139.75 each.'
+    }]
+  }
+  unahPpMockPaymentReq = {
+    intent: 'sale',
+    experience_profile_id: 'An-awesome-exp-id-unahil',
+    payer: { payment_method: 'paypal' },
+    transactions: [{
+      ammount: getRequestTransactionAmmount(559),
+      description: '4 nights at US$139.75 each.'
+    }],
+    redirect_urls: {
+      return_url: 'https://unahil.com/payment/success',
+      cancel_url: 'https://unahil.com/payment/failed'
+    }
+  }
 }
 
 function getCardOptions() {
   return {
     cardType: 'visa',
-    cardNumber: "4929831878017100",
-    cardExpireMonth: "02",
-    cardExpireYear: "19",
-    cardCvv2: "998",
-    cardName: "Cosme Fulanito"
+    cardNumber: '4929831878017100',
+    cardExpireMonth: '02',
+    cardExpireYear: '19',
+    cardCvv2: '998',
+    cardName: 'Cosme Fulanito'
+  }
+}
+
+function getCardRequest() {
+  return {
+    payment_method: 'credit_card',
+    funding_instruments: [{
+      credit_card: {
+        type: 'visa',
+        number: '4929831878017100',
+        expire_month: '02',
+        expire_year: `2019`,
+        cvv2: '998',
+        first_name: 'Cosme',
+        last_name: 'Fulanito'
+      }
+    }]
   }
 }
 
@@ -150,6 +209,18 @@ function getKampaOptions() {
     }],
     subtotal: '969.97',
     shipping: '5',
+  }
+}
+
+function getRequestTransactionAmmount(subtotal, shipping) {
+  const total = subtotal + shipping
+  return {
+    currency: 'USD',
+    total,
+    details: {
+      subtotal,
+      shipping
+    }
   }
 }
 
