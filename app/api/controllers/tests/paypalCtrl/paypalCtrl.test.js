@@ -7,9 +7,22 @@ describe('paypalCtrl', () => {
 
   describe('buildPaymentRequest', () => {
 
+    beforeEach(() => {
+      cardPaymentOptions = {
+        method: 'paypal',
+        store: 'unahil'
+      }
+    })
+
     test('Should return a correct paypal payment obj')
 
-    test('Should return a correct credit_card payment obj')
+    test('Should return a correct credit_card payment obj (paypal, unahil)')
+
+    test('Should return a correct credit_card payment obj (credit_card, unahil)')
+
+    test('Should return a correct credit_card payment obj (paypal, kampamocha)')
+
+    test('Should return a correct credit_card payment obj (credit_card, kampamocha)')    
 
     test('Should return an error malformed paymentForm (method=paypal)')
 
