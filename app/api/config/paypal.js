@@ -1,4 +1,3 @@
-const environment = process.env.NODE_ENV
 const devHost = 'http://localhost:3000'
 const prodKpHost = 'https://kampamocha.com'
 const prodTcHost = 'https://tuchadesigns.com'
@@ -11,10 +10,10 @@ module.exports = {
   xpUrl: 'https://api.sandbox.paypal.com/v1/payment-experience/web-profiles',
   payUrl: 'https://api.sandbox.paypal.com/v1/payments/payment',
   kampaOpts: {
-    executeUrl: getUrl('kampa', 'exec'), cancelUrl: getUrl('kampa', 'canc')
+    executeUrl: getUrl('kampamocha', 'exec'), cancelUrl: getUrl('kampamocha', 'canc')
   },
   tuchaOpts: {
-    executeUrl: getUrl('tucha', 'exec'), cancelUrl: getUrl('tucha', 'canc')
+    executeUrl: getUrl('tuchadesigns', 'exec'), cancelUrl: getUrl('tuchadesigns', 'canc')
   },
   unahilOpts: {
     executeUrl: getUrl('unahil', 'exec'), cancelUrl: getUrl('unahil', 'canc')
@@ -71,10 +70,11 @@ module.exports = {
 
 function getUrl(store, opt) {
   let start = '', end = ''
-  if (environment === 'development') start = devHost
-  if (environment === 'production' && store === 'kampa')  start = prodKpHost
-  if (environment === 'production' && store === 'tucha')  start = prodTcHost
-  if (environment === 'production' && store === 'unahil') start = prodUhHost
-  end = opt === 'exec' ? '/payment/confirm' : '/payment/cancel'
+  if (process.env.NODE_ENV === 'development') start = 'http://localhost:8080'
+  if (process.env.NODE_ENV != 'development' && store === 'kampamocha')  start = prodKpHost
+  if (process.env.NODE_ENV != 'development' && store === 'tuchadesigns')  start = prodTcHost
+  if (process.env.NODE_ENV != 'development' && store === 'unahil') start = prodUhHost
+  end = opt === 'exec' ? '/payment/success' : '/payment/failed'
+  console.log(store)
   return `${start}${end}`
 }
