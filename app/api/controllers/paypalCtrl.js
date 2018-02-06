@@ -52,7 +52,7 @@ function buildPaymentRequest(paymentForm) {
         }
       },
       description: paymentForm.store == 'unahil' 
-      ? `${paymentForm.nights} nights at ${paymentForm.nightPrice} each.`
+      ? `${paymentForm.nights} nights at US$${paymentForm.nightPrice} each.`
       : paymentForm.products.reduce((str, product, index) => {
         str += `${product.quantity}x ${product.name}, `
         if (index + 1 == paymentForm.products.length) str = str.slice(0, -2) 

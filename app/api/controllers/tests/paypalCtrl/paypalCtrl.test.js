@@ -163,11 +163,16 @@ describe('paypalCtrl', () => {
     }
 
     function getRequestTransactionAmount(subtotal, shipping) {
-      let total = subtotal + shipping
+      let total
+
+      if (shipping) { 
+        total = subtotal + shipping        
+        shipping = shipping.toString() 
+      } else 
+        total = subtotal
 
       total = total.toString()
       subtotal = subtotal.toString()
-      if (shipping) shipping = shipping.toString()
 
       return {
         currency: 'USD',
