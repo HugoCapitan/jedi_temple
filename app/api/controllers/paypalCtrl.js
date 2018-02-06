@@ -34,7 +34,7 @@ function buildPaymentRequest(paymentForm) {
 
   // Constructing common payment structure
   const paymentTotal = paymentForm.shipping 
-  ? paymentForm.subtotal + paymentForm.shipping
+  ? parseFloat(paymentForm.subtotal) + parseFloat(paymentForm.shipping)
   : paymentForm.subtotal
 
   const payment = {
@@ -44,7 +44,7 @@ function buildPaymentRequest(paymentForm) {
     },
     transactions: [{
       amount: {
-        total: paymentTotal,
+        total: paymentTotal.toString(),
         currency: 'USD',
         details: {
           subtotal: paymentForm.subtotal,
