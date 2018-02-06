@@ -98,7 +98,7 @@ describe('paypalCtrl', () => {
 
 })
 
-function createCdOptionsObjects() {
+function createOptionsObjects() {
   kampaCdMockPaymentOpts = {
     method: 'credit_card',
     paymentSuccess: 'https://kampamocha.com/payment/success',
@@ -107,24 +107,17 @@ function createCdOptionsObjects() {
   }
   unahCdMockPaymentOpts = {
     method: 'credit_card',
-    ...getUnahilOptions(),
     paymentSuccess: 'https://unahil.com/payment/success',
+    ...getUnahilOptions(),
     ...getCardOptions()
   }
-}
-
-function createPpOtionsObjects() {
   kampaPpMockPaymentOpts = {
     method: 'paypal',
-    store: 'unahil',
-
+    ...getKampaOptions()
   }
   unahPpMockPaymentOpts = {
-    method: 'credit_card',
-    store: 'unahil',
-    nightPrice: '139.75',
-    nights: '4',
-    subtotal: '559',
+    method: 'paypal',
+    ...getUnahilOptions()
   }
 }
 
