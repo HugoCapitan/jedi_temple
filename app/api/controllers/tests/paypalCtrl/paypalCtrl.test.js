@@ -6,15 +6,15 @@ const axios = require('axios')
 describe('paypalCtrl', () => {
 
   describe('buildPaymentRequest', () => {
+    let kampaCdMockPaymentOpts, kampaPpMockPaymentOpts,
+        unahCdMockPaymentOpts, unahPpMockPaymentOpts,
+        kampaCdPaymentReq, kampaPpPaymentReq,
+        unahCdPaymentReq, kampaPpPaymentReq
 
     beforeEach(() => {
-      cardPaymentOptions = {
-        method: 'paypal',
-        store: 'unahil'
-      }
+      createPaymentOtionsObjects()
+      createPaymentRequestsObjects()
     })
-
-    test('Should return a correct paypal payment obj')
 
     test('Should return a correct credit_card payment obj (paypal, unahil)')
 
@@ -97,3 +97,74 @@ describe('paypalCtrl', () => {
   })
 
 })
+
+function createCdOptionsObjects() {
+  kampaCdMockPaymentOpts = {
+    method: 'credit_card',
+    paymentSuccess: 'https://kampamocha.com/payment/success',
+    ...getKampaOptions(),
+    ...getCardOptions()
+  }
+  unahCdMockPaymentOpts = {
+    method: 'credit_card',
+    ...getUnahilOptions(),
+    paymentSuccess: 'https://unahil.com/payment/success',
+    ...getCardOptions()
+  }
+}
+
+function createPpOtionsObjects() {
+  kampaPpMockPaymentOpts = {
+    method: 'paypal',
+    store: 'unahil',
+
+  }
+  unahPpMockPaymentOpts = {
+    method: 'credit_card',
+    store: 'unahil',
+    nightPrice: '139.75',
+    nights: '4',
+    subtotal: '559',
+  }
+}
+
+function createPaymentRequestsObjects() {
+
+}
+
+function getCardOptions() {
+  return {
+    cardType: 'visa',
+    cardNumber: "4929831878017100",
+    cardExpireMonth: "02",
+    cardExpireYear: "19",
+    cardCvv2: "998",
+    cardName: "Cosme Fulanito"
+  }
+}
+
+function getKampaOptions() {
+  return {
+    store: 'kampamocha',
+    products: [{
+      name: 'Pretty Bangles',
+      quantity: '2',
+      price: '199.99'
+    },{
+      name: 'Prettier Necklace',
+      quantity: '1',
+      price: '569.99'
+    }],
+    subtotal: '969.97',
+    shipping: '5',
+  }
+}
+
+function getUnahilOptions() {
+  return {
+    store: 'unahil',
+    nightPrice: '139.75',
+    nights: '4',
+    subtotal: '559',
+  }
+}
