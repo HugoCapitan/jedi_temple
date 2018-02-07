@@ -47,7 +47,7 @@ ReservationSchema._middlewareFuncs = {
     self.updated_at = currentDate
     if (!self.created_at) self.created_at = currentDate
 
-    self.total = moment(self.departure_date).diff(self.arrive_date, 'days') * self.night_price
+    if (!self.hasOwnProperty('total')) self.total = moment(self.departure_date).diff(self.arrive_date, 'days') * self.night_price
 
     return next()
   },
