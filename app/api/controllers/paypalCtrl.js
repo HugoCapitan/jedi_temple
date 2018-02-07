@@ -20,7 +20,7 @@ module.exports = {
 
 async function createExperience(requestBody) {
   try {
-    const token = await getAuthToken()
+    const token = await this.getAuthToken()
     const experienceResponse = await axios.post(experienceUrl, {
       data: requestBody,
       headers: {

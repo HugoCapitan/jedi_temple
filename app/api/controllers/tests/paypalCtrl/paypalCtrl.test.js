@@ -5,39 +5,104 @@ const axios = require('axios')
 
 describe('paypalCtrl', () => {
 
-  beforeEach(() => {
-    axios.post = jest.fn((url, options) => new Promise((resolve, reject) => {
-      let data
-      if (url === 'https://api.sandbox.paypal.com/v1/oauth2/token') 
-        data = 'hellothisistoken'
-      if (url === 'https://api.sandbox.paypal.com/v1/payment-experience/web-profiles') 
-        data = { name: 'new exp', id: 'newexpid' }
-      if (url === 'https://api.sandbox.paypal.com/v1/payments/payment')
-        data = { what: 'a payment object' }
-
-      resolve({ data })
-    }))
-  })
-
   describe('createExperience', () => {
+    let requestBodyToSend
     
     beforeEach(() => {
-      paypalCtrl.getAuthToken = jest.fn(() => 'Bearer: heythisistoken')
+      axios.post = jest.fn((url, options) => new Promise((resolve, reject) => {
+        resolve({ data: { name: 'new exp', id: 'newexpid' } })
+      }))
+      paypalCtrl.getAuthToken = jest.fn(() => new Promise((resolve, reject) => { resolve('Bearer heythisistoken') }))
+
+      requestBodyToSend = {
+        name: 'this is the sent name',
+        id: 'heyhey'
+      }
     })
     
-    test('Should call getToken', async () => {
-      const token = await paypalCtrl.createExperience({})
+    test('Should call this.getToken', async () => {
+      const experience = await paypalCtrl.createExperience(requestBodyToSend)
+
+      expect(paypalCtrl.getAuthToken.mock.calls.length).toBe(1)
     })
 
-    test('Should call axios with correct options and sent body')
+    test('Should call axios with correct options and sent body', async () => {
+      const expectedOptions = {
+        data: requestBodyToSend,
+        headers: {
+          'Content-Type': 'application/JSON',
+          'Authorization': 'Bearer heythisistoken'
+        }
+      }
 
-    test('Should return the created experience')
+      const experience = await paypalCtrl.createExperience(requestBodyToSend)
 
-    test('Should throw axios response error')
+      const axiosUrl     = axios.post.mock.calls[0][0]
+      const axiosOptions = axios.post.mock.calls[0][1]
+      expect(axios.post.mock.calls.length).toBe(1)
+      expect(axiosUrl).toBe('https://api.sandbox.paypal.com/v1/payment-experience/web-profiles')
+      expect(axiosOptions).toEqual(expectedOptions)
+    })
 
-    test('Should throw axios request error')
+    test('Should return the created experience', async () => {
+      const expectedExperience = { name: 'new exp', id: 'newexpid' }
+      const experience = await paypalCtrl.createExperience(requestBodyToSend)
 
-    test('Should throw unexpected eror')
+      expect(experience).toEqual(expectedExperience)
+    })
+
+    test('Should throw axios response error', async () => {
+      axios.post = jest.fn(() => new Promise((resolve, reject) => {
+        const resError = new Error('Faked Error')
+        resError.response = {
+          data: 'why do you care',
+          headers: { 'header1': 'someinfo' },
+          status: 500
+        }
+        reject(resError)
+      }))
+
+      try {
+        await paypalCtrl.createExperience(requestBodyToSend)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect(e.message).toBe('Response error')
+        expect(e.response).toEqual({
+          data: 'why do you care',
+          headers: { 'header1': 'someinfo' },
+          status: 500
+        })
+      }
+    })
+
+    test('Should throw axios request error', async () => {
+      axios.post = jest.fn(() => new Promise((resolve, reject) => {
+        const resError = new Error('Faked Error')
+        resError.request = 'BADBADBAD'
+        reject(resError)
+      }))
+
+      try {
+        await paypalCtrl.createExperience(requestBodyToSend)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect(e.message).toBe('Error on request')
+        expect(e.request).toBe('BADBADBAD')
+      }
+    })
+
+    test('Should throw unexpected eror', async () => {
+      axios.post = jest.fn(() => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
+
+      try {
+        await paypalCtrl.createExperience(requestBodyToSend)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect(e.message).toBe('Faked Error')
+      }
+    })
 
   })
   
