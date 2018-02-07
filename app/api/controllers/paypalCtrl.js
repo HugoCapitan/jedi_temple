@@ -1,8 +1,5 @@
 const axios = require('axios')
 
-const clientId     = process.env.NODE_PAYPAL_CLIENT_ID
-const clientSecret = process.env.NODE_PAYPAL_CLIENT_SECRET 
-
 const tokenUrl      = 'https://api.sandbox.paypal.com/v1/oauth2/token'
 const experienceUrl = 'https://api.sandbox.paypal.com/v1/payment-experience/web-profiles'
 const paymentUrl    = 'https://api.sandbox.paypal.com/v1/payments/payment'
@@ -69,6 +66,8 @@ async function createPaymentEndpoint(req, res) {
 }
 
 async function getAuthToken() {
+  const clientId = process.env.NODE_PAYPAL_CLIENT_ID
+  const clientSecret = process.env.NODE_PAYPAL_CLIENT_SECRET
   const tokenResponse = await axios.post(tokenUrl, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
