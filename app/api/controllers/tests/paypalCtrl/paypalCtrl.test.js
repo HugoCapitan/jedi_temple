@@ -5,49 +5,70 @@ const axios = require('axios')
 
 describe('paypalCtrl', () => {
 
+  beforeEach(() => {
+    axios.post = jest.fn((url, options) => new Promise((resolve, reject) => {
+      let data
+      if (url === 'https://api.sandbox.paypal.com/v1/oauth2/token') 
+        data = 'hellothisistoken'
+      if (url === 'https://api.sandbox.paypal.com/v1/payment-experience/web-profiles') 
+        data = { name: 'new exp', id: 'newexpid' }
+      if (url === 'https://api.sandbox.paypal.com/v1/payments/payment')
+        data = { what: 'a payment object' }
+
+      resolve({ data })
+    }))
+  })
+
+  describe('createExperience', () => {
+    
+    beforeEach(() => {
+      paypalCtrl.getAuthToken = jest.fn(() => 'Bearer: heythisistoken')
+    })
+    
+    test('Should call getToken', async () => {
+      const token = await paypalCtrl.createExperience({})
+    })
+
+    test('Should call axios with correct options and sent body')
+
+    test('Should return the created experience')
+
+    test('Should throw axios response error')
+
+    test('Should throw axios request error')
+
+    test('Should throw unexpected eror')
+
+  })
+  
+
   describe('createPayment', () => {
 
     test('Should call get token')
 
-    test('Should call buildPayment')
+    test('Should call axios with correct options and sent body')
 
-    test('Should call axios with correct method and options')
+    test('Should return the created payment')
 
-    test('Should check on response for redirect url and cal res.redirect (paypal)')
+    test('Should throw axios response error')
 
-    test('Should check on response for redirect url and cal res.redirect (credit_card)')
+    test('Should throw axios request error')
 
-    test('Should return the createdPayment obj')
-
-    test('Should send axios response error correctly formatted')
-
-    test('Should send axios request error correctly formatted')
-
-    test('Should send error returned by builPaymentRequest')
-
-    test('Should send unexpectedError')
+    test('Should throw unexpected error')
 
   })
   
   describe('getAuthToken', () => {
 
-    test('Should call axios with the right auth data')
+    test('Should call axios with correct options and auth data')
 
     test('Should return the token formatted for instant use')
 
-    test('Should send response error')
+    test('Should send axios response error')
 
-    test('Should send request error')
+    test('Should send axios request error')
 
-    test('Should send unexpectedError')
-
-  })
-
-  describe('getLocalXps', () => {
-    
-    test('Should return an object with the right xps')
-
-    test('Should return empty object if xps not found')
+    test('Should send unexpected error')
 
   })
   
