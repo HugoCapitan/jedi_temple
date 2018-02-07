@@ -202,10 +202,16 @@ describe('paypalCtrl', () => {
     })
 
     test('Should throw unexpected error', async () => {
-      const expectedPayment = { name: 'new payment', id: 'newpayment' }
-      const payment = await paypalCtrl.createPayment(requestBodyToSend)
+      axios.post = jest.fn(() => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
 
-      expect(payment).toEqual(expectedPayment)
+      try {
+        await paypalCtrl.createPayment(requestBodyToSend)
+        expect(1).toBe(0)
+      } catch (e) {
+        expect(e.message).toBe('Faked Error')
+      }
     })
 
   })
@@ -241,13 +247,65 @@ describe('paypalCtrl', () => {
       expect(axiosOptions).toEqual(expectedOptions)
     })
 
-    test('Should return the token formatted for instant use')
+    test('Should return the token formatted for instant use', async () => {
+      const expectedToken = 'Bearer hellofrenimtoken'
+      const token = await paypalCtrl.getAuthToken()
 
-    test('Should send axios response error')
+      expect(token).toBe(expectedToken)
+    })
 
-    test('Should send axios request error')
+    test('Should send axios response error', async () => {
+      axios.post = jest.fn(() => new Promise((resolve, reject) => {
+        const resError = new Error('Faked Error')
+        resError.response = {
+          data: 'why do you care',
+          headers: { 'header1': 'someinfo' },
+          status: 500
+        }
+        reject(resError)
+      }))
 
-    test('Should send unexpected error')
+      try {
+        await paypalCtrl.getAuthToken()
+        expect(1).toBe(0)
+      } catch (e) {
+        expect(e.message).toBe('Response error')
+        expect(e.response).toEqual({
+          data: 'why do you care',
+          headers: { 'header1': 'someinfo' },
+          status: 500
+        })
+      }
+    })
+
+    test('Should send axios request error', async () => {
+      axios.post = jest.fn(() => new Promise((resolve, reject) => {
+        const resError = new Error('Faked Error')
+        resError.request = 'BADBADBAD'
+        reject(resError)
+      }))
+
+      try {
+        await paypalCtrl.getAuthToken()
+        expect(1).toBe(0)
+      } catch (e) {
+        expect(e.message).toBe('Error on request')
+        expect(e.request).toBe('BADBADBAD')
+      }
+    })
+
+    test('Should send unexpected error', async () => {
+      axios.post = jest.fn(() => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
+
+      try {
+        await paypalCtrl.getAuthToken()
+        expect(1).toBe(0)
+      } catch (e) {
+        expect(e.message).toBe('Faked Error')
+      }
+    })
 
   })
   
