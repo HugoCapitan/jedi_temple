@@ -4,6 +4,17 @@ jest.mock('axios')
 const axios = require('axios')
 
 describe('paypalCtrl', () => {
+  const actualGetAuthToken = paypalCtrl.getAuthToken
+
+  beforeEach(() => {
+    paypalCtrl.getAuthToken = jest.fn(() => new Promise((resolve, reject) => { 
+      resolve('Bearer heythisistoken') 
+    }))
+  })
+
+  afterEach(() => {
+    paypalCtrl.getAuthToken = actualGetAuthToken
+  })
 
   describe('createExperience', () => {
     let requestBodyToSend
@@ -12,7 +23,6 @@ describe('paypalCtrl', () => {
       axios.post = jest.fn((url, options) => new Promise((resolve, reject) => {
         resolve({ data: { name: 'new exp', id: 'newexpid' } })
       }))
-      paypalCtrl.getAuthToken = jest.fn(() => new Promise((resolve, reject) => { resolve('Bearer heythisistoken') }))
 
       requestBodyToSend = {
         name: 'this is the sent name',
@@ -191,13 +201,45 @@ describe('paypalCtrl', () => {
       }
     })
 
-    test('Should throw unexpected error')
+    test('Should throw unexpected error', async () => {
+      const expectedPayment = { name: 'new payment', id: 'newpayment' }
+      const payment = await paypalCtrl.createPayment(requestBodyToSend)
+
+      expect(payment).toEqual(expectedPayment)
+    })
 
   })
   
   describe('getAuthToken', () => {
+    const env = Object.assign({}, process.env)
 
-    test('Should call axios with correct options and auth data')
+    beforeEach(() => {
+      process.env.NODE_PAYPAL_CLIENT_ID = 'coolid'
+      process.env.NODE_PAYPAL_CLIENT_SECRET = 'shhhhandwhispers'
+
+      paypalCtrl.getAuthToken = actualGetAuthToken
+      axios.post = jest.fn((url, options) => new Promise((resolve, reject) => {
+        resolve({ data: { access_token: 'hellofrenimtoken' } })
+      }))
+    })
+
+    test('Should call axios with correct options and auth data', async () => {
+      const expectedOptions = {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        params: {  'grant_type': 'client_credentials' },
+        auth: {
+          username: 'coolid',
+          password: 'shhhhandwhispers'
+        }
+      }
+      const token = await paypalCtrl.getAuthToken()
+
+      const axiosUrl = axios.post.mock.calls[0][0]
+      const axiosOptions = axios.post.mock.calls[0][1]
+      expect(axios.post.mock.calls.length).toBe(1)
+      expect(axiosUrl).toBe('https://api.sandbox.paypal.com/v1/oauth2/token')
+      expect(axiosOptions).toEqual(expectedOptions)
+    })
 
     test('Should return the token formatted for instant use')
 
