@@ -39,9 +39,37 @@ describe('paypalCtrl', () => {
       expect(unahPpBuiltReq).toEqual(unahPpMockPaymentReq)
     })
 
-    test('Should return an error malformed paymentForm (method=paypal)')
+    test('Should return an error if malformed paymentForm (wrong common data)', () => {
+      const missingMethod = Object.assign(unahPpMockPaymentOpts, {method: ''})
+      const missingStore = Object.assign(unahPpMockPaymentOpts, {store: ''})
+      const missingSubtotal = Object.assign(unahPpMockPaymentOpts, {subtotal: ''})
 
-    test('Should return an error malformed paymentForm (method=credit_card)')
+      try { 
+        const missingMethodBuilt = paypalCtrl.buildPaymentRequest(missingMethod)
+        expect(1).toBe(0)
+      } 
+      catch (e) { expect(e.message).toBe('Malformed options') }
+
+      try { 
+        const missingStoreBuilt = paypalCtrl.buildPaymentRequest(missingStore) 
+        expect(1).toBe(0)        
+      }
+      catch(e) { expect(e.message).toBe('Malformed options') }
+      
+      try { 
+        const missingSubtotalBuilt = paypalCtrl.buildPaymentRequest(missingSubtotal) 
+        expect(1).toBe(0)        
+      }
+      catch(e) { expect(e.message).toBe('Malformed options') }
+    })
+
+    test('Should return an error malformed paymentForm (wrong store data = unahil)')    
+
+    test('Should return an error malformed paymentForm (wrong store data = kampamocha)')    
+
+    test('Should return an error malformed paymentForm (wrong method data = credit_card)')
+
+    test('Should return an error malformed paymentForm (wrong method data = paypal)')
     
     test('Should return an error -> URLS not found')
 

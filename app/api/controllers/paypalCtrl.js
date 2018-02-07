@@ -19,6 +19,9 @@ module.exports = {
 }
 
 function buildPaymentRequest(paymentForm) {
+  if (!paymentForm.store || paymentForm.store == '' || !paymentForm.method || paymentForm.method == '' || !paymentForm.subtotal || paymentForm.subtotal == '')
+    throw new Error('Malformed options')
+
   // Setting general vars
   let urls, experienceId
   if (paymentForm.store == 'unahil') {
@@ -81,6 +84,8 @@ function buildPaymentRequest(paymentForm) {
 			}
 		}]
   }
+
+  if (paymentForm.store === 'unahil') delete payment.transactions[0].amount.details.shipping
 
   return payment
 }
