@@ -6,7 +6,6 @@ let authorization, userRequest, userResponse
 let unahilXP, kampaXP
 
 module.exports = {
-  buildPaymentRequest,
   createPayment,
   getAuthToken,
   initExperiences,
@@ -18,87 +17,14 @@ module.exports = {
   getLocalExperiencesEndpoint
 }
 
-function buildPaymentRequest(paymentForm) {
-  if (!paymentForm.store || paymentForm.store == '' || !paymentForm.method || paymentForm.method == '' || !paymentForm.subtotal || paymentForm.subtotal == '')
-    throw new Error('Malformed options')
-
-  // Setting general vars
-  let urls, experienceId
-  if (paymentForm.store == 'unahil') {
-    urls = ppConfig.unahilOpts
-    experienceId = JSON.parse(process.env.NODE_PP_UNAHIL_XP).id
-  } else if (paymentForm.store == 'kampamocha') {
-    urls = ppConfig.kampaOpts
-    experienceId = JSON.parse(process.env.NODE_PP_KAMPA_XP).id
-  } else if (paymentForm.store == 'tuchadesigns') {
-    urls = ppConfig.tuchaOpts
-    experienceId = JSON.parse(process.env.NODE_PP_TUCHA_XP).id
-  }
-
-  // Constructing common payment structure
-  const paymentTotal = paymentForm.shipping 
-  ? parseFloat(paymentForm.subtotal) + parseFloat(paymentForm.shipping)
-  : paymentForm.subtotal
-
-  const payment = {
-    intent: 'sale',
-    payer: {
-      payment_method: paymentForm.method
-    },
-    transactions: [{
-      amount: {
-        total: paymentTotal.toString(),
-        currency: 'USD',
-        details: {
-          subtotal: paymentForm.subtotal,
-          shipping: paymentForm.shipping
-        }
-      },
-      description: paymentForm.store == 'unahil' 
-      ? `${paymentForm.nights} nights at US$${paymentForm.nightPrice} each.`
-      : paymentForm.products.reduce((str, product, index) => {
-        str += `${product.quantity}x ${product.name}, `
-        if (index + 1 == paymentForm.products.length) str = str.slice(0, -2) 
-        return str
-      }, '')
-    }]
-  }
-
-  // Constructing last part depending on the method
-  if (paymentForm.method === 'paypal') {
-    payment.experience_profile_id = experienceId
-		payment.redirect_urls = {
-			return_url: urls.executeUrl,
-			cancel_url: urls.cancelUrl
-		}
-  } else if (paymentForm.method === 'credit_card') {
-    payment.payer.funding_instruments = [{
-			credit_card: {
-				type: paymentForm.cardType,
-				number: paymentForm.cardNumber,
-				expire_month: paymentForm.cardExpireMonth,
-				expire_year: `20${paymentForm.cardExpireYear}`,
-				cvv2: paymentForm.cardCvv2,
-				first_name: paymentForm.cardName.split(' ')[0],
-				last_name: paymentForm.cardName.split(' ')[1]
-			}
-		}]
-  }
-
-  if (paymentForm.store === 'unahil') delete payment.transactions[0].amount.details.shipping
-
-  return payment
-}
-
-async function createPayment(paymentForm) {
+async function createPayment(requestBody) {
   try {
     const payUrl = ppConfig.payUrl
     const token = await getAuthToken()
-    const paymentRequestBody = buildPaymentRequest(req.body)
     const createResponse = await axios({
       url: payUrl,
       method: 'post',
-      data: paymentRequestBody,
+      data: requestBody,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': token
