@@ -94,9 +94,7 @@ async function getAuthTokenEndpoint(req, res) {
 async function getRemoteExperiences() {
   try {
     const token    = await this.getAuthToken()
-    const response = await axios({
-      method: 'get',
-      url: experienceUrl,
+    const response = await axios.get(experienceUrl, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': token

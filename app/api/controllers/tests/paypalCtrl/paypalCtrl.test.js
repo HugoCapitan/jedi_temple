@@ -115,7 +115,6 @@ describe('paypalCtrl', () => {
     })
 
   })
-  
 
   describe('createPayment', () => {
     let requestBodyToSend
@@ -310,18 +309,95 @@ describe('paypalCtrl', () => {
   })
   
   describe('getRemoteExperiences', () => {
+
+    beforeEach(() => {
+      axios.get = jest.fn((url, options) => new Promise((resolve, reject) => {
+        resolve({ data: [{ name: 'experience 1' }, {name: 'experience 2'}] })
+      }))
+    })
     
-    test('Should call getAuthToken')
+    test('Should call getAuthToken', async () => {
+      await paypalCtrl.getRemoteExperiences()
 
-    test('Should call axios with the right method, headers and auth')
+      expect(paypalCtrl.getAuthToken.mock.calls.length).toBe(1)
+    })
 
-    test('Should return the array of found experiences')
+    test('Should call axios with the right method, headers and auth', async () => {
+      const expectedOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer heythisistoken'
+        }
+      }
+      
+      await paypalCtrl.getRemoteExperiences()
 
-    test('Should return response error')
+      const axiosUrl = axios.get.mock.calls[0][0]
+      const axiosOptions = axios.get.mock.calls[0][1]
+      expect(axios.get.mock.calls.length).toBe(1)
+      expect(axiosUrl).toBe('https://api.sandbox.paypal.com/v1/payment-experience/web-profiles')
+      expect(axiosOptions).toEqual(expectedOptions)
+    })
 
-    test('Should return request error')
+    test('Should return the array of found experiences', async () => {
+      const expectedExperiences = [{ name: 'experience 1' }, {name: 'experience 2'}]
+      const experiences = await paypalCtrl.getRemoteExperiences()
 
-    test('Should return unexpected error')
+      expect(experiences).toEqual(expectedExperiences)
+    })
+
+    test('Should return response error', async () => {
+      axios.get = jest.fn(() => new Promise((resolve, reject) => {
+        const resError = new Error('Faked Error')
+        resError.response = {
+          data: 'why do you care',
+          headers: { 'header1': 'someinfo' },
+          status: 500
+        }
+        reject(resError)
+      }))
+
+      try {
+        await paypalCtrl.getRemoteExperiences()
+        expect(1).toBe(0)
+      } catch (e) {
+        expect(e.message).toBe('Response error')
+        expect(e.response).toEqual({
+          data: 'why do you care',
+          headers: { 'header1': 'someinfo' },
+          status: 500
+        })
+      }
+    })
+
+    test('Should return request error', async () => {
+      axios.get = jest.fn(() => new Promise((resolve, reject) => {
+        const resError = new Error('Faked Error')
+        resError.request = 'BADBADBAD'
+        reject(resError)
+      }))
+
+      try {
+        await paypalCtrl.getRemoteExperiences()
+        expect(1).toBe(0)
+      } catch (e) {
+        expect(e.message).toBe('Error on request')
+        expect(e.request).toBe('BADBADBAD')
+      }
+    })
+
+    test('Should return unexpected error', async () => {
+      axios.get = jest.fn(() => new Promise((resolve, reject) => {
+        reject(new Error('Faked Error'))
+      }))
+
+      try {
+        await paypalCtrl.getRemoteExperiences()
+        expect(1).toBe(0)
+      } catch (e) {
+        expect(e.message).toBe('Faked Error')
+      }
+    })
 
   })
 
