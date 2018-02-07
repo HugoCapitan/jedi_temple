@@ -36,7 +36,7 @@ async function createExperience(requestBody) {
 }
 
 async function createExperienceEndpoint(req, res) {
-  const experience = createExperience(req.body)
+  const experience = this.createExperience(req.body)
   .catch(e => { res.status(500).send(e) })
   
   res.status(200).send(experience)
@@ -44,7 +44,7 @@ async function createExperienceEndpoint(req, res) {
 
 async function createPayment(requestBody) {
   try {
-    const token = await getAuthToken()
+    const token = await this.getAuthToken()
     const createResponse = await axios({
       url: paymentUrl,
       method: 'post',
@@ -62,7 +62,7 @@ async function createPayment(requestBody) {
 }
 
 async function createPaymentEndpoint(req, res) {
-  const payment = await createPayment(req.body)
+  const payment = await this.createPayment(req.body)
   .catch(e => {
     res.status(500).send(e)
   })
@@ -88,7 +88,7 @@ async function getAuthToken() {
 }
 
 async function getAuthTokenEndpoint(req, res) {
-  const token = await getAuthToken()
+  const token = await this.getAuthToken()
   .catch(e => { res.status(500).send(e) })
 
   res.status(200).send(token)
@@ -96,7 +96,7 @@ async function getAuthTokenEndpoint(req, res) {
 
 async function getRemoteExperiences() {
   try {
-    const token    = await getAuthToken()
+    const token    = await this.getAuthToken()
     const response = await axios({
       method: 'get',
       url: experienceUrl,
@@ -113,7 +113,7 @@ async function getRemoteExperiences() {
 }
 
 async function getRemoteExperiencesEndpoint(req, res) {
-  const experiences = await getRemoteExperiences()
+  const experiences = await this.getRemoteExperiences()
   .catch(e => res.status(500).send(e))
 
   res.status(200).send(experiences)
