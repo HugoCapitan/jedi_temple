@@ -19,6 +19,10 @@ const HMProductSchema = new Schema({
     type: String,
     unique: true
   },
+  store: {
+    type: String,
+    required: true
+  },
   materials: [HandmadeMaterialSchema],
   models: [HandmadeModelSchema],
   created_at: Date,
@@ -60,30 +64,12 @@ HMProductSchema._middlewareFuncs = {
     }
 
     return next()
-  },
-  preRemove(next) {
-    const self = this
-    Store.find({ hm_products: self._conditions._id })
-    .exec()
-    .then(storesToModify => {
-      let saves = []
-      for (const store of storesToModify) {
-        store.hm_products.pull(self._conditions._id)
-        saves.push(store.save())
-      }
-
-      return Promise.all(saves)
-    })
-    .then(results => next())
-    .catch(err => next(err))
   }
 }
 
 HMProductSchema.pre('save', HMProductSchema._middlewareFuncs.preSave)
 HMProductSchema.pre('update', HMProductSchema._middlewareFuncs.preUpdate)
 HMProductSchema.pre('findOneAndUpdate', HMProductSchema._middlewareFuncs.preUpdate)
-HMProductSchema.pre('remove', HMProductSchema._middlewareFuncs.preRemove)
-HMProductSchema.pre('findOneAndRemove', HMProductSchema._middlewareFuncs.preRemove)
 
 const HMProduct = mongoose.model('HMProduct', HMProductSchema)
 

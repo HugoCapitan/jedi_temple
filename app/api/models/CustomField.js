@@ -24,6 +24,10 @@ const CustomFieldSchema = new Schema({
     type: Boolean,
     required: true
   },
+  store: {
+    type: String,
+    require: true
+  },
   filter: {
     type: Boolean,
     required: true,
@@ -116,23 +120,15 @@ CustomFieldSchema._middlewareFuncs = {
   },
   preRemove(next) {
     const self = this
-    const saves = []            
     Product.find({
       customs: { $elemMatch: { custom_id: self._conditions._id } }
     }).exec()
     .then(productsToModify => {
+      const saves = []            
       for (const product of productsToModify) {
         const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
         product.customs.pull({ _id: customToRemove._id })
         saves.push(product.save())
-      }
-
-      return Store.find({ customs: self._conditions._id }).exec()
-    })
-    .then(storesToModify => {
-      for (const store of storesToModify) {
-        store.customs.pull(self._conditions._id)
-        saves.push(store.save())
       }
 
       return Promise.all(saves)

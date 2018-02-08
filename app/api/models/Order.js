@@ -26,11 +26,20 @@ const OrderSchema = new Schema({
     type: String,
     unique: true
   },
+  store: {
+    type: String,
+    required: true
+  },
   status: {
     type: String,
     enum: statuses,
     required: true
   },
+  payment_method: {
+    type: String,
+    required: true
+  },
+  payment_id: String,
   products: {
     type: [OrderProductSchema],
     default: undefined,
@@ -109,17 +118,12 @@ OrderSchema._middlewareFuncs = {
     }
 
     return next()
-  },
-  preRemove(next) {
-    return next()
   }
 }
 
 OrderSchema.pre('save', OrderSchema._middlewareFuncs.preSave)
 OrderSchema.pre('update', OrderSchema._middlewareFuncs.preUpdate)
 OrderSchema.pre('findOneAndUpdate', OrderSchema._middlewareFuncs.preUpdate)
-OrderSchema.pre('remove', OrderSchema._middlewareFuncs.preRemove)
-OrderSchema.pre('findOneAndUpdate', OrderSchema._middlewareFuncs.preRemove)
 
 const Order = mongoose.model('Order', OrderSchema)
 

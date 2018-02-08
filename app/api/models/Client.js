@@ -17,6 +17,10 @@ const ClientSchema = new Schema({
     required: true,
     unique: true
   },
+  store: {
+    type: String,
+    required: true
+  },
   password: String,
   salt: String,
   addresses: [AddressSchema],
@@ -77,30 +81,12 @@ ClientSchema._middlewareFuncs = {
       return next()
     })
     .catch(err => next(err))
-  },
-  preRemove(next) {
-    const self = this
-
-    Store.find({ clients: self._conditions._id })
-    .exec()
-    .then(storesToModify => {
-      let saves = []
-      for (const store of storesToModify) {
-        store.clients.pull(self._conditions._id)
-        saves.push(store.save())
-      }
-      return Promise.all(saves)
-    })
-    .then(results => next())
-    .catch(err => next(err))
   }
 }
 
 ClientSchema.pre('save', ClientSchema._middlewareFuncs.preSave)
 ClientSchema.pre('udpate', ClientSchema._middlewareFuncs.preUpdate)
 ClientSchema.pre('findOneAndUpdate', ClientSchema._middlewareFuncs.preUpdate)
-ClientSchema.pre('remove', ClientSchema._middlewareFuncs.preRemove)
-ClientSchema.pre('findOneAndRemove', ClientSchema._middlewareFuncs.preRemove)
 
 const Client = mongoose.model('Client', ClientSchema)
 

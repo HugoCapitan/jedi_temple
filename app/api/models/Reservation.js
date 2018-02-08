@@ -36,6 +36,10 @@ const ReservationSchema = new Schema({
     required: true
   },
   total: Number,
+  store: {
+    type: String,
+    required: true
+  },
   created_at: Date,
   updated_at: Date
 })

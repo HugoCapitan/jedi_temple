@@ -71,25 +71,13 @@ ProductSchema._middlewareFuncs = {
   },
   preRemove(next) {
     const self = this
-    const findPromises = [
-      Client.find({ wishlist: self._conditions._id }).exec(),
-      Store.find({ products: self._conditions._id }).exec()
-    ]
 
-    Promise.all(findPromises)
-    .then(objectsToModify => {
-      const clientsToModify = objectsToModify[0]
-      const storesToModify  = objectsToModify[1]
+    Client.find({ wishlist: self._conditions._id }).exec()
+    .then(clientsToModify => {
       const saves = []
-
       for (const client of clientsToModify) {
         client.wishlist.pull(self._conditions._id)
         saves.push(client.save())
-      }
-
-      for (const store of storesToModify) {
-        store.products.pull(self._conditions._id)
-        saves.push(store.save())
       }
 
       return Promise.all(saves)
