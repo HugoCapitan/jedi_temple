@@ -45,5 +45,6 @@ module.exports = async () => {
     return false
   } catch (e) {
     console.log(e)
+    throw e
   }
 }

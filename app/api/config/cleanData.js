@@ -19,7 +19,7 @@ module.exports = async () => {
     Store.remove({}).exec()
   )
 
-  await Promise.all(findPromises).catch(e => { console.log(e) })
+  await Promise.all(findPromises).catch(e => { console.log(e); throw e })
 
   console.log('Database clean.')
   
