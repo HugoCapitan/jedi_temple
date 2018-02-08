@@ -1,12 +1,5 @@
 {
   "execMap": {
     "js": "node server.js"
-  },
-  "env": {
-    "NODE_ENV": "development",
-    "NODE_PORT": 8000,
-    "ITERATIONS": 1000,
-    "PP_CLIENT_ID": "Acr3HeG3c54lsJQIvkwiwklI5-IbPj-CZa8MkjYtkx8z-C0mnWnFFhpA7xr_2xyUmpJan7bU5fnndFET",
-    "PP_CLIENT_SECRET": "EDzjt3eD54251X4zYeD1sKRIfKGRoluosdydWTm3N7m_5AGGDzt13gBNVFlpWIrW4YHXzZkcoeC3NHe3"
   }
 }
