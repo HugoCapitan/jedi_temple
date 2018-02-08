@@ -1,8 +1,6 @@
 const CustomField = require('../../CustomField')
 jest.mock('../../Product')
 const Product = require('../../Product')
-jest.mock('../../Store')
-const Store = require('../../Store')
 
 const uSchemas = require('../../../utils/validSchemas')
 
@@ -19,12 +17,8 @@ describe('preRemove Middleware', () => {
     Product.find = jest.fn(() => ({
       exec: () => new Promise((resolve, reject) => { resolve([]) })
     }))
-    Store.find = jest.fn(() => ({
-      exec: () => new Promise((resolve, reject) => { resolve([]) })
-    }))
 
     Product.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
-    Store.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
   })
   
   test('Should call next', done => {
@@ -86,53 +80,6 @@ describe('preRemove Middleware', () => {
     boundMiddleware(next)     
   })
 
-  test('Should call store.find with the custom id', done => {
-    const _conditions = { _id: 'chocobanana' }
-    const boundMiddleware = bindMiddleware({ _conditions })
-    const expectedQuery = { customs: 'chocobanana' }
-    const next = err => {
-      expect(err).toBeFalsy()
-      expect( Store.find.mock.calls.length ).toBe(1)
-      expect( Store.find.mock.calls[0][0] ).toEqual(expectedQuery)
-      done()
-    }
-
-    boundMiddleware(next)
-  })
-
-  test('Should iterate and update stores', done => {
-    const _conditions = { _id: 'chocobanana' }
-    const boundMiddleware = bindMiddleware({ _conditions })
-    const foundStores = [{
-      customs: ['anotherthing', 'chocobanana'],
-      save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
-    }, {
-      customs: ['shomething', 'chocobanana'],
-      save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
-    }]
-    foundStores[0].customs.pull = jest.fn(() => { foundStores[0].customs.pop() })
-    foundStores[1].customs.pull = jest.fn(() => { foundStores[1].customs.pop() })
-    Store.find = jest.fn(() => ({
-      exec: () => new Promise((resolve, reject) => { resolve(foundStores) })
-    }))
-
-    const next = err => {
-      expect(err).toBeFalsy()
-      expect( foundStores[0].customs.length ).toBe(1)
-      expect( foundStores[0].customs.pull.mock.calls.length ).toBe(1)
-      expect( foundStores[0].customs.pull.mock.calls[0][0] ).toBe('chocobanana')
-      expect( foundStores[0].save.mock.calls.length ).toBe(1)
-
-      expect( foundStores[1].customs.length ).toBe(1)
-      expect( foundStores[1].customs.pull.mock.calls.length ).toBe(1)
-      expect( foundStores[1].customs.pull.mock.calls[0][0] ).toBe('chocobanana')
-      expect( foundStores[1].save.mock.calls.length ).toBe(1)
-      done()
-    }
-
-    boundMiddleware(next)
-  })
-
   test('Should call next with Product.find Error', done => {
     const _conditions = { _id: 'chocobanana' }
     const boundMiddleware = bindMiddleware({ _conditions })
@@ -167,40 +114,5 @@ describe('preRemove Middleware', () => {
 
     boundMiddleware(next)
   })
-
-  test('Should call next with Store.find Error', done => {
-    const _conditions = { _id: 'chocobanana' }
-    const boundMiddleware = bindMiddleware({ _conditions })
-    Store.find = jest.fn(() => ({
-      exec: () => new Promise((resolve, reject) => { reject(new Error('Test error fetching stores')) })
-    }))
-    const next = err => {
-      expect( err.message ).toBe('Test error fetching stores')
-      done()
-    }
-
-    boundMiddleware(next)
-  })
-
-  test('Should call next with stores error', done => {
-    const _conditions = { _id: 'chocobanana' }
-    const boundMiddleware = bindMiddleware({ _conditions })
-
-    const foundStore = { 
-      customs: ['chocobanana'],
-      save: jest.fn(() => new Promise((resolve, reject) => { reject(new Error('Smoothie Error')) }))
-    }
-    foundStore.customs.pull = jest.fn(() => { foundStore.customs.pop() })
-
-    Store.find = jest.fn(() => ({
-      exec: () => new Promise((resolve, reject) => { resolve([foundStore]) })
-    }))
-    const next = err => {
-      expect( err.message ).toBe('Smoothie Error')
-      done()
-    }
-
-    boundMiddleware(next)
-  }) 
 
 })
