@@ -1,5 +1,14 @@
 {
   "execMap": {
     "js": "node server.js"
+  },
+  "env": {
+    "NODE_ENV": "development",
+    "NODE_PORT": 8000,
+    "ITERATIONS": 1000,
+    "NODE_PAYPAL_CLIENT_ID": "Acr3HeG3c54lsJQIvkwiwklI5-IbPj-CZa8MkjYtkx8z-C0mnWnFFhpA7xr_2xyUmpJan7bU5fnndFET",
+    "NODE_PAYPAL_CLIENT_SECRET": "EDzjt3eD54251X4zYeD1sKRIfKGRoluosdydWTm3N7m_5AGGDzt13gBNVFlpWIrW4YHXzZkcoeC3NHe3",
+    "NODE_AUTH0_UNAHILVENTURES_CLIENT_ID": "iHnJT3wuP1lVukcHn2d0wLcWJt3xiGCX",
+    "NODE_AUTH0_UNAHILVENTURES_CLIENT_SECRET": "QhuvX7zDbpMxRJOcZL7_D3CUOnNZuylOP2-OluhzruNYWIadig80HgJ_8doh7wol"
   }
 }
