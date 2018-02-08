@@ -25,6 +25,10 @@ const ProductSchema = new Schema({
     type: Number,
     required: true
   },
+  store: {
+    type: Number,
+    required: true
+  },
   description: String,
   images: [ImageSchema],
   customs: [CustomSchema],
@@ -42,7 +46,7 @@ ProductSchema._middlewareFuncs = {
       return next(err)
     }
 
-    self.slug = uCommons.slugify(self.name)
+    self.slug = uCommons.slugify(`${self.store}__${self.name}`)
     const currentDate = new Date()
     self.updated_at = currentDate
     if (!self.created_at) self.created_at = currentDate
