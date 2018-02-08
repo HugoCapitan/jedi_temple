@@ -40,9 +40,6 @@ function getValidAddress () {
 }
 
 function getValidClient() {
-  const product = new Product( getValidProduct() )
-  const order = new Order( getValidOrder() )
-
   return {
     name: 'Some Name',
     email: 'some@email.com',
