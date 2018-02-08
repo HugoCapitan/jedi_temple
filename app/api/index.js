@@ -7,10 +7,12 @@ const mongoose   = require('mongoose')
 const path       = require('path')
 const session    = require('express-session')
 
-const routes   = require('./routes')
-const initData = require('./config/initData')
+const routes    = require('./routes')
+const initData  = require('./config/initData')
+const mockData  = require('./config/mockData')
+const cleanData = require('./config/cleanData')
 
-module.exports = server => {
+module.exports = async server => {
   const apiRouter = express.Router()
 
   const jwtCheck = jwt({
@@ -68,7 +70,12 @@ module.exports = server => {
     useMongoClient: true
   }).catch(e => { throw e })
 
+  if (process.env.NODE_ENV === 'development') {
+    await cleanData()
+    await mockData() 
+  }
   initData()
+  
   routes(apiRouter)  
 
   server.use('/api/', apiRouter)

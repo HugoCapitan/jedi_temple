@@ -6,7 +6,7 @@ const Product     = require('../models/Product')
 const Reservation = require('../models/Reservation')
 const Store       = require('../models/Store')
 
-module.exports = () => {
+module.exports = async () => {
   const findPromises = []
 
   findPromises.push(
@@ -19,8 +19,9 @@ module.exports = () => {
     Store.remove({}).exec()
   )
 
-  Promise.all(findPromises)
-  .then(removed => {
-    console.log('Database clean.')
-  })
+  await Promise.all(findPromises).catch(e => { console.log(e) })
+
+  console.log('Database clean.')
+  
+  return false
 }

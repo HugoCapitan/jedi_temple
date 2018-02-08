@@ -1,0 +1,19 @@
+[{
+  "name": "bracelet",
+  "materials": [{
+    "material_name": "24K Yellow Gold",
+    "material_price": 999.99
+  }, {
+    "material_name": "14K Yellow Gold",
+    "material_price": 599.99
+  }]
+}, {
+  "name": "Necklace",
+  "materials": [{
+    "material_name": "24K Yellow Gold",
+    "material_price": 1599.99
+  }, {
+    "material_name": "14K Yellow Gold",
+    "material_price": 1099.99
+  }]
+}]
