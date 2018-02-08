@@ -24,12 +24,30 @@ module.exports = server => {
     issuer: 'https://hookahdev.auth0.com/',
     algorithms: ['RS256']
   })
+
+  function guard (req, res, next) {
+    console.log('path:', req)
+    switch (req.path) {
+      case '/store/': {
+        const permissions = ['unahil']
+        for (const perm of permissions) {
+          if (req.user.scope.includes(perm)) {
+            next()
+          } else {
+            res.status(403).send({message:'Forbidden'})
+          }
+        }
+      }
+    }
+  }
+
   apiRouter.use(jwtCheck)
   apiRouter.use((err, req, res, next) => {
     if (err.name === 'UnauthorizedError') {
       res.status(401).json({message:'Missing or invalid token'});
     }
   })
+  apiRouter.use(guard)
 
   server.use(session({
     genid: function(req) {
