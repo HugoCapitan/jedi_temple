@@ -77,29 +77,12 @@ ReservationSchema._middlewareFuncs = {
     }
 
     return next()
-  },
-  preRemove(next) {
-    const self = this
-
-    Store.find({ reservations: self._conditions._id }).exec()
-    .then(storesToModify => {
-      const saves = []
-      for(store of storesToModify) {
-        store.reservations.pull(self._conditions._id)
-        saves.push(store.save())
-      }
-      return Promise.all(saves)
-    })
-    .then(saved => next())
-    .catch(err => next(err))
   }
 }
 
 ReservationSchema.pre('save', ReservationSchema._middlewareFuncs.preSave)
 ReservationSchema.pre('update', ReservationSchema._middlewareFuncs.preUpdate)
 ReservationSchema.pre('findOneAndUpdate', ReservationSchema._middlewareFuncs.preUpdate)
-ReservationSchema.pre('remove', ReservationSchema._middlewareFuncs.preRemove)
-ReservationSchema.pre('findOneAndRemove', ReservationSchema._middlewareFuncs.preRemove)
 
 const Reservation = mongoose.model('Reservation', ReservationSchema)
 
