@@ -1,6 +1,7 @@
 [{
   "name": "Number CustomField",
   "show": true,
+  "store": "kampamocha",
   "type": "number",
   "min": "auto",
   "max": "500",
@@ -9,6 +10,26 @@
 }, {
   "name": "String CustomField",
   "show": true, 
+  "store": "kampamocha",
+  "type": "string",
+  "values": [{
+    "value": "A value"
+    }, {
+    "value": "Another Value"
+  }]
+}, {
+  "name": "Number CustomField",
+  "show": true,
+  "store": "tuchadesigns",
+  "type": "number",
+  "min": "auto",
+  "max": "500",
+  "unit": "cm",
+  "unit_place": "after"
+}, {
+  "name": "String CustomField",
+  "show": true, 
+  "store": "tuchadesigns",
   "type": "string",
   "values": [{
     "value": "A value"

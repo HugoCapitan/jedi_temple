@@ -1,5 +1,6 @@
 [{
   "name": "bracelet",
+  "store": "kampamocha",
   "materials": [{
     "material_name": "24K Yellow Gold",
     "material_price": 999.99
@@ -9,6 +10,7 @@
   }]
 }, {
   "name": "Necklace",
+  "store": "kampamocha",
   "materials": [{
     "material_name": "24K Yellow Gold",
     "material_price": 1599.99

@@ -2,6 +2,7 @@
   "name": "A client name",
   "email": "aclient@email.com",
   "password": "whatwhat",
+  "store": "kampamocha",
   "addresses": [{
     "name": "A client name",
     "email": "aclient@mail.com",
@@ -16,6 +17,67 @@
   "name": "Another client name",
   "email": "anotherclient@email.com",
   "password": "whatwhat",
+  "store": "kampamocha",
+  "addresses": [{
+    "name": "Another client name",
+    "email": "anotherclient@mail.com",
+    "address_line_1": "Address number etc",
+    "address_line_2": "Appartment number",
+    "city": "Maybe a mayor city",
+    "state": "Who cares",
+    "country": "PR",
+    "zip": "89231"
+  }]
+},{
+  "name": "A client name",
+  "email": "aclient@email.com",
+  "password": "whatwhat",
+  "store": "tuchadesigns",
+  "addresses": [{
+    "name": "A client name",
+    "email": "aclient@mail.com",
+    "address_line_1": "Address number etc",
+    "address_line_2": "Appartment number",
+    "city": "Maybe a mayor city",
+    "state": "Who cares",
+    "country": "PR",
+    "zip": "89231"
+  }]
+}, {
+  "name": "Another client name",
+  "email": "anotherclient@email.com",
+  "password": "whatwhat",
+  "store": "tuchadesigns",
+  "addresses": [{
+    "name": "Another client name",
+    "email": "anotherclient@mail.com",
+    "address_line_1": "Address number etc",
+    "address_line_2": "Appartment number",
+    "city": "Maybe a mayor city",
+    "state": "Who cares",
+    "country": "PR",
+    "zip": "89231"
+  }]
+},{
+  "name": "A client name",
+  "email": "aclient@email.com",
+  "password": "whatwhat",
+  "store": "unahil",
+  "addresses": [{
+    "name": "A client name",
+    "email": "aclient@mail.com",
+    "address_line_1": "Address number etc",
+    "address_line_2": "Appartment number",
+    "city": "Maybe a mayor city",
+    "state": "Who cares",
+    "country": "PR",
+    "zip": "89231"
+  }]
+}, {
+  "name": "Another client name",
+  "email": "anotherclient@email.com",
+  "password": "whatwhat",
+  "store": "unahil",
   "addresses": [{
     "name": "Another client name",
     "email": "anotherclient@mail.com",

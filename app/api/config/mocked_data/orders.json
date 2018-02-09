@@ -3,6 +3,7 @@
   "status": "Awaiting Payment",
   "products": [],
   "shipping": 15,
+  "store": "kampamocha",
   "billing_address": {
     "name": "A client name",
     "email": "aclient@mail.com",
@@ -28,6 +29,59 @@
   "status": "Awaiting Payment",
   "products": [],
   "shipping": 15,
+  "store": "kampamocha",
+  "billing_address": {
+    "name": "A client name",
+    "email": "aclient@mail.com",
+    "address_line_1": "Address number etc",
+    "address_line_2": "Appartment number",
+    "city": "Maybe a mayor city",
+    "state": "Who cares",
+    "country": "PR",
+    "zip": "89231"
+  },
+  "shipping_address": {
+    "name": "A client name",
+    "email": "aclient@mail.com",
+    "address_line_1": "Address number etc",
+    "address_line_2": "Appartment number",
+    "city": "Maybe a mayor city",
+    "state": "Who cares",
+    "country": "PR",
+    "zip": "89231"
+  }
+}, {
+  "mail": "some@mail.com",
+  "status": "Awaiting Payment",
+  "products": [],
+  "shipping": 15,
+  "store": "tuchadesigns",
+  "billing_address": {
+    "name": "A client name",
+    "email": "aclient@mail.com",
+    "address_line_1": "Address number etc",
+    "address_line_2": "Appartment number",
+    "city": "Maybe a mayor city",
+    "state": "Who cares",
+    "country": "PR",
+    "zip": "89231"
+  },
+  "shipping_address": {
+    "name": "A client name",
+    "email": "aclient@mail.com",
+    "address_line_1": "Address number etc",
+    "address_line_2": "Appartment number",
+    "city": "Maybe a mayor city",
+    "state": "Who cares",
+    "country": "PR",
+    "zip": "89231"
+  }
+}, {
+  "mail": "some@mail.com",
+  "status": "Awaiting Payment",
+  "products": [],
+  "shipping": 15,
+  "store": "tuchadesigns",
   "billing_address": {
     "name": "A client name",
     "email": "aclient@mail.com",
