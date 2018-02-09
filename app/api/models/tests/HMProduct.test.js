@@ -107,6 +107,10 @@ describe('HMProduct Model', () => {
       boundMiddleware(next)
     })
 
+    test('Should call next with store modification error')
+
+    test('Should call next with uniqueness modification error')
+
     test('Should iterate materials for duplicates and call next with error', done => {
       const context = { 
         ...validHMProduct, 

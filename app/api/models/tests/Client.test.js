@@ -134,6 +134,10 @@ describe('Client model', () => {
       boundMiddleware(next)
     })
 
+    test('Should call next with store modification error')
+
+    test('Should call next with email modification error')
+
     test('Shoul call next with no password error', done => {
       delete validClient.password
       const context = validClient

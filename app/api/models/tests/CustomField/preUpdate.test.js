@@ -143,6 +143,8 @@ describe('preUpdate Middleware', () => {
     boundMiddleware(next)
   })
 
+  test('Should call next with store mod error')
+
   test('Should call next with Product.find Error', done => {
     const maxUpdated = { min: '450', max: '500' }
     const _update = maxUpdated

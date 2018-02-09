@@ -172,6 +172,8 @@ describe('preSave Middleware', () => {
     boundMiddleware(next) 
   })
 
+  test('Should call next with store update error')
+
   test('Should call next with type error', done => {
     const context = validNumberCustom
     context.isModified = jest.fn( (prop) => prop == 'type' ? true : false )
