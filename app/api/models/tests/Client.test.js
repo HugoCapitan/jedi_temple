@@ -248,7 +248,7 @@ describe('Client model', () => {
       boundMiddleware(next)
     })
 
-    test('Should throw validation error', done => {
+    test('Should throw validation error if modified store', done => {
       const _update = {store: 'kampamocha'}
       const boundMiddleware = bindMiddleware({_update})
       const next = err => {
@@ -259,7 +259,7 @@ describe('Client model', () => {
       boundMiddleware(next)
     })
 
-    test('Should throw validation error', done => {
+    test('Should throw validation error if modified uniqueness', done => {
       const _update = {uniqueness: 'kampamocha'}
       const boundMiddleware = bindMiddleware({_update})
       const next = err => {
@@ -270,8 +270,8 @@ describe('Client model', () => {
       boundMiddleware(next)
     })
 
-    test('Should throw validation error', done => {
-      const _update = {uniqueness: 'email@maol.com'}
+    test('Should throw validation error if modified email', done => {
+      const _update = {email: 'email@maol.com'}
       const boundMiddleware = bindMiddleware({_update})
       const next = err => {
         expect(err.message).toBe('Validation Error')
