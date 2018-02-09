@@ -83,6 +83,17 @@ module.exports = HMProduct
 
 function preSaveValidation(self) {
   return new Promise((resolve, reject) => {
+    if (!self.isNew && self.isModified('store')) {
+      err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (!self.isNew && self.isModified('uniqueness')) {
+      err = new Error('Uniqueness is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+
     const materialsCount = self.materials.reduce((matacc, material) => {
       !!matacc[material.material_name] ? ++matacc[material.material_name] : matacc[material.material_name] = 1
       return matacc

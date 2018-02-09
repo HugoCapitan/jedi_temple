@@ -62,8 +62,10 @@ describe('HMProduct Model', () => {
 
   describe('preSave Middleware', () => {
     let validHMProduct
-    const bindMiddleware = context => 
-      HMProduct.schema._middlewareFuncs.preSave.bind(context)
+    const bindMiddleware = context => {
+      if(!context.hasOwnProperty('isModified')) context.isModified = jest.fn(() => false)
+      return HMProduct.schema._middlewareFuncs.preSave.bind(context)
+    }
 
     beforeEach(() => {
       validHMProduct = uSchemas.getValidHMProduct()
@@ -113,7 +115,8 @@ describe('HMProduct Model', () => {
       context.isModified = jest.fn(prop => prop == 'store' ? true : false)
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
-        expect(err.message).toBe('Validation Error')
+        expect(err.message).toBe('Store is not updatable')
+        expect(err.name).toBe('ValidationError')
         done()
       }
 
@@ -126,9 +129,12 @@ describe('HMProduct Model', () => {
       context.isModified = jest.fn(prop => prop == 'uniqueness' ? true : false)
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
-        expect(err.message).toBe('Validation Error')
+        expect(err.message).toBe('Uniqueness is not updatable')
+        expect(err.name).toBe('ValidationError')
         done()
       }
+
+      boundMiddleware(next)
     })
 
     test('Should iterate materials for duplicates and call next with error', done => {
