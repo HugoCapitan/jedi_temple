@@ -13,8 +13,7 @@ const uCommon = require('../utils')
 const CustomFieldSchema = new Schema({
   name: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   slug: {
     type: String,
