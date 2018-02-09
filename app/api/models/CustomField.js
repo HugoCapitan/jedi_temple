@@ -164,6 +164,11 @@ function preSaveValidations(self) {
       err.name = 'ValidationError'
       reject(err)
     }
+    if (!self.isNew && self.isModified('store')) {
+      let err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
     if (self.values) {
       let valCount = self.values.reduce((acc, val) => {
         !!acc[val.value] ? ++acc[val.value] : acc[val.value] = 1
@@ -190,6 +195,11 @@ function preUpdateValidations(self) {
     }
     if (self._update.hasOwnProperty('type')) {
       err = new Error('Type is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('store')) {
+      err = new Error('Store is not updatable')
       err.name = 'ValidationError'
       reject(err)
     }
