@@ -36,9 +36,11 @@ describe('Order model', () => {
     const m = new Order({ })
     const v = m.validateSync()
 
-    expect(uCommon.howManyKeys(v.errors)).toBe(6)
+    expect(uCommon.howManyKeys(v.errors)).toBe(8)
     expect(v.errors.email).toBeTruthy()
     expect(v.errors.status).toBeTruthy()
+    expect(v.errors.payment_method).toBeTruthy()
+    expect(v.errors.store).toBeTruthy()
     expect(v.errors.products).toBeTruthy()
     expect(v.errors.shipping).toBeTruthy()
     expect(v.errors.billing_address).toBeTruthy()
@@ -439,29 +441,6 @@ describe('Order model', () => {
     test('Should send email on canceled')
 
     test('Should prevent products update, send message to use Save method')
-
-  })
-
-  describe('preRemove Error', () => {
-    const bindMiddleware = context => 
-      Order.schema._middlewareFuncs.preRemove(context)
-
-    beforeEach(() => {
-      Client.find = jest.fn(() => ({
-        exec: () => new Promise((resolve, reject) => { resolve([]) })
-      }))
-      Store.find = jest.fn(() => ({
-        exec: () => new Promise((resolve, reject) => { resolve([]) })
-      }))
-    })
-    
-    test('Should be no error')
-
-    test('Should call find on stores and clients')
-
-    test('Should update and save found stores')
-
-    test('Should update and save found clients')
 
   })
 

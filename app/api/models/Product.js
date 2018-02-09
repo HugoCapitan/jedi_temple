@@ -26,7 +26,7 @@ const ProductSchema = new Schema({
     required: true
   },
   store: {
-    type: Number,
+    type: String,
     required: true
   },
   description: String,

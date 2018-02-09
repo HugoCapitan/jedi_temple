@@ -23,9 +23,10 @@ describe('Reservation model', () => {
     const m = new Reservation({ })
     const v = m.validateSync()
 
-    expect( uCommon.howManyKeys(v.errors) ).toBe(5)
+    expect( uCommon.howManyKeys(v.errors) ).toBe(6)
     expect(v.errors.email).toBeTruthy()
     expect(v.errors.status).toBeTruthy()
+    expect(v.errors.store).toBeTruthy()
     expect(v.errors.arrive_date).toBeTruthy()
     expect(v.errors.departure_date).toBeTruthy()
     expect(v.errors.night_price).toBeTruthy()
@@ -186,111 +187,6 @@ describe('Reservation model', () => {
       }
 
       boundMiddleware(next)      
-    })
-
-  })
-
-  describe('preRemove Middleware', () => {
-    let idToSend, foundStore
-
-    beforeEach(() => { 
-      idToSend = new ObjectId('ffffffffffffaaaaaaaaaaaa') 
-      foundStore   = Object.assign(uSchemas.getValidStore(), { reservations: [idToSend], 
-        save: jest.fn(() => new Promise((resolve, reject) => { resolve() })) 
-      })
-      anotherStore = Object.assign(uSchemas.getValidStore(), { reservations: [idToSend], 
-        save: jest.fn(() => new Promise((resolve, reject) => { resolve() })) 
-      })
-      foundStore.reservations.pull = jest.fn(() => { foundStore.reservations.pop() })
-      anotherStore.reservations.pull = jest.fn(() => { anotherStore.reservations.pop() })
-      Store.find = jest.fn(() => ({
-        exec: () => new Promise((resolve, reject) => {
-          resolve([foundStore, anotherStore])
-        })
-      }))
-    })
-
-    const bindMiddleware = context => {
-      return Reservation.schema._middlewareFuncs.preRemove.bind(context)
-    }
-
-    test('Should call next', done => {
-      const _conditions = { _id: idToSend }
-      const boundMiddleware = bindMiddleware({_conditions})
-      const next = err => {
-        expect(err).toBeFalsy()
-        done()
-      }
-
-      boundMiddleware(next)
-    })
-
-    test('Should call Store.find with reservation id', done => {
-      const _conditions = { _id: idToSend }
-      const boundMiddleware = bindMiddleware({_conditions})
-      const next = err => {
-        expect(err).toBeFalsy()
-        expect(Store.find.mock.calls.length).toBe(1)
-        expect(Store.find.mock.calls[0][0]).toEqual({ reservations: idToSend })
-        done()
-      }
-
-      boundMiddleware(next)
-    })
-
-    test('Should update and save stores', done => {
-      const _conditions = { _id: idToSend }
-      const boundMiddleware = bindMiddleware({_conditions})
-      const next = err => {
-        expect(err).toBeFalsy()
-        expect(foundStore.reservations.pull.mock.calls.length).toBe(1)
-        expect(anotherStore.reservations.pull.mock.calls.length).toBe(1)
-        expect(foundStore.reservations.pull.mock.calls[0][0]).toEqual(idToSend)
-        expect(anotherStore.reservations.pull.mock.calls[0][0]).toEqual(idToSend)
-        expect(foundStore.reservations.length).toBe(0)
-        expect(anotherStore.reservations.length).toBe(0)
-        expect(foundStore.save.mock.calls.length).toBe(1)
-        expect(anotherStore.save.mock.calls.length).toBe(1)
-        done()
-      }
-
-      boundMiddleware(next)
-    })
-
-    test('Should call next with Store.find error', done => {
-      const _conditions = { _id: idToSend }
-      const boundMiddleware = bindMiddleware({_conditions})
-      Store.find = jest.fn(() => ({
-        exec: () => new Promise((resolve, reject) => {
-          const err = new Error('Faked Error')
-          err.name = 'QueryError'
-          reject(err)
-        })
-      }))
-      const next = err => {
-        expect(err.message).toBe('Faked Error')
-        expect(err.name).toBe('QueryError')
-        done()
-      }
-
-      boundMiddleware(next)
-    })
-
-    test('Should call next with Store.update error', done => {
-      const _conditions = {_id: idToSend}
-      const boundMiddleware = bindMiddleware({_conditions})
-      anotherStore.save = jest.fn(() => new Promise((resolve, reject) => {
-        const err = new Error('Faked Error')
-        err.name = 'ValidationError'
-        reject(err)
-      }))
-      const next = err => {
-        expect(err.message).toBe('Faked Error')
-        expect(err.name).toBe('ValidationError')
-        done()
-      }
-
-      boundMiddleware(next)
     })
 
   })

@@ -28,33 +28,6 @@ describe('Store model', () => {
     expect(v.errors.name).toBeTruthy()
   })
 
-  test('Should be invalid if any array has a wrong id', () => {
-    const m = new Store( getMalformedIdsStore() )
-    const v = m.validateSync()
-
-    expect( howManyKeys(v.errors) ).toBe(7)
-    expect(v.errors.products).toBeTruthy()
-    expect(v.errors.texts).toBeTruthy()
-    expect(v.errors.pictures).toBeTruthy()
-    expect(v.errors.customs).toBeTruthy()
-    expect(v.errors.orders).toBeTruthy()
-    expect(v.errors.clients).toBeTruthy()
-    expect(v.errors.reservations).toBeTruthy()
-  })
-
-  test('Should be invalid if any array has an empty id', () => {
-    const m = new Store( getEmptyIdsStore() )
-    const v = m.validateSync()
-
-    expect( howManyKeys(v.errors) ).toBe(7)
-    expect(v.errors.products).toBeTruthy()
-    expect(v.errors.texts).toBeTruthy()
-    expect(v.errors.pictures).toBeTruthy()
-    expect(v.errors.customs).toBeTruthy()
-    expect(v.errors.orders).toBeTruthy()
-    expect(v.errors.clients).toBeTruthy()
-    expect(v.errors.reservations).toBeTruthy()
-  })
 
   describe('Calendar configuration', () => {
 

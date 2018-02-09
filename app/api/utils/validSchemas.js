@@ -45,6 +45,7 @@ function getValidClient() {
     email: 'some@email.com',
     password: 'arealhardpassword',
     addresses: [getValidAddress()],
+    store: 'Kampamocha',
     orders: [new ObjectId('fafafafafafafafafafafafa')],
     wishlist: [new ObjectId('afafafafafafafafafafafaf')],
     reservations: [new ObjectId('0f0f0f0f0f0f0f0f0f0f0f0f')]
@@ -55,6 +56,7 @@ function getValidHMProduct() {
   const materialId = new ObjectId('aaafffaaafffaaafffaaafff')
   return { 
     name: 'Bracelet',
+    store: 'Kampamocha',
     materials: [{
       _id: materialId,
       material_name: '24K Gold',
@@ -83,16 +85,17 @@ function getValidNumberCustom() {
     min: 'auto',
     max: '500',
     unit: 'cm',
+    store: 'Kampamocha',
     unit_place: 'after'
   }
 }
 
 function getValidOrder() {
-  const product = new Product( getValidProduct() )
-
   return {
     email: 'some@mail.com',
     status: 'Awaiting Payment',
+    payment_method: 'paypal',
+    payment_id: 'somepaypalid',
     products: [{ 
       code: new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'),
       quantity: 2,
@@ -102,6 +105,7 @@ function getValidOrder() {
       quantity: 1,
       is_populated: false
     }],
+    store: 'Kampamocha',
     shipping: 15,
     billing_address: getValidAddress(),
     shipping_address: getValidAddress()
@@ -110,21 +114,21 @@ function getValidOrder() {
 
 function getValidPicture() {
   return {
-    url: '/dist/picture.png'
+    url: '/dist/picture.png',
+    store: 'Kampamocha'
   }
 }
 
 function getValidProduct() {
-  const validCustom = new CustomField( getValidNumberCustom() )
-
   return {
     name: 'Some product',
     stock: '20',
     price: 599.99,
     description: 'Some product description',
+    store: 'Kampamocha',
     images: [ getValidImage() ],
     customs: [{
-      custom_id: validCustom._id,
+      custom_id: new ObjectId('000aaa000aaa000aaa000aaa'),
       value: 'A value'
     }]
   }
@@ -135,6 +139,7 @@ function getValidReservation() {
     email: 'some@mail.com',
     plan: 'short',
     status: 1,
+    store: 'Unahil',
     arrive_date: moment().add('1', 'days').toDate(),
     departure_date: moment().add('1', 'weeks').toDate(),
     night_price: 499.99
@@ -142,23 +147,8 @@ function getValidReservation() {
 }
 
 function getValidStore() {
-  const product     = new Product( getValidProduct() )
-  const text        = new Text( getValidText() )
-  const picture     = new Picture( getValidPicture() )
-  const customField = new CustomField( getValidNumberCustom() )
-  const order       = new Order( getValidOrder() )
-  const client      = new Client( getValidClient() )
-  const reservation = new Reservation( getValidReservation() )
-
   return {
     name: 'The Store Baby',
-    products: [ product._id ],
-    texts: [ text._id ],
-    pictures: [ picture._id ],
-    customs: [ customField._id ],
-    orders: [ order._id ],
-    clients: [ client._id ],
-    reservations: [ reservation._id ],
     calendar: {
       nearest_available_date: 7,
       furthest_available_date: 120,
@@ -170,7 +160,8 @@ function getValidStore() {
 function getValidStringCustom() {
   return {
     name: 'String CustomField',
-    show: true, 
+    show: true,
+    store: 'Kampamocha',
     type: 'string',
     values: [ { value: 'A value' }, { value: 'Another Value' } ]
   }
@@ -178,6 +169,7 @@ function getValidStringCustom() {
 
 function getValidText() {
   return {
-    text: 'This is some random text'
+    text: 'This is some random text',
+    store: 'Kampamocha'
   }
 }

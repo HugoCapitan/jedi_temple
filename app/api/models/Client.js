@@ -21,7 +21,10 @@ const ClientSchema = new Schema({
     type: String,
     required: true
   },
-  password: String,
+  password: { 
+    type: String,
+    required: true
+  },
   salt: String,
   addresses: [AddressSchema],
   orders:[{

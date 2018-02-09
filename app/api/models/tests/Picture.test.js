@@ -16,12 +16,13 @@ describe('Picture model', () => {
     const m = new Picture({ })
     const v = m.validateSync()
 
-    expect(howManyKeys(v.errors)).toBe(1)
+    expect(howManyKeys(v.errors)).toBe(2)
     expect(v.errors.url).toBeTruthy()
+    expect(v.errors.store).toBeTruthy()
   })
 
   test('Should be invalid if url not ending in picture format', () => {
-    const m = new Picture({ url: 'someinvalidurl' })
+    const m = new Picture({ url: 'someinvalidurl', store: 'Kampamocha' })
     const v = m.validateSync()
 
     expect(howManyKeys(v.errors)).toBe(1)

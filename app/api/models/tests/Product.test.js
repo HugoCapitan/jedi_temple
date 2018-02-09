@@ -5,8 +5,6 @@ const ObjectId = mongoose.Types.ObjectId
 const Product     = require('../Product')
 jest.mock('../Client')
 const Client = require('../Client')
-jest.mock('../Store')
-const Store = require('../Store')
 
 const uCommon  = require('../../utils')
 const uSchemas = require('../../utils/validSchemas')
@@ -25,16 +23,17 @@ describe('Normal Product Model', () => {
   })
 
   test('Should be invalid if empty: name, price, stock', () => {
-    const wrongProduct = Object.assign({}, validProduct, {name: undefined, stock: undefined, price: undefined})
+    const wrongProduct = Object.assign({}, validProduct, {name: undefined, stock: undefined, price: undefined, store: undefined})
 
     const m = new Product(wrongProduct)
     const v = m.validateSync()
 
-    expect(uCommon.howManyKeys(v.errors)).toBe(3)
+    expect(uCommon.howManyKeys(v.errors)).toBe(4)
 
     expect(v.errors.name).toBeTruthy()
     expect(v.errors.stock).toBeTruthy()
     expect(v.errors.price).toBeTruthy()
+    expect(v.errors.store).toBeTruthy()
   })
 
 
@@ -78,7 +77,7 @@ describe('Normal Product Model', () => {
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
         expect(err).toBeFalsy()
-        expect(context.slug).toBe('the_name')
+        expect(context.slug).toBe('kampamocha__the_name')
         done()
       }
 
@@ -198,9 +197,6 @@ describe('Normal Product Model', () => {
       Client.find = jest.fn(() => ({
         exec: () => new Promise((resolve, reject) => { resolve([]) })
       }))
-      Store.find = jest.fn(() => ({
-        exec: () => new Promise((resolve, reject) => { resolve([]) })
-      }))
     })
 
     test('Should be fine', done => {
@@ -208,44 +204,6 @@ describe('Normal Product Model', () => {
       const boundMiddleware = bindMiddleware({_conditions})
       const next = err => {
         expect(err).toBeFalsy()
-        done()
-      }
-
-      boundMiddleware(next)
-    })
-
-    test('Should call Store.find with prod id', done => {
-      const _conditions = { _id: remove_id }
-      const boundMiddleware = bindMiddleware({_conditions})
-      const expectedQuery = { products: remove_id }
-      const next = err => {
-        expect(err).toBeFalsy()
-        expect(Store.find.mock.calls.length).toBe(1)
-        expect(Store.find.mock.calls[0][0]).toEqual(expectedQuery)
-        done()
-      }
-
-      boundMiddleware(next)
-    })
-
-    test('Should update and save found stores', done => {
-      const _conditions = { _id: remove_id }
-      const boundMiddleware = bindMiddleware({_conditions})
-      const foundStores = getFoundStores()
-      Store.find = jest.fn(() => ({
-        exec: () => new Promise((resolve, reject) => { resolve(foundStores) })
-      }))
-      const next = err => {
-        expect(err).toBeFalsy()
-        expect(foundStores[0].products.length).toBe(1)
-        expect(foundStores[0].products.pull.mock.calls.length).toBe(1)
-        expect(foundStores[0].products.pull.mock.calls[0][0]).toEqual(remove_id)
-        expect(foundStores[0].save.mock.calls.length).toBe(1)
-        
-        expect(foundStores[1].products.length).toBe(0)
-        expect(foundStores[1].products.pull.mock.calls.length).toBe(1)
-        expect(foundStores[1].products.pull.mock.calls[0][0]).toEqual(remove_id)
-        expect(foundStores[1].save.mock.calls.length).toBe(1)
         done()
       }
 
@@ -290,38 +248,6 @@ describe('Normal Product Model', () => {
       boundMiddleware(next)
     })
 
-    test('Should send Store.find error', done => {
-      const _conditions = {_id: remove_id}
-      const boundMiddleware = bindMiddleware({_conditions})
-      Store.find = jest.fn(() => ({
-        exec: () => new Promise((resolve, reject) => { reject(new Error('Test Store Error 123')) })
-      }))
-      const next = err => {
-        expect(err.message).toBe('Test Store Error 123')
-        done()
-      }
-
-      boundMiddleware(next)
-    })
-
-    test('Should send Store.update error', done => {
-      const _conditions = {_id: remove_id}
-      const boundMiddleware = bindMiddleware({_conditions})
-      const foundStores = getFoundStores()
-      foundStores[1].save = jest.fn(() => new Promise((resolve, reject) => { 
-        reject(new Error('Save test Error 674')) 
-      }))
-      Store.find = jest.fn(() => ({
-        exec: () => new Promise((resolve, reject) => { resolve(foundStores) })
-      }))
-      const next = err => {
-        expect(err.message).toBe('Save test Error 674')
-        done()
-      }
-
-      boundMiddleware(next)
-    })
-
     test('Should send Client.find error', done => {
       const _conditions = {_id: remove_id}
       const boundMiddleware = bindMiddleware({_conditions})
@@ -353,21 +279,6 @@ describe('Normal Product Model', () => {
 
       boundMiddleware(next)
     })
-
-    function getFoundStores() {
-      const foundStores = [{
-        products: [new ObjectId('0a0a0a0a0a0a0a0a0a0a0a0a'), remove_id],
-        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
-      },{
-        products: [remove_id],
-        save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))        
-      }]
-
-      foundStores[0].products.pull = jest.fn(() => foundStores[0].products.pop())
-      foundStores[1].products.pull = jest.fn(() => foundStores[1].products.pop())
-      
-      return foundStores
-    }
 
     function getFoundClients() {
       const foundClients = [{
