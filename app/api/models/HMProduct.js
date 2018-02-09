@@ -12,8 +12,7 @@ const HandmadeModelSchema = require('./schemas/HandmadeModelSchema')
 const HMProductSchema = new Schema({
   name: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   slug: {
     type: String,
@@ -40,7 +39,7 @@ HMProductSchema._middlewareFuncs = {
       self.updated_at = currentDate
       if (!self.created_at) self.created_at = currentDate
 
-      self.slug = uCommon.slugify(self.name)
+      self.slug = uCommon.slugify(`${self.store}__${self.name}`)
 
       return next()
     })
@@ -50,8 +49,15 @@ HMProductSchema._middlewareFuncs = {
     const self = this
 
     self._update.updated_at = new Date()
-    if (self._update.name) self._update.slug = uCommon.slugify(self._update.name)
 
+    if (self._update.store) {
+      if (self._update.name)
+        self._update.slug = uCommon.slugify(self._update.name) 
+      else
+        return next(new Error('Validation Error'))
+      
+      delete self._update.store
+    }
     if (self._update.materials) {
       const err = new Error('Materials should be updated via HMProduct.save')
       err.name = 'ValidationError'

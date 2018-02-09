@@ -170,6 +170,11 @@ describe('Client model', () => {
     const bindMiddleware = context => 
       Client.schema._middlewareFuncs.preUpdate.bind(context)
 
+    beforeEach(() => {
+      delete validClient.email
+      delete validClient.store
+    })
+
     test('Should call next', done => {
       const boundMiddleware = bindMiddleware({ _update: validClient })
       const next = err => {
@@ -209,6 +214,39 @@ describe('Client model', () => {
         expect( context.password ).toBeTruthy()
         expect( context.salt ).toBeTruthy()
         models.hashPassword.mockRestore()
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should throw validation error', done => {
+      const _update = {store: 'kampamocha'}
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err.message).toBe('Validation Error')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should throw validation error', done => {
+      const _update = {uniqueness: 'kampamocha'}
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err.message).toBe('Validation Error')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should throw validation error', done => {
+      const _update = {uniqueness: 'email@maol.com'}
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err.message).toBe('Validation Error')
         done()
       }
 

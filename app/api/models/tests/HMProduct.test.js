@@ -195,7 +195,7 @@ describe('HMProduct Model', () => {
       HMProduct.schema._middlewareFuncs.preUpdate.bind(context)
 
     test('Should call next', done => {
-      const context = { name: 'bracelet' }
+      const context = { name: 'bracelet', store: 'kampamocha' }
       const boundMiddlewareFunc = bindMiddleware({ _update: context })
       const next = err => {
         expect(err).toBeFalsy()
@@ -216,7 +216,18 @@ describe('HMProduct Model', () => {
       }
 
       boundMiddlewareFunc(next)
-    })    
+    })
+
+    test('Should throw error if store but no name' , done => {
+      const _update = { store: 'kampamocha' }
+      const boundMiddlewareFunc = bindMiddleware({_update})
+      const next = err => {
+        expect(err.message).toBe('Validation Error')
+        done()
+      }
+
+      boundMiddlewareFunc(next)
+    })
 
     test('Should throw error if materials', done => {
       const context = { materials: [] }
