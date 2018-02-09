@@ -63,6 +63,16 @@ ClientSchema._middlewareFuncs = {
       e.name = 'ValidationError'
       return next(e)
     }
+    if (!self.isNew && self.isModified('store')) {
+      const e = new Error('Store is not updatable')
+      e.name = 'ValidationError'
+      return next(e)
+    }
+    if (!self.isNew && self.isModified('email')) { 
+      const e = new Error('Email is not updatable')
+      e.name = 'ValidationError'
+      return next(e)
+    }
 
     handlePassword(self)
     .then(hashed => { 

@@ -71,8 +71,10 @@ describe('Client model', () => {
   })
 
   describe('preSave Middleware', () => {
-    const bindMiddleware = context => 
-      Client.schema._middlewareFuncs.preSave.bind(context)
+    const bindMiddleware = context => {
+      if (!context.hasOwnProperty('isModified')) context.isModified = jest.fn(() => false)
+      return Client.schema._middlewareFuncs.preSave.bind(context)
+    }
 
     test('Should call next', done => {
       const context = validClient
@@ -141,7 +143,8 @@ describe('Client model', () => {
 
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
-        expect(err.message).toBe('ValidationError')
+        expect(err.message).toBe('Store is not updatable')
+        expect(err.name).toBe('ValidationError')
         done()
       }
 
@@ -155,7 +158,8 @@ describe('Client model', () => {
 
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
-        expect(err.message).toBe('ValidationError')
+        expect(err.message).toBe('Email is not updatable')
+        expect(err.name).toBe('ValidationError')
         done()
       }
 
