@@ -84,36 +84,9 @@ describe('Store model', () => {
 
   })
 
-  function getMalformedIdsStore() {
-    return {
-      name: 'Super name for a store',
-      products: [ 'product._id' ],
-      texts: [ 'text._id' ],
-      pictures: [ 'picture._id' ],
-      customs: [ 'customField._id' ],
-      filters: [ 'filter._id' ],
-      orders: [ 'order._id' ],
-      clients: [ 'client._id' ],
-      reservations: [ 'reservation._id' ],
-      calendar: {
-        nearest_available_date: 7,
-        furthest_available_date: 120,
-        maximum_reservation: 45
-      }
-    }
-  }
-
   function getEmptyIdsStore() {
     return {
       name: 'Super name for a store',
-      products: [ '' ],
-      texts: [ '' ],
-      pictures: [ '' ],
-      customs: [ '' ],
-      filters: [ '' ],
-      orders: [ '' ],
-      clients: [ '' ],
-      reservations: [ '' ],
       calendar: {
         nearest_available_date: 7,
         furthest_available_date: 120,
