@@ -134,9 +134,33 @@ describe('Client model', () => {
       boundMiddleware(next)
     })
 
-    test('Should call next with store modification error')
+    test('Should call next with store modification error', done => {
+      const context      = validClient
+      context.isNew      = false
+      context.isModified = jest.fn(prop => prop == 'store' ? true : false)
 
-    test('Should call next with email modification error')
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err.message).toBe('ValidationError')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
+    test('Should call next with email modification error', done => {
+      const context      = validClient
+      context.isNew      = false
+      context.isModified = jest.fn(prop => prop == 'email' ? true : false)
+
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err.message).toBe('ValidationError')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
     test('Shoul call next with no password error', done => {
       delete validClient.password

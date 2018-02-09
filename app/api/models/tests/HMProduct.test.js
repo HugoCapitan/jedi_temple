@@ -108,7 +108,9 @@ describe('HMProduct Model', () => {
     })
 
     test('Should call next with store modification error', done => {
-      const context = validHMProduct
+      const context      = validHMProduct
+      context.isNew      = false
+      context.isModified = jest.fn(prop => prop == 'store' ? true : false)
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
         expect(err.message).toBe('Validation Error')
@@ -118,7 +120,16 @@ describe('HMProduct Model', () => {
       boundMiddleware(next)
     })
 
-    test('Should call next with uniqueness modification error')
+    test('Should call next with uniqueness modification error', done => {
+      const context      = Object.assign(validHMProduct, { uniqueness: 'something' })
+      context.isNew      = false
+      context.isModified = jest.fn(prop => prop == 'uniqueness' ? true : false)
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err.message).toBe('Validation Error')
+        done()
+      }
+    })
 
     test('Should iterate materials for duplicates and call next with error', done => {
       const context = { 
