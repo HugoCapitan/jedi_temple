@@ -28,31 +28,18 @@ describe('preUpdate Middleware', () => {
   })
   
   test('Should call next', done => {
-    const _update = { name: 'new name' }
+    const _update = { show: false }
     const boundMiddleware = bindMiddleware({ _update })
     const next = err => {
       expect(err).toBeFalsy()
       done()
     }
 
-    boundMiddleware(next)
-  })
-
-  test('Should update the slug if name is passed', done => {
-    const newField = { name: 'New Name' }
-    const _update = newField
-    const boundMiddleware = bindMiddleware({ _update })
-    const next = err => {
-      expect(err).toBeFalsy()
-      expect(newField.slug).toBe('new_name')
-      done()
-    }
-    
     boundMiddleware(next)
   })
 
   test('Should update updated_at date', done => {
-    const newField = { name: 'new name' }
+    const newField = { show: false }
     const _update = newField
     const boundMiddleware = bindMiddleware({ _update })
     const next = err => {
@@ -180,6 +167,45 @@ describe('preUpdate Middleware', () => {
     }))
     const next = err => {
       expect( err.message ).toBe('Smoothie Error')
+      done()
+    }
+
+    boundMiddleware(next)
+  })
+
+  test('Should prevent modification of the store and return a ValidationError', done => {
+    const newField  = { store: 'what_a_slug' }
+    const _update = newField
+    const boundMiddleware = bindMiddleware({ _update })
+    const next = err => {
+      expect(err.name).toBe('ValidationError')
+      expect(err.message).toBe('Store is not updatable')
+      done()
+    }
+
+    boundMiddleware(next)
+  })
+
+  test('Should prevent modification of the _store and return a ValidationError', done => {
+    const newField  = { _store: 'what_a_slug' }
+    const _update = newField
+    const boundMiddleware = bindMiddleware({ _update })
+    const next = err => {
+      expect(err.name).toBe('ValidationError')
+      expect(err.message).toBe('_store is not updatable')
+      done()
+    }
+
+    boundMiddleware(next)
+  })
+
+  test('Should prevent modification of the name and return a ValidationError', done => {
+    const newField  = { name: 'what_a_slug' }
+    const _update = newField
+    const boundMiddleware = bindMiddleware({ _update })
+    const next = err => {
+      expect(err.name).toBe('ValidationError')
+      expect(err.message).toBe('Name should be updated via CustomField.save')
       done()
     }
 

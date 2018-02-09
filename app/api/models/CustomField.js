@@ -19,13 +19,14 @@ const CustomFieldSchema = new Schema({
     type: String,
     unique: true
   },
+  store: {
+    type: String,
+    required: true
+  },
+  _store: String,
   show: {
     type: Boolean,
     required: true
-  },
-  store: {
-    type: String,
-    require: true
   },
   filter: {
     type: Boolean,
@@ -81,9 +82,11 @@ const CustomFieldSchema = new Schema({
 CustomFieldSchema._middlewareFuncs = {
   preSave(next) {
     const self = this
+
     const saves = []
     preSaveValidations(self).then(() => {
-      self.slug = uCommon.slugify(self.name)
+      if (!self._store) self._store = self.store
+      self.slug = uCommon.slugify(`${self.store}__${self.name}`)
       
       return productCustomRemovedValue(self)
     })
@@ -109,16 +112,16 @@ CustomFieldSchema._middlewareFuncs = {
     .then(() => {
       const currentDate = new Date()
       self._update.updated_at = currentDate
-      if (self._update.name) self._update.slug = uCommon.slugify(self._update.name)
       
-      return productCustomUpdatedMinMax(self)    
+      return productCustomUpdatedMinMax(self)
     })
-    .then(results => Promise.all(results))
+    .then(savePromises => Promise.all(savePromises))
     .then(results => next())
     .catch(err => next(err))
   },
   preRemove(next) {
     const self = this
+      
     Product.find({
       customs: { $elemMatch: { custom_id: self._conditions._id } }
     }).exec()
@@ -154,6 +157,16 @@ function preSaveValidations(self) {
       err.name = 'ValidationError'
       reject(err)
     }
+    if (!self.isNew && self.isModified('store')) {
+      let err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (!self.isNew && self.isModified('_store')) {
+      let err = new Error('_store is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
     if (!self.isNew && self.isModified('type')) {
       let err = new Error('Type is not updatable')
       err.name = 'ValidationError'
@@ -161,11 +174,6 @@ function preSaveValidations(self) {
     }
     if (!self.isNew && self.isModified('_values')) {
       let err = new Error('_values is not updatable')
-      err.name = 'ValidationError'
-      reject(err)
-    }
-    if (!self.isNew && self.isModified('store')) {
-      let err = new Error('Store is not updatable')
       err.name = 'ValidationError'
       reject(err)
     }
@@ -200,6 +208,16 @@ function preUpdateValidations(self) {
     }
     if (self._update.hasOwnProperty('store')) {
       err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('_store')) {
+      err = new Error('_store is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('name')) {
+      err = new Error('Name should be updated via CustomField.save')
       err.name = 'ValidationError'
       reject(err)
     }
