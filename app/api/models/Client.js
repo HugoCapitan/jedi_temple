@@ -14,12 +14,15 @@ const ClientSchema = new Schema({
   },
   email: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   store: {
     type: String,
     required: true
+  },
+  uniqueness: {
+    type: String,
+    unique: true
   },
   password: { 
     type: String,
@@ -51,6 +54,7 @@ ClientSchema._middlewareFuncs = {
     const self = this
     const currentDate = new Date()
 
+    self.uniqueness = `${self.store}__${self.email}`
     self.updated_at = currentDate
     if (!self.created_at) self.created_at = currentDate
 
@@ -74,6 +78,9 @@ ClientSchema._middlewareFuncs = {
   preUpdate(next) {
     const self = this
     self._update.updated_at = new Date()
+    if (self._update.hasOwnProperty('store') || self._update.hasOwnProperty('email') || self._update.hasOwnProperty('uniqueness')) {
+      return next(new Error('Validation Error'))
+    }
 
     handlePassword(self._update)
     .then(hashed => {
