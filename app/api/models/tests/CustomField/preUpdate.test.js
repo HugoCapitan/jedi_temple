@@ -143,8 +143,6 @@ describe('preUpdate Middleware', () => {
     boundMiddleware(next)
   })
 
-  test('Should call next with store mod error')
-
   test('Should call next with Product.find Error', done => {
     const maxUpdated = { min: '450', max: '500' }
     const _update = maxUpdated
@@ -213,6 +211,19 @@ describe('preUpdate Middleware', () => {
 
     boundMiddleware(next)
   })
+
+  test('Should call next with store mod error', done => {
+    const newField = { store: 'kampamocha' }
+    const _update  = newField
+    const boundMiddleware = bindMiddleware({_update})
+    const next = err => {
+      expect(err.message).toBe('Store is not updatable')
+      expect(err.name).toBe('ValidationError')
+      done()
+    }
+
+    boundMiddleware(next)
+  })  
 
   test('Should call next with values error', done => {
     const newField  = { values: [{ value: 'heyhey' }] }

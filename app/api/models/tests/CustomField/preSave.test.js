@@ -172,7 +172,20 @@ describe('preSave Middleware', () => {
     boundMiddleware(next) 
   })
 
-  test('Should call next with store update error')
+  test('Should call next with store update error', done => {
+    const context = validNumberCustom
+    context.isModified = jest.fn(propt => propt == 'store' ? true : false)
+    context.isNew      = false
+
+    const boundMiddleware = bindMiddleware(context)
+    const next = err => {
+      expect(err.message).toBe('Store is not updatable')
+      expect(err.name).toBe('ValidationError')
+      done()
+    }
+
+    boundMiddleware(next)
+  })
 
   test('Should call next with type error', done => {
     const context = validNumberCustom

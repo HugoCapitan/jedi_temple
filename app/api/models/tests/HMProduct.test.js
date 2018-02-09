@@ -107,7 +107,16 @@ describe('HMProduct Model', () => {
       boundMiddleware(next)
     })
 
-    test('Should call next with store modification error')
+    test('Should call next with store modification error', done => {
+      const context = validHMProduct
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(err.message).toBe('Validation Error')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
 
     test('Should call next with uniqueness modification error')
 
