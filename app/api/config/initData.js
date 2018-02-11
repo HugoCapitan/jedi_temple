@@ -21,6 +21,7 @@ async function saveHMModelCustom () {
   const HMModelCustom = await new CustomField({ 
     name: 'HMModel',
     type: 'string',
+    store: 'kampamocha',
     show: false,
     values: [{ value: 'Niño, Niña' }]
   }).save()
@@ -31,6 +32,7 @@ async function saveMaterialCustom() {
   const MaterialCustom = await new CustomField({
     name: 'Material',
     type: 'string',
+    store: 'kampamocha',
     values: [{ value: '24K Gold' }, { value: '14K Gold' }],
     show: true
   }).save()
