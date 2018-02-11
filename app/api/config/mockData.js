@@ -34,16 +34,28 @@ module.exports = async () => {
       path.resolve(__dirname, 'mocked_data/clients.json'), { encoding: 'utf-8' }
     ))
 
-    // Fill orders with products
+    const instanceProducts = products.map(product => new Product(product))
+
+    for (const order of orders) {
+      order.products = instanceProducts.reduce((storeProds, product) => {
+        if (product.store === order.store) 
+          storeProds.push({ code: product._id, quantity: 1 })
+        
+        return storeProds
+      }, [])
+    }
   
     const saves = []
-    for (const client of clients)     { saves.push(new Client(client).save()) }
-    for (const custom of customs)     { saves.push(new CustomField(custom).save()) }
-    for (const handmade of handmades) { saves.push(new HMProduct(handmade).save()) }
+    for (const client of clients)           { saves.push(new Client(client).save()) }
+    for (const custom of customs)           { saves.push(new CustomField(custom).save()) }
+    for (const handmade of handmades)       { saves.push(new HMProduct(handmade).save()) }
+    for (const product of instanceProducts) { saves.push(product.save()) }
+    for (const order of orders)             { saves.push(new Order(order).save()) }
 
     await Promise.all(saves)
     
     console.log(moment().add("1", "days").toDate())
+    console.log(moment().add("1", "weeks").toDate())
     console.log('Mocked data.')
 
     return false

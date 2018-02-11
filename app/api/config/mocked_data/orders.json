@@ -1,9 +1,10 @@
 [{
-  "mail": "some@mail.com",
+  "email": "some@mail.com",
   "status": "Awaiting Payment",
   "products": [],
   "shipping": 15,
   "store": "kampamocha",
+  "payment_method": "paypal",
   "billing_address": {
     "name": "A client name",
     "email": "aclient@mail.com",
@@ -25,11 +26,12 @@
     "zip": "89231"
   }
 }, {
-  "mail": "some@mail.com",
+  "email": "some@mail.com",
   "status": "Awaiting Payment",
   "products": [],
   "shipping": 15,
   "store": "kampamocha",
+  "payment_method": "paypal",
   "billing_address": {
     "name": "A client name",
     "email": "aclient@mail.com",
@@ -51,11 +53,12 @@
     "zip": "89231"
   }
 }, {
-  "mail": "some@mail.com",
+  "email": "some@mail.com",
   "status": "Awaiting Payment",
   "products": [],
   "shipping": 15,
   "store": "tuchadesigns",
+  "payment_method": "paypal",
   "billing_address": {
     "name": "A client name",
     "email": "aclient@mail.com",
@@ -77,10 +80,11 @@
     "zip": "89231"
   }
 }, {
-  "mail": "some@mail.com",
+  "email": "some@mail.com",
   "status": "Awaiting Payment",
   "products": [],
   "shipping": 15,
+  "payment_method": "paypal",
   "store": "tuchadesigns",
   "billing_address": {
     "name": "A client name",
