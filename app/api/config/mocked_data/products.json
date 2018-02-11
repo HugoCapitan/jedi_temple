@@ -1,0 +1,49 @@
+[{
+  "name": "Some product",
+  "stock": "20",
+  "store": "kampamocha",
+  "price": 599.99,
+  "description": "Some product description",
+  "images": [{
+    "url": "someurl.com/image.png",
+    "x": "50%",
+    "y": "2px"
+  }],
+  "customs": []
+}, {
+  "name": "Another product",
+  "stock": "20",
+  "store": "kampamocha",
+  "price": 599.99,
+  "description": "Some product description",
+  "images": [{
+    "url": "someurl.com/image.png",
+    "x": "50%",
+    "y": "2px"
+  }],
+  "customs": []
+}, {
+  "name": "Some product",
+  "stock": "20",
+  "store": "tuchadesigns",
+  "price": 599.99,
+  "description": "Some product description",
+  "images": [{
+    "url": "someurl.com/image.png",
+    "x": "50%",
+    "y": "2px"
+  }],
+  "customs": []
+}, {
+  "name": "Another product",
+  "stock": "20",
+  "store": "tuchadesigns",
+  "price": 599.99,
+  "description": "Some product description",
+  "images": [{
+    "url": "someurl.com/image.png",
+    "x": "50%",
+    "y": "2px"
+  }],
+  "customs": []
+}]

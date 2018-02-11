@@ -1,0 +1,9 @@
+[{
+  "email": "some@mail.com",
+  "plan": "short",
+  "status": 1,
+  "store": "Unahil",
+  "arrive_date": moment().add("1", "days").toDate(),
+  "departure_date": moment().add("1", "weeks").toDate(),
+  "night_price": 499.99
+}]

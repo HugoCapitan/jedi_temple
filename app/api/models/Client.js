@@ -52,11 +52,6 @@ const ClientSchema = new Schema({
 ClientSchema._middlewareFuncs = {
   preSave(next) {
     const self = this
-    const currentDate = new Date()
-
-    self.uniqueness = `${self.store}__${self.email}`
-    self.updated_at = currentDate
-    if (!self.created_at) self.created_at = currentDate
 
     if (self.isNew && !self.password) {
       const e = new Error('Password Required')
@@ -73,6 +68,12 @@ ClientSchema._middlewareFuncs = {
       e.name = 'ValidationError'
       return next(e)
     }
+
+    const currentDate = new Date()
+
+    self.uniqueness = `${self.store}__${self.email}`
+    self.updated_at = currentDate
+    if (!self.created_at) self.created_at = currentDate
 
     handlePassword(self)
     .then(hashed => { 

@@ -1,5 +1,6 @@
-const fs   = require('fs')
-const path = require('path')
+const fs     = require('fs')
+const moment = require('moment')
+const path   = require('path')
 
 const Client      = require('../models/Client')
 const CustomField = require('../models/CustomField')
@@ -20,18 +21,20 @@ module.exports = async () => {
     const handmades = JSON.parse(fs.readFileSync(
       path.resolve(__dirname, 'mocked_data/handmades.json'), { encoding: 'utf-8' }
     ))
-    // const orders = JSON.parse(fs.readFileSync(
-    //   path.resolve(__dirname, 'mocked_data/orders.json'), { encoding: 'utf-8' }
-    // ))
-    // const products = JSON.parse(fs.readFileSync(
-    //   path.resolve(__dirname, 'mocked_data/products.json'), { encoding: 'utf-8' }
-    // ))
+    const orders = JSON.parse(fs.readFileSync(
+      path.resolve(__dirname, 'mocked_data/orders.json'), { encoding: 'utf-8' }
+    ))
+    const products = JSON.parse(fs.readFileSync(
+      path.resolve(__dirname, 'mocked_data/products.json'), { encoding: 'utf-8' }
+    ))
     // const reservations = JSON.parse(fs.readFileSync(
     //   path.resolve(__dirname, 'mocked_data/reservations.json'), { encoding: 'utf-8' }
     // ))
-    // const stores = JSON.parse(fs.readFileSync(
-    //   path.resolve(__dirname, 'mocked_data/clients.json'), { encoding: 'utf-8' }
-    // ))
+    const stores = JSON.parse(fs.readFileSync(
+      path.resolve(__dirname, 'mocked_data/clients.json'), { encoding: 'utf-8' }
+    ))
+
+    // Fill orders with products
   
     const saves = []
     for (const client of clients)     { saves.push(new Client(client).save()) }
@@ -40,6 +43,7 @@ module.exports = async () => {
 
     await Promise.all(saves)
     
+    console.log(moment().add("1", "days").toDate())
     console.log('Mocked data.')
 
     return false
