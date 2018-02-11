@@ -186,19 +186,6 @@ describe('preUpdate Middleware', () => {
     boundMiddleware(next)
   })
 
-  test('Should prevent modification of the _store and return a ValidationError', done => {
-    const newField  = { _store: 'what_a_slug' }
-    const _update = newField
-    const boundMiddleware = bindMiddleware({ _update })
-    const next = err => {
-      expect(err.name).toBe('ValidationError')
-      expect(err.message).toBe('_store is not updatable')
-      done()
-    }
-
-    boundMiddleware(next)
-  })
-
   test('Should prevent modification of the name and return a ValidationError', done => {
     const newField  = { name: 'what_a_slug' }
     const _update = newField
@@ -237,19 +224,6 @@ describe('preUpdate Middleware', () => {
 
     boundMiddleware(next)
   })
-
-  test('Should call next with store mod error', done => {
-    const newField = { store: 'kampamocha' }
-    const _update  = newField
-    const boundMiddleware = bindMiddleware({_update})
-    const next = err => {
-      expect(err.message).toBe('Store is not updatable')
-      expect(err.name).toBe('ValidationError')
-      done()
-    }
-
-    boundMiddleware(next)
-  })  
 
   test('Should call next with values error', done => {
     const newField  = { values: [{ value: 'heyhey' }] }
