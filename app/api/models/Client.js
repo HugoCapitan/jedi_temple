@@ -53,34 +53,24 @@ ClientSchema._middlewareFuncs = {
   preSave(next) {
     const self = this
 
-    if (self.isNew && !self.password) {
-      const e = new Error('Password Required')
-      e.name = 'ValidationError'
-      return next(e)
-    }
-    if (!self.isNew && self.isModified('store')) {
-      const e = new Error('Store is not updatable')
-      e.name = 'ValidationError'
-      return next(e)
-    }
-    if (!self.isNew && self.isModified('email')) { 
-      const e = new Error('Email is not updatable')
-      e.name = 'ValidationError'
-      return next(e)
-    }
-
-    const currentDate = new Date()
-
-    self.uniqueness = `${self.store}__${self.email}`
-    self.updated_at = currentDate
-    if (!self.created_at) self.created_at = currentDate
-
-    handlePassword(self)
-    .then(hashed => { 
+    preSaveValidation(self)
+    .then(()     => handlePassword(self))
+    .then(hashed => {
+      const currentDate = new Date()
+      
+      if (self.isNew) 
+        self.uniqueness = `${self.store}__${self.email}`
+      
       if (hashed && hashed.hasOwnProperty('hash') && hashed.hasOwnProperty('salt')) {
         self.password = hashed.hash
         self.salt = hashed.salt
       }
+
+      if (!self.created_at) 
+        self.created_at = currentDate
+
+      self.updated_at = currentDate
+
       return next() 
     })
     .catch(err => next(err))
@@ -88,17 +78,16 @@ ClientSchema._middlewareFuncs = {
   },
   preUpdate(next) {
     const self = this
-    self._update.updated_at = new Date()
-    if (self._update.hasOwnProperty('store') || self._update.hasOwnProperty('email') || self._update.hasOwnProperty('uniqueness')) {
-      return next(new Error('Validation Error'))
-    }
 
-    handlePassword(self._update)
+    preUpdateValidation(self)
+    .then(()     => handlePassword(self._update))
     .then(hashed => {
       if (hashed && hashed.hasOwnProperty('hash') && hashed.hasOwnProperty('salt')) {
         self._update.password = hashed.hash
         self._update.salt = hashed.salt
       }
+
+      self._update.updated_at = new Date()
       return next()
     })
     .catch(err => next(err))
@@ -114,11 +103,75 @@ const Client = mongoose.model('Client', ClientSchema)
 module.exports = Client
 
 async function handlePassword(context) {
-  if (!context.password)
+  if (context.hasOwnProperty('isNew') && !context.isNew) 
     return false
 
   const hashed = await uModels.hashPassword(context.password)
     .catch(err => { throw err })
 
   return hashed
+}
+
+function preSaveValidation(self) {
+  return new Promise((resolve, reject) => {
+    if (self.isModified('salt')) {
+      const e = new Error('Salt is not updatable')
+      e.name = 'ValidationError'
+      reject(e)
+    }
+    if (self.isModified('uniqueness')) {
+      const e = new Error('Uniqueness is not updatable')
+      e.name = 'ValidationError'
+      reject(e)
+    }
+    if (self.isNew && !self.password) {
+      const e = new Error('Password Required')
+      e.name = 'ValidationError'
+      reject(e)
+    }
+    if (!self.isNew && self.isModified('password')) {
+      const e = new Error('Password should be modified via update')
+      e.name = 'ValidationError'
+      reject(e)
+    }
+    if (!self.isNew && self.isModified('store')) {
+      const e = new Error('Store is not updatable')
+      e.name = 'ValidationError'
+      reject(e)
+    }
+    if (!self.isNew && self.isModified('email')) { 
+      const e = new Error('Email is not updatable')
+      e.name = 'ValidationError'
+      reject(e)
+    }
+
+    resolve()
+  })
+}
+
+function preUpdateValidation(self) {
+  return new Promise((resolve, reject) => {
+    if (self._update.hasOwnProperty('store')) {
+      const err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('email')) {
+      const err = new Error('Email is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('uniqueness')) {
+      const err = new Error('Uniqueness is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('salt')) {
+      const err = new Error('Salt is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    
+    resolve()
+  })
 }
