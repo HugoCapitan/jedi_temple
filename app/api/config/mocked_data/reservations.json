@@ -3,7 +3,7 @@
   "plan": "short",
   "status": 1,
   "store": "Unahil",
-  "arrive_date": moment().add("1", "days").toDate(),
-  "departure_date": moment().add("1", "weeks").toDate(),
+  "arrive_date": "2018-02-12T22:04:22.533Z",
+  "departure_date": "2018-02-18T22:04:22.535Z",
   "night_price": 499.99
 }]
