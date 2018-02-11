@@ -303,7 +303,19 @@ describe('Client model', () => {
       const _update = {store: 'kampamocha'}
       const boundMiddleware = bindMiddleware({_update})
       const next = err => {
-        expect(err.message).toBe('Validation Error')
+        expect(err.message).toBe('Store is not updatable')
+        expect(err.name).toBe('ValidationError')
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+    test('Should throw validation error if modified salt', done => {
+      const _update = {salt: 'kampamocha'}
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(err.message).toBe('Salt is not updatable')
+        expect(err.name).toBe('ValidationError')
         done()
       }
 
@@ -314,7 +326,8 @@ describe('Client model', () => {
       const _update = {uniqueness: 'kampamocha'}
       const boundMiddleware = bindMiddleware({_update})
       const next = err => {
-        expect(err.message).toBe('Validation Error')
+        expect(err.message).toBe('Uniqueness is not updatable')
+        expect(err.name).toBe('ValidationError')
         done()
       }
 
@@ -325,7 +338,8 @@ describe('Client model', () => {
       const _update = {email: 'email@maol.com'}
       const boundMiddleware = bindMiddleware({_update})
       const next = err => {
-        expect(err.message).toBe('Validation Error')
+        expect(err.message).toBe('Email is not updatable')
+        expect(err.name).toBe('ValidationError')
         done()
       }
 
