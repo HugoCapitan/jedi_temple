@@ -31,15 +31,16 @@ describe('CustomField Model', () => {
     const m = new CustomField({ })
     const v = m.validateSync()
 
-    expect(uCommon.howManyKeys(v['errors'])).toBe(3)
+    expect(uCommon.howManyKeys(v['errors'])).toBe(4)
 
     expect(v.errors.name).toBeTruthy()
     expect(v.errors.type).toBeTruthy()
     expect(v.errors.show).toBeTruthy()
+    expect(v.errors.store).toBeTruthy()
   })
 
   test('Number should be invalid if empty: min, max, unit, unit_place', () => {
-    const m = new CustomField({ name: 'Some name', type: 'number', show: false })
+    const m = new CustomField({ name: 'Some name', store: 'superstore', type: 'number', show: false })
     const v = m.validateSync()
 
     expect(uCommon.howManyKeys(v['errors'])).toBe(4)
