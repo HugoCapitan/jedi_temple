@@ -74,7 +74,9 @@ module.exports = async server => {
     await cleanData()
     await mockData() 
   }
-  initData()
+  
+  if (process.env.NODE_ENV === 'production') 
+    initData()
   
   routes(apiRouter)  
 
