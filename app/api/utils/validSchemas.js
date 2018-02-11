@@ -45,7 +45,7 @@ function getValidClient() {
     email: 'some@email.com',
     password: 'arealhardpassword',
     addresses: [getValidAddress()],
-    store: 'Kampamocha',
+    store: 'kampamocha',
     orders: [new ObjectId('fafafafafafafafafafafafa')],
     wishlist: [new ObjectId('afafafafafafafafafafafaf')],
     reservations: [new ObjectId('0f0f0f0f0f0f0f0f0f0f0f0f')]
@@ -56,7 +56,7 @@ function getValidHMProduct() {
   const materialId = new ObjectId('aaafffaaafffaaafffaaafff')
   return { 
     name: 'Bracelet',
-    store: 'Kampamocha',
+    store: 'kampamocha',
     materials: [{
       _id: materialId,
       material_name: '24K Gold',
@@ -85,7 +85,7 @@ function getValidNumberCustom() {
     min: 'auto',
     max: '500',
     unit: 'cm',
-    store: 'Kampamocha',
+    store: 'kampamocha',
     unit_place: 'after'
   }
 }
@@ -105,7 +105,7 @@ function getValidOrder() {
       quantity: 1,
       is_populated: false
     }],
-    store: 'Kampamocha',
+    store: 'kampamocha',
     shipping: 15,
     billing_address: getValidAddress(),
     shipping_address: getValidAddress()
@@ -115,7 +115,7 @@ function getValidOrder() {
 function getValidPicture() {
   return {
     url: '/dist/picture.png',
-    store: 'Kampamocha'
+    store: 'kampamocha'
   }
 }
 
@@ -125,7 +125,7 @@ function getValidProduct() {
     stock: '20',
     price: 599.99,
     description: 'Some product description',
-    store: 'Kampamocha',
+    store: 'kampamocha',
     images: [ getValidImage() ],
     customs: [{
       custom_id: new ObjectId('000aaa000aaa000aaa000aaa'),
@@ -139,7 +139,7 @@ function getValidReservation() {
     email: 'some@mail.com',
     plan: 'short',
     status: 1,
-    store: 'Unahil',
+    store: 'unahil',
     arrive_date: moment().add('1', 'days').toDate(),
     departure_date: moment().add('1', 'weeks').toDate(),
     night_price: 499.99
@@ -161,7 +161,7 @@ function getValidStringCustom() {
   return {
     name: 'String CustomField',
     show: true,
-    store: 'Kampamocha',
+    store: 'kampamocha',
     type: 'string',
     values: [ { value: 'A value' }, { value: 'Another Value' } ]
   }
@@ -170,6 +170,6 @@ function getValidStringCustom() {
 function getValidText() {
   return {
     text: 'This is some random text',
-    store: 'Kampamocha'
+    store: 'kampamocha'
   }
 }
