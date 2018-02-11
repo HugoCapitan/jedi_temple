@@ -22,10 +22,14 @@ describe('preSave Middleware', () => {
     Product.prototype.save = jest.fn(() => new Promise((resolve, reject) => { resolve() }))
   })
 
+  function bindMiddleware (context) {
+    if (!context.hasOwnProperty('isModified')) context.isModified = jest.fn(() => false)
+    if (!context.hasOwnProperty('isNew'))      context.isNew = true
+    return CustomField.schema._middlewareFuncs.preSave.bind( context )
+  }
+
   test('Should call next', done => {
-    const context = validNumberCustom
-    context.isNew = true
-    
+    const context = { ...validNumberCustom, isNew: true }
     const boundMiddleware = bindMiddleware(context)
 
     const next = err => {
@@ -37,16 +41,24 @@ describe('preSave Middleware', () => {
   })
 
   test('Should sluggify name and add updated and created dates', done => {
-    const context = validNumberCustom
-    context.isNew = true
-
+    const context = { ...validNumberCustom, isNew: true, isModified: jest.fn(prop => prop === 'name') }
     const boundMiddleware = bindMiddleware(context)
    
     const next = err => {
-      expect( err ).toBeFalsy()
-      expect( validNumberCustom.slug ).toBe('number_customfield')
-      expect( uValid.isThisMinute(validNumberCustom.created_at) ).toBeTruthy()
-      expect( uValid.isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
+      expect(context.slug).toBe('kampamocha__number_customfield')
+      expect( uValid.isThisMinute(context.created_at) ).toBeTruthy()
+      expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
+      done()
+    }
+
+    boundMiddleware(next)
+  })
+
+  test('Should slugify new name', done => {
+    const context = { ...validNumberCustom, slug: 'previous_slug', isNew: false, isModified: jest.fn(prop => prop === 'name') }
+    const boundMiddleware = bindMiddleware(context)
+    const next = err => {
+      expect(context.slug).toBe('kampamocha__number_customfield')
       done()
     }
 
@@ -55,15 +67,13 @@ describe('preSave Middleware', () => {
 
   test('Should not update created_at date', done => {
     const yesterday = moment().subtract(1, 'days').toDate()
-    const context = Object.assign(validNumberCustom, { created_at: yesterday })
-    context.isNew = true
-
+    const context = { ...validNumberCustom, created_at: yesterday, updated_at: yesterday, isNew: false }
     const boundMiddleware = bindMiddleware(context)
 
     const next = err => {
       expect(err).toBeFalsy()
-      expect(validNumberCustom.created_at).toBe(yesterday)
-      expect( uValid.isThisMinute(validNumberCustom.updated_at) ).toBeTruthy()
+      expect(context.created_at).toBe(yesterday)
+      expect( uValid.isThisMinute(context.updated_at) ).toBeTruthy()
       done()
     }
 
@@ -279,11 +289,6 @@ describe('preSave Middleware', () => {
 
     boundMiddleware(next)
   })
-
-  function bindMiddleware (context) {
-    if (!context.isModified) context.isModified = jest.fn((prop) => false)
-    return CustomField.schema._middlewareFuncs.preSave.bind( context )
-  }
 
   function getRemovedValueCustom (removedValue) {
     validStringCustom = _.omit(validStringCustom, ['slug'])

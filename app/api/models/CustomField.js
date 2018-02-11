@@ -15,15 +15,14 @@ const CustomFieldSchema = new Schema({
     type: String,
     required: true
   },
-  slug: {
-    type: String,
-    unique: true
-  },
   store: {
     type: String,
     required: true
   },
-  _store: String,
+  slug: {
+    type: String,
+    unique: true
+  },
   show: {
     type: Boolean,
     required: true
@@ -84,23 +83,22 @@ CustomFieldSchema._middlewareFuncs = {
     const self = this
 
     const saves = []
-    preSaveValidations(self).then(() => {
-      if (!self._store) self._store = self.store
-      self.slug = uCommon.slugify(`${self.store}__${self.name}`)
-      
-      return productCustomRemovedValue(self)
-    })
-    .then(results => Promise.all(results))
+    preSaveValidations(self)
+    .then(()      => productCustomRemovedValue(self))
+    .then(updates => Promise.all(updates))
     .then(results => {
-      if (self.type === 'string') {
-        self._values = self.values.map(val => val._id.toString())
-      }
-  
       const currentDate = new Date()
-  
-      self.updated_at = currentDate
-      if (!self.created_at)
+      
+      if (self.type === 'string') 
+        self._values = self.values.map(val => val._id.toString())
+    
+      if (self.isModified('name'))
+        self.slug = uCommon.slugify(`${self.store}__${self.name}`)
+
+      if (self.isNew) 
         self.created_at = currentDate
+      
+      self.updated_at = currentDate
 
       return next()
     })
@@ -159,11 +157,6 @@ function preSaveValidations(self) {
     }
     if (!self.isNew && self.isModified('store')) {
       let err = new Error('Store is not updatable')
-      err.name = 'ValidationError'
-      reject(err)
-    }
-    if (!self.isNew && self.isModified('_store')) {
-      let err = new Error('_store is not updatable')
       err.name = 'ValidationError'
       reject(err)
     }
