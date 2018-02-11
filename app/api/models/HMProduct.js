@@ -36,10 +36,13 @@ HMProductSchema._middlewareFuncs = {
     .then(() => {
       const currentDate = new Date()
 
-      self.updated_at = currentDate
-      if (!self.created_at) self.created_at = currentDate
+      if (self.isNew) 
+        self.created_at = currentDate
 
-      self.slug = uCommon.slugify(`${self.store}__${self.name}`)
+      if (self.isModified('name'))
+        self.slug = uCommon.slugify(`${self.store}__${self.name}`)
+
+      self.updated_at = currentDate      
 
       return next()
     })
@@ -48,26 +51,33 @@ HMProductSchema._middlewareFuncs = {
   preUpdate(next) {
     const self = this
 
-    self._update.updated_at = new Date()
-
-    if (self._update.store) {
-      if (self._update.name)
-        self._update.slug = uCommon.slugify(self._update.name) 
-      else
-        return next(new Error('Validation Error'))
-      
-      delete self._update.store
-    }
-    if (self._update.materials) {
+    if (self._update.hasOwnProperty('materials')) {
       const err = new Error('Materials should be updated via HMProduct.save')
       err.name = 'ValidationError'
       return next(err)
     }
-    if (self._update.models) {
+    if (self._update.hasOwnProperty('models')) {
       const err = new Error('Models should be updated via HMProduct.save')
       err.name = 'ValidationError'
       return next(err)
     }
+    if (self._update.hasOwnProperty('store')) {
+      const err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if (self._update.hasOwnProperty('slug')) {
+      const err = new Error('Slug is not updatable')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if (self._update.hasOwnProperty('name')) {
+      const err = new Error('Name should be updated via save')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+
+    self._update.updated_at = new Date()    
 
     return next()
   }
@@ -83,13 +93,13 @@ module.exports = HMProduct
 
 function preSaveValidation(self) {
   return new Promise((resolve, reject) => {
-    if (!self.isNew && self.isModified('store')) {
-      err = new Error('Store is not updatable')
+    if (self.isModified('slug')) {
+      err = new Error('Slug is not updatable')
       err.name = 'ValidationError'
       reject(err)
     }
-    if (!self.isNew && self.isModified('uniqueness')) {
-      err = new Error('Uniqueness is not updatable')
+    if (!self.isNew && self.isModified('store')) {
+      err = new Error('Store is not updatable')
       err.name = 'ValidationError'
       reject(err)
     }
