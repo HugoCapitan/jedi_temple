@@ -16,6 +16,14 @@ const AdminSchema = new Schema({
   salt: String
 })
 
+AdminSchema.methods.isPasswordValid = (passwordAttempt) => 
+  new Promise((resolve, reject) => {
+    uModels.isPasswordRight(this.password, this.salt, passwordAttempt)
+    .then(resolve)
+    .catch(reject)
+  })
+
+
 AdminSchema._middlewareFuncs = {
   preSave(next) {
     const self = this
