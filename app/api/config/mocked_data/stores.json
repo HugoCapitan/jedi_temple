@@ -1,9 +1,9 @@
 [{
   "name": "unahil",
-  "calendar": {
-    "nearest_available_date": "7",
-    "furthest_available_date": "120",
-    "maximum_reservation": "45"
+  "calendar": {
+    "nearest_available_date": 7,
+    "furthest_available_date": 120,
+    "maximum_reservation": 45
   }
 },{
   "name": "kampamocha"
