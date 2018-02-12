@@ -1,10 +1,10 @@
 const storeCtrl = require('../controllers/storeCtrl')
 
 module.exports = app => {
-  app.route('/store/')
+  app.route('/stores/')
     .get(storeCtrl.apiAll)
     .post(storeCtrl.apiCreate)
-  app.route('/store/:id')
+  app.route('/stores/:id')
     .get(storeCtrl.apiRead)
     .put(storeCtrl.apiUpdate)
     .delete(storeCtrl.apiRemove)

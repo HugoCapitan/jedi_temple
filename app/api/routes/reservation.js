@@ -1,13 +1,13 @@
 const reservationCtrl = require('../controllers/reservationCtrl')
 
-module.exports = app => {
-  app.route('/reservation/')
+module.exports = api => {
+  api.route('/reservations/')
     .get(reservationCtrl.apiAll)
     .post(reservationCtrl.apiCreate)
-  app.route('/reservation/:id')
+  api.route('/reservations/:id')
     .get(reservationCtrl.apiRead)
     .put(reservationCtrl.apiUpdate)
     .delete(reservationCtrl.apiRemove)
 
-  app.put('/reservation/:id/specials', reservationCtrl.apiUpdateDatesPrice)
+  api.put('/reservations/:id/specials', reservationCtrl.apiUpdateDatesPrice)
 }

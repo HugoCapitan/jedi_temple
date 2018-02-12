@@ -1,5 +1,5 @@
 const paypalCtrl = require('../controllers/paypalCtrl')
 
 module.exports = app => {
-  app.post('/paypal/payment/', paypalCtrl.createPaymentEndpoint)
+  app.post('/paypal/payments/', paypalCtrl.createPaymentEndpoint)
 }

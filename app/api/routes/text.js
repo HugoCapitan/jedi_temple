@@ -1,10 +1,10 @@
 const textCtrl = require('../controllers/textCtrl')
 
 module.exports = app => {
-  app.route('/text/')
+  app.route('/texts/')
     .get(textCtrl.apiAll)
     .post(textCtrl.apiCreate)
-  app.route('/text/:id')
+  app.route('/texts/:id')
     .get(textCtrl.apiRead)
     .put(textCtrl.apiUpdate)
     .delete(textCtrl.apiRemove)

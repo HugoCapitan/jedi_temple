@@ -1,10 +1,10 @@
 const pictureCtrl = require('../controllers/pictureCtrl')
 
 module.exports = app => {
-  app.route('/picture/')
+  app.route('/pictures/')
     .get(pictureCtrl.apiAll)
     .post(pictureCtrl.apiCreate)
-  app.route('/picture/:id')
+  app.route('/pictures/:id')
     .get(pictureCtrl.apiRead)
     .put(pictureCtrl.apiUpdate)
     .delete(pictureCtrl.apiRemove)
