@@ -31,11 +31,10 @@ module.exports = async () => {
       path.resolve(__dirname, 'mocked_data/reservations.json'), { encoding: 'utf-8' }
     ))
     const stores = JSON.parse(fs.readFileSync(
-      path.resolve(__dirname, 'mocked_data/clients.json'), { encoding: 'utf-8' }
+      path.resolve(__dirname, 'mocked_data/stores.json'), { encoding: 'utf-8' }
     ))
 
     const instanceProducts = products.map(product => new Product(product))
-
     for (const order of orders) {
       order.products = instanceProducts.reduce((storeProds, product) => {
         if (product.store === order.store) 
@@ -56,9 +55,9 @@ module.exports = async () => {
     for (const custom of customs)           { saves.push(new CustomField(custom).save()) }
     for (const handmade of handmades)       { saves.push(new HMProduct(handmade).save()) }
     for (const order of orders)             { saves.push(new Order(order).save()) }
-    for (const reservation of reservations) { saves.push(new Reservation(reservation).save()) }
     for (const product of instanceProducts) { saves.push(product.save()) }
-
+    for (const reservation of reservations) { saves.push(new Reservation(reservation).save()) }
+    for (const store of stores)             { saves.push(new Store(store).save()) }
 
     await Promise.all(saves)
     
