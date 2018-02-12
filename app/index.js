@@ -12,7 +12,7 @@ const apiMiddleware = require('./api/middleware/')
 const apiMockData   = require('./api/config/mockData')
 const apiRoutes     = require('./api/routes')
 
-const Admin = require('./api/controllers/Admin')
+const Admin = require('./api/models/Admin')
 
 module.exports = async server => {
   // GLOBAL MIDDLEWARE
@@ -30,8 +30,20 @@ module.exports = async server => {
 
   // WEB
   const webRouter = express.Router()
-  passport.use(new LocalStrategy((username, password, done) => {
-    
+  passport.use(new LocalStrategy((email, password, done) => {
+    Admin.findOne({ email }).exec()
+    .then(user => {
+      if (!user) 
+        return done(null, false, { message: 'Incorrect username.' })
+      
+      return user.isPasswordValid(password)
+    })
+    .then(isValid => {
+      
+      return isValid ? done(null, user)   
+      : done(null, false, { message: 'Incorrect password' })
+    })
+    .catch(err => done(err))
   }))
 
   webRouter.get('/', (req, res) => {
