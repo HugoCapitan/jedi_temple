@@ -35,13 +35,18 @@ module.exports = async server => {
       usernameField: 'email', 
       passwordField: 'password'
     }, (email, password, done) => {
+      let admin
+
       Admin.findOne({ email }).exec()
-      .then(user => user 
-        ? user.isPasswordValid(password)
-        : done(null, false, { message: 'Incorrect username.' })
-      )
+      .then(found => {
+        admin = found
+
+        return found ? 
+          found.isPasswordValid(password) :
+          done(null, false, { message: 'Incorrect username.' })
+      })
       .then(isValid => isValid 
-        ? done(null, user)   
+        ? done(null, admin)   
         : done(null, false, { message: 'Incorrect password.' })
       )
       .catch(err => done(err))
