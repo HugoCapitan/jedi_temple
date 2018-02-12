@@ -24,7 +24,7 @@ AdminSchema._middlewareFuncs = {
       return next(new Error('email is not udpatable'))
     else if (self.isModified('salt')) 
       return next(new Error('salt is not updatable'))
-    else if (self.isNew || self.isModified('password')) {
+    else if (self.isNew) {
       uModels.hashPassword(self.password)
       .then(hashed => { 
         self.password = hashed.hash
@@ -32,9 +32,8 @@ AdminSchema._middlewareFuncs = {
         return next()
       })
       .catch(e => next(e))
-    } 
-    
-    return next(new Error('Unexpected Error'))
+    } else 
+      return next(new Error('Unexpected Error'))
   },
   preUpdate(next) {
     const self = this
