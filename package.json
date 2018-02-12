@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest test",
-    "debug": "nodemon --inspect"
+    "debug": "nodemon --inspect",
+    "new_admin": "node ./Server_Scripts/newAdmin"
   },
   "author": "",
   "license": "ISC",
