@@ -1,3 +1,4 @@
+const Admin       = require('../models/Admin')
 const Client      = require('../models/Client')
 const CustomField = require('../models/CustomField')
 const HMProduct   = require('../models/HMProduct')
@@ -10,6 +11,7 @@ module.exports = async () => {
   const findPromises = []
 
   findPromises.push(
+    Admin.remove({}).exec(),
     Client.remove({}).exec(), 
     CustomField.remove({}).exec(),
     HMProduct.remove({}).exec(),

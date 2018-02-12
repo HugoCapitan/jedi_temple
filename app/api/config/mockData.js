@@ -2,6 +2,7 @@ const fs     = require('fs')
 const moment = require('moment')
 const path   = require('path')
 
+const Admin       = require('../models/Admin')
 const Client      = require('../models/Client')
 const CustomField = require('../models/CustomField')
 const HMProduct   = require('../models/HMProduct')
@@ -58,6 +59,8 @@ module.exports = async () => {
     for (const product of instanceProducts) { saves.push(product.save()) }
     for (const reservation of reservations) { saves.push(new Reservation(reservation).save()) }
     for (const store of stores)             { saves.push(new Store(store).save()) }
+
+    saves.push( new Admin({ email: 'admin@unahil.com', password: 'theadminpassword' }).save() )
 
     await Promise.all(saves)
     
