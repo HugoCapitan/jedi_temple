@@ -2,8 +2,18 @@
   "email": "some@mail.com",
   "plan": "short",
   "status": 1,
-  "store": "Unahil",
-  "arrive_date": "2018-02-12T22:04:22.533Z",
-  "departure_date": "2018-02-18T22:04:22.535Z",
+  "store": "unahil",
+  "night_price": 499.99
+}, {
+  "email": "some@mail.com",
+  "plan": "short",
+  "status": 1,
+  "store": "unahil",
+  "night_price": 499.99
+}, {
+  "email": "some@mail.com",
+  "plan": "short",
+  "status": 1,
+  "store": "unahil",
   "night_price": 499.99
 }]
