@@ -1,10 +1,12 @@
-const bodyParser    = require('body-parser')
-const express       = require('express')
-const mongoose      = require('mongoose')
-const passport      = require('passport')
-const LocalStrategy = require('passport-local').Strategy
-const path          = require('path')
-const session       = require('express-session')
+const bodyParser     = require('body-parser')
+const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn
+const express        = require('express')
+const flash          = require('connect-flash')
+const mongoose       = require('mongoose')
+const passport       = require('passport')
+const LocalStrategy  = require('passport-local').Strategy
+const path           = require('path')
+const session        = require('express-session')
 
 const apiCleanData  = require('./api/config/cleanData')
 const apiInitData   = require('./api/config/initData')
@@ -53,10 +55,15 @@ module.exports = async server => {
     }
   ))
 
-  function checkUser(req, res, next) {
-    console.log(req)
-    return next()
-  }
+  passport.serializeUser((user, done) => {
+    done(null, user.id)
+  })
+
+  passport.deserializeUser((id, done) => {
+    Admin.findById(id, (err, user) => {
+      done(err, user)
+    })
+  })
 
   const sessionOptions = {
     secret: 'ILOVELA',
@@ -67,21 +74,21 @@ module.exports = async server => {
   webRouter.use(session(sessionOptions))
   webRouter.use(passport.initialize())
   webRouter.use(passport.session())
-  webRouter.use(checkUser)
+  webRouter.use(flash())
 
-  webRouter.get('/', (req, res) => {
+  webRouter.get('/', ensureLoggedIn('/login'), (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public', 'index.html'))
   })
 
-  webRouter.route('/login')
-    .get((req, res) => {
-      res.sendFile(path.resolve(__dirname, 'public/login.html'))
-    })
-    .post(passport.authenticate('local', {
-      successRedirect: '/',
-      failureRedirect: '/login',
-      failureFlash: true
-    }))
+  webRouter.post('/login', passport.authenticate('local', {
+    successRedirect: '/app/',
+    failureRedirect: '/app/login',
+    failureFlash: true
+  }))
+
+  server.get('/login', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'public/login.html'))
+  })
 
   server.use('/app/', webRouter)
 
