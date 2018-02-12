@@ -30,25 +30,53 @@ module.exports = async server => {
 
   // WEB
   const webRouter = express.Router()
-  passport.use(new LocalStrategy((email, password, done) => {
-    Admin.findOne({ email }).exec()
-    .then(user => {
-      if (!user) 
-        return done(null, false, { message: 'Incorrect username.' })
-      
-      return user.isPasswordValid(password)
-    })
-    .then(isValid => {
-      
-      return isValid ? done(null, user)   
-      : done(null, false, { message: 'Incorrect password' })
-    })
-    .catch(err => done(err))
-  }))
+
+  passport.use(new LocalStrategy({
+      usernameField: 'email', 
+      passwordField: 'password'
+    }, (email, password, done) => {
+      Admin.findOne({ email }).exec()
+      .then(user => user 
+        ? user.isPasswordValid(password)
+        : done(null, false, { message: 'Incorrect username.' })
+      )
+      .then(isValid => isValid 
+        ? done(null, user)   
+        : done(null, false, { message: 'Incorrect password.' })
+      )
+      .catch(err => done(err))
+    }
+  ))
+
+  function checkUser(req, res, next) {
+    console.log(req)
+    return next()
+  }
+
+  const sessionOptions = {
+    secret: 'ILOVELA',
+    resave: false,
+    saveUninitialized: true
+  }
+
+  webRouter.use(session(sessionOptions))
+  webRouter.use(passport.initialize())
+  webRouter.use(passport.session())
+  webRouter.use(checkUser)
 
   webRouter.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public', 'index.html'))
   })
+
+  webRouter.route('/login')
+    .get((req, res) => {
+      res.sendFile(path.resolve(__dirname, 'public/login.html'))
+    })
+    .post(passport.authenticate('local', {
+      successRedirect: '/',
+      failureRedirect: '/login',
+      failureFlash: true
+    }))
 
   server.use('/app/', webRouter)
 
