@@ -16,13 +16,7 @@ const AdminSchema = new Schema({
   salt: String
 })
 
-AdminSchema.methods.isPasswordValid = (passwordAttempt) => 
-  new Promise((resolve, reject) => {
-    uModels.isPasswordRight(this.password, this.salt, passwordAttempt)
-    .then(resolve)
-    .catch(reject)
-  })
-
+AdminSchema.methods.isPasswordValid = isPasswordValid
 
 AdminSchema._middlewareFuncs = {
   preSave(next) {
@@ -71,3 +65,11 @@ AdminSchema.pre('findOneAndUpdate', AdminSchema._middlewareFuncs.preUpdate)
 const Admin = mongoose.model('Admin', AdminSchema)
 
 module.exports = Admin
+
+function isPasswordValid (passwordAttempt) {
+  return new Promise((resolve, reject) => {
+    uModels.isPasswordRight(this.password, this.salt, passwordAttempt)
+    .then(resolve)
+    .catch(reject)
+  })
+}
