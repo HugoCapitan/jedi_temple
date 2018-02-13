@@ -25,10 +25,10 @@ module.exports = async server => {
   const environment = process.env.NODE_ENV
   const apiClientId = environment === 'production' 
   ? process.env.NODE_AUTH0_CLIENT_ID
-  : process.env.NODE_AUTH0_ADMIN_CLIENT_ID
+  : process.env.NODE_AUTH0_UNAHILVENTURES_CLIENT_ID
   const apiClientSecret = environment === 'production'
   ? provess.env.NODE_AUTH0_CLIENT_SECRET
-  : process.env.NODE_AUTH0_ADMIN_CLIENT_SECRET
+  : process.env.NODE_AUTH0_UNAHILVENTURES_CLIENT_SECRET
 
   /**********************
    *  GLOBAL MIDDLEWARE *
@@ -103,19 +103,20 @@ module.exports = async server => {
   webRouter.use(flash())
 
   webRouter.get('/', ensureLoggedIn('/login'), (req, res) => {
-    // const apiAuthData = {
-    //   client_id: apiClientId,
-    //   client_secret: apiClientSecret,
-    //   audience: 'https://ventadmin.unahil.com',
-    //   grant_type: 'client_credentials',      
-    // }
-    // axios.post('https://hookahdev.auth0.com/oauth/token', apiAuthData, { 
-    //   headers: { 'content-type': 'application/json' } 
-    // }).then(axiosResponse => {
-    // }).catch(err => {
-
-    // })
-    res.render('index', { smtg: 'the var sent' })    
+    const apiAuthData = {
+      client_id: apiClientId,
+      client_secret: apiClientSecret,
+      audience: 'https://ventadmin.unahil.com',
+      grant_type: 'client_credentials',      
+    }
+    axios.post('https://hookahdev.auth0.com/oauth/token', apiAuthData, { 
+      headers: { 'content-type': 'application/json' } 
+    }).then(axiosResponse => {
+      res.render('index', { authorization_token: axiosResponse.data.access_token })
+    }).catch(err => {
+      res.status(500).send('Unable to get auth token')
+    })
+        
   })
 
   webRouter.post('/login', passport.authenticate('local', {

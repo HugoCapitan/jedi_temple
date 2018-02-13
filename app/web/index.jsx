@@ -3,6 +3,8 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import App from './components/App'
 
+const token = document.getElementById('root').getAttribute('token')
+
 render(
   <App />,
   document.getElementById('root')
