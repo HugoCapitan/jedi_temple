@@ -1,6 +1,7 @@
 const axios          = require('axios')
 const bodyParser     = require('body-parser')
 const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn
+const ejs            = require('ejs')
 const express        = require('express')
 const flash          = require('connect-flash')
 const mongoose       = require('mongoose')
@@ -52,6 +53,8 @@ module.exports = async server => {
    * WEB *
    *******/
   const webRouter = express.Router()
+  server.set('view engine', 'ejs')
+  server.set('views', path.resolve(__dirname, 'public'))
 
   /**********************
    * WEB AUTHENTICATION *
@@ -112,7 +115,7 @@ module.exports = async server => {
     // }).catch(err => {
 
     // })
-    res.sendFile(path.resolve(__dirname, 'public', 'index.html'))    
+    res.render('index', { smtg: 'the var sent' })    
   })
 
   webRouter.post('/login', passport.authenticate('local', {
