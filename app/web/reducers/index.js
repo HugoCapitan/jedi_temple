@@ -1,26 +1,23 @@
 import { combineReducers } from 'redux'
 
-import { SET_AUTH_TOKEN } from '../constants'
-
-function authToken (state = '', action) {
-  switch (action.type) {
-    case SET_AUTH_TOKEN:
-      return action.token
-    default:
-      return state
-  }
-}
-
-function customFields (state = [], action) {
-  switch (action.type) {
-    default:
-      return state
-  }
-}
+import authToken    from './authToken'
+import customFields from './customFields'
+import hmProducts   from './hmProducts'
+import orders       from './orders' 
+import pictures     from './pictures'
+import products     from './products'
+import reservations from './reservations'
+import stores       from './stores'
 
 const adminApp = combineReducers({
   authToken,
-  customFields
+  customFields,
+  hmProducts,
+  orders,
+  pictures,
+  products,
+  reservations,
+  stores
 })
 
 export default adminApp
