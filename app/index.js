@@ -1,3 +1,4 @@
+const axios          = require('axios')
 const bodyParser     = require('body-parser')
 const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn
 const express        = require('express')
@@ -17,22 +18,44 @@ const apiRoutes     = require('./api/routes')
 const Admin = require('./api/models/Admin')
 
 module.exports = async server => {
-  // GLOBAL MIDDLEWARE
+  /***************
+   * ENVIRONMENT *
+   ***************/
+  const environment = process.env.NODE_ENV
+  const apiClientId = environment === 'production' 
+  ? process.env.NODE_AUTH0_CLIENT_ID
+  : process.env.NODE_AUTH0_ADMIN_CLIENT_ID
+  const apiClientSecret = environment === 'production'
+  ? provess.env.NODE_AUTH0_CLIENT_SECRET
+  : process.env.NODE_AUTH0_ADMIN_CLIENT_SECRET
+
+  /**********************
+   *  GLOBAL MIDDLEWARE *
+   **********************/
   server.use(bodyParser.json())
   server.use(bodyParser.urlencoded({ extended: false }))
 
-  // DATABASE
+  /*************
+   *  DATABASE *
+   *************/
   mongoose.Promise = global.Promise
   mongoose.connect('mongodb://localhost/test', {
     useMongoClient: true
   }).catch(e => { throw e })
 
-  // STATICFILES
+  /***************
+   * STATICFILES *
+   ***************/
   server.use('/dist/', express.static(path.resolve(__dirname, 'dist')))
 
-  // WEB
+  /*******
+   * WEB *
+   *******/
   const webRouter = express.Router()
 
+  /**********************
+   * WEB AUTHENTICATION *
+   **********************/
   passport.use(new LocalStrategy({
       usernameField: 'email', 
       passwordField: 'password'
@@ -77,12 +100,24 @@ module.exports = async server => {
   webRouter.use(flash())
 
   webRouter.get('/', ensureLoggedIn('/login'), (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'public', 'index.html'))
+    // const apiAuthData = {
+    //   client_id: apiClientId,
+    //   client_secret: apiClientSecret,
+    //   audience: 'https://ventadmin.unahil.com',
+    //   grant_type: 'client_credentials',      
+    // }
+    // axios.post('https://hookahdev.auth0.com/oauth/token', apiAuthData, { 
+    //   headers: { 'content-type': 'application/json' } 
+    // }).then(axiosResponse => {
+    // }).catch(err => {
+
+    // })
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'))    
   })
 
   webRouter.post('/login', passport.authenticate('local', {
     successRedirect: '/app/',
-    failureRedirect: '/app/login',
+    failureRedirect: '/login/',
     failureFlash: true
   }))
 
@@ -91,18 +126,20 @@ module.exports = async server => {
   })
 
   server.use('/app/', webRouter)
-
-  // API
+  
+  /*******
+   * API *
+   *******/
   const apiRouter = express.Router()
   apiMiddleware(apiRouter)
   apiRoutes(apiRouter)
 
-  if (process.env.NODE_ENV === 'development') {
+  if (environment === 'development') {
     await apiCleanData()
     await apiMockData() 
   }
   
-  if (process.env.NODE_ENV === 'production') 
+  if (environment === 'production') 
     apiInitData()
 
   server.use('/api/', apiRouter)  
