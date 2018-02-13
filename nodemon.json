@@ -2,6 +2,7 @@
   "execMap": {
     "js": "node server.js"
   },
+  "ignore": ["*.test.js", "app/styles/*", "app/public/*", "app/web/*"],
   "env": {
     "NODE_ENV": "development",
     "NODE_PORT": 8000,
