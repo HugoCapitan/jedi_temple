@@ -1,17 +1,45 @@
 import React from 'react'
+import { connect } from 'react-redux'
+
+import AppBar from 'material-ui/AppBar'
 import Drawer  from 'material-ui/Drawer'
 import MenuItem from 'material-ui/MenuItem'
+import FontIcon from 'material-ui/FontIcon'
+import IconButton from 'material-ui/IconButton'
 
-const SideBar = ({  }) => (
+import { changeDrawerOpen } from '../actions'
+
+const CloseIcon = <IconButton> <FontIcon className="material-icons">close</FontIcon> </IconButton>
+
+const SideBarComponent = ({ open, changeOpen }) => (
   <Drawer
     docked={false}
     width={200}
-    open={true}
-    onRequestChange={(open) => this.setState({open})}
+    open={open}
+    onRequestChange={(open) => { changeOpen(open) }}
   >
-    <p>Hi</p>
-    <p>Hello</p>
+    <AppBar 
+      title="Sites" 
+      iconElementRight={CloseIcon} 
+      iconClassNameLeft="display-none"
+      onRightIconButtonClick={() => {changeOpen(false)}}
+    />
+    <MenuItem>Menu Item</MenuItem>
+    <MenuItem>Menu Item 2</MenuItem>
   </Drawer>
 )
+
+const mapStateToProps = (state, ownProps) => ({
+  open: state.ui.drawerOpen
+})
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  changeOpen(open) { dispatch(changeDrawerOpen(open)) }
+})
+
+const SideBar = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SideBarComponent)
 
 export default SideBar
