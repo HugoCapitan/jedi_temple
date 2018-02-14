@@ -1,9 +1,10 @@
+const axis = require('axis')
 const path = require('path')
 const webpack = require('webpack')
 
 module.exports = {
   resolve: {
-    extensions: ['*', '.js', '.jsx']
+    extensions: ['*', '.js', '.jsx', '.styl']
   },
   entry: [
     'webpack-hot-middleware/client', 
@@ -33,7 +34,7 @@ module.exports = {
         }
       }],
     }, {
-      test: /\.css$/,
+      test: /\.styl$/,
       use: [
         'style-loader',
         {
@@ -41,6 +42,11 @@ module.exports = {
           query: {
             modules: true,
             localIdentName: '[name]__[local]__[hash:base64:5]'
+          }
+        }, {
+          loader: 'stylus-loader',
+          options: {
+            use: [axis()]
           }
         }
       ]
