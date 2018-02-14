@@ -15,7 +15,7 @@ const CollectionList = ({ items, onItemEdit }) => (
           secondaryTextLines={2}
           leftAvatar={<Avatar src={item.avatar} />}
           rightIcon={<IconContentModeEdit />}
-          onClick={() => onItemEdit(item._id)}
+          onClick={() => onItemEdit(item)}
         />
       ))}
     </List>
