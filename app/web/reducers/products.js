@@ -13,7 +13,7 @@ function products (state = initialState, action) {
       return {
         ...state,
         isFetching: false,
-        items: action.products.reduce((acc, product) => ({...acc, [product._id]: product }), {})
+        items: action.items.reduce((acc, product) => ({...acc, [product._id]: product }), {})
       }
     default:
       return state
