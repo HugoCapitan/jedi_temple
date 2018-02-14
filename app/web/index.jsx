@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import App from './components/App'
-import { setAuthToken } from './actions'
+import { setAuthToken, fetchProducts } from './actions'
 import configureStore from './configureStore'
 
 import baseStyles from './styles/base'
@@ -12,6 +12,7 @@ import baseStyles from './styles/base'
 const store = configureStore()
 const token = document.getElementById('root').getAttribute('token')
 store.dispatch(setAuthToken(token))
+store.dispatch(fetchProducts(token))
 
 const MaterialApp = () => (
   <MuiThemeProvider>
