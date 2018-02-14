@@ -32,6 +32,18 @@ module.exports = {
           ]
         }
       }],
+    }, {
+      test: /\.css$/,
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          query: {
+            modules: true,
+            localIdentName: '[name]__[local]__[hash:base64:5]'
+          }
+        }
+      ]
     }]
   },
   plugins: [
