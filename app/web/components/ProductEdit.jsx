@@ -3,7 +3,10 @@ import React from 'react'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 
-import dialogsStyles from '../styles/dialogs'
+const customContentStyle = {
+  width: '100%',
+  maxWidth: 'none',
+}
 
 const ProductEdit = ({ open, title, product, onSave, onCancel }) => {
   const actions = [
@@ -24,7 +27,7 @@ const ProductEdit = ({ open, title, product, onSave, onCancel }) => {
       title={title}
       actions={actions}
       modal={true}
-      className={dialogsStyles['fullscreen-dialog']}
+      contentStyle={customContentStyle}
       open={open}
     >
       This dialog spans the entire width of the screen.
