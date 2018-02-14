@@ -6,7 +6,7 @@ import IconContentAddCircle from 'material-ui/svg-icons/content/add-circle-outli
 import IconButton from 'material-ui/IconButton'
 import FontIcon from 'material-ui/FontIcon'
 
-const ProductListHeader = ({ title, onEdit, onAdd }) => (
+const ProductListHeader = ({ title, onAdd, onEdit }) => (
   <Toolbar>
     <ToolbarGroup>
       <ToolbarTitle text={title} />
