@@ -13,12 +13,12 @@ import ProductEditDialog from './ProductEditDialog'
 
 import testStyles from '../styles/test'
 
-const EStoreComponent = ({ error, estore, products, toggleDrawer, onProductAdd, onProductConfig }) => (
+const EStoreComponent = ({ error, estore, products, toggleDrawer, onProductsAdd, onProductsConfig, onProductEdit }) => (
   <div>
     <div className="content">
       <div className={testStyles['product-list']}>
-        <ProductListHeader title="Products" onAdd={onProductAdd} onConfig={onProductConfig} />
-        <CollectionList items={products} />
+        <ProductListHeader title="Products" onAdd={onProductsAdd} onConfig={onProductsConfig} />
+        <CollectionList items={products} onItemEdit={onProductEdit} />
       </div>
     </div>
 
@@ -33,8 +33,10 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  toggleDrawer() { dispatch(toggleDrawer()) },
-  onProductAdd() { dispatch(openDialog('productDialog', {})) }
+  toggleDrawer()         { dispatch(toggleDrawer()) },
+  onProductsAdd()        { dispatch(openDialog('productEditDialog', {})) },
+  onProductsConfig()     { dispatch(openDialog('productsConfigDialog')) },
+  onProductEdit(product) { dispatch(openDialog('productEditDialog', product)) }
 })
 
 const EStore = connect(

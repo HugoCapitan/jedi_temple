@@ -8,7 +8,7 @@ import {
 const initialState = {
   drawerOpen: false,
   fetchingError: null,
-  productDialog: {
+  productEditDialog: {
     title: '',
     open: false,
     content: {}
@@ -24,8 +24,8 @@ const ui = (state = initialState, action) => {
     case OPEN_DIALOG:
       return { ...state, [action.dialog]: { 
         open: true, 
-        content: action.content ? action.content : {}, 
-        title: action.content ? 'New Product' : 'Edit Product'
+        content: action.content, 
+        title: action.content._id ? 'Edit Product' : 'New Product'
       } }
     case TOGGLE_DRAWER: 
       return { ...state, drawerOpen: !state.drawerOpenopen }

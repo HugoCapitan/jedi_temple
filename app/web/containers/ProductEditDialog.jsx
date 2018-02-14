@@ -11,8 +11,8 @@ const ProductEditDialogComponent = ({ title, open, onSave, onCancel }) => (
 )
 
 const mapStateToProps = state => ({
-  title: state.ui.productDialog.title,
-  open: state.ui.productDialog.open
+  title: state.ui.productEditDialog.title,
+  open: state.ui.productEditDialog.open
 })
 
 const mapDispatchToProps = dispatch => ({
