@@ -4,22 +4,22 @@ import Avatar from 'material-ui/Avatar'
 import { List, ListItem } from 'material-ui/List'
 import IconContentModeEdit from 'material-ui/svg-icons/editor/mode-edit'
 
-const ProductList = ({ products, editProduct }) => (
+const CollectionList = ({ items, onItemEdit }) => (
   <div>
     <List>
-      {products.map((product, index) => (
+      {items.map((item, index) => (
         <ListItem 
           key={index}
-          primaryText={product.name}
-          secondaryText={<p>US ${product.price} <br /> Stock: {product.stock}</p>}
+          primaryText={item.primaryText}
+          secondaryText={item.secondaryText}
           secondaryTextLines={2}
-          leftAvatar={<Avatar src={"http://lorempixel.com/200/200/people/" + index} />}
+          leftAvatar={<Avatar src={item.avatar} />}
           rightIcon={<IconContentModeEdit />}
-          onClick={editProduct}
+          onClick={() => onItemEdit(item._id)}
         />
       ))}
     </List>
   </div>
 )
 
-export default ProductList
+export default CollectionList
