@@ -6,24 +6,20 @@ import Snackbar from 'material-ui/Snackbar'
 import { toggleDrawer } from '../actions'
 
 import SideBar from './SideBar'
-import ProductListHeader from './ProductListHeader'
-import ProductList from './ProductList'
+
+import Store from '../containers/Store'
 
 import testStyles from '../styles/test'
 
-const AppComponent = ({ products, error, toggleDrawer }) => (
+const AppComponent = ({ error, toggleDrawer }) => (
   <div>
     <AppBar
       title="Heberto Sites Admin"
       onLeftIconButtonClick={toggleDrawer}
     />
     <SideBar />
-    <div className="content">
-      <div className={testStyles['product-list']}>
-        <ProductListHeader title="Products"/>
-        <ProductList products={products} />
-      </div>
-    </div>
+    
+    <Store estore="kampamocha" />
 
     { error ?  
       ( <Snackbar
@@ -35,12 +31,10 @@ const AppComponent = ({ products, error, toggleDrawer }) => (
       /> ) 
       : ''
     }
-    
   </div>
 )
 
 const mapStateToProps = (state, ownProps) => ({
-  products: Object.values(state.products.items),
   error: state.ui.fetchingError
 })
 
