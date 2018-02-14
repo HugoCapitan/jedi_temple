@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { receiveProducts, requestProducts } from './products'
+import { failedRequest } from './ui'
 
 export const fetchProducts = token => dispatch => {
   dispatch(requestProducts())
