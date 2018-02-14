@@ -8,6 +8,7 @@ import pictures     from './pictures'
 import products     from './products'
 import reservations from './reservations'
 import stores       from './stores'
+import ui           from './ui'
 
 const adminApp = combineReducers({
   authToken,
@@ -17,7 +18,8 @@ const adminApp = combineReducers({
   pictures,
   products,
   reservations,
-  stores
+  stores,
+  ui
 })
 
 export default adminApp

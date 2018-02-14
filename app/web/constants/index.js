@@ -1,2 +1,5 @@
 
 export const SET_AUTH_TOKEN = 'SET_AUTH_TOKEN'
+
+export const TOGGLE_DRAWER = 'TOGGLE_DRAWER'
+export const CHANGE_DRAWER_OPEN = 'CHANGE_DRAWER_OPEN'
