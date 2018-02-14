@@ -6,6 +6,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import App from './components/App'
 import { setAuthToken } from './actions'
 import configureStore from './configureStore'
+import styles from './styles/base.css'
 
 const store = configureStore()
 const token = document.getElementById('root').getAttribute('token')
