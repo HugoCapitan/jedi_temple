@@ -24,8 +24,10 @@ const SideBarComponent = ({ open, changeOpen }) => (
       iconClassNameLeft="display-none"
       onRightIconButtonClick={() => {changeOpen(false)}}
     />
-    <MenuItem>Menu Item</MenuItem>
-    <MenuItem>Menu Item 2</MenuItem>
+    <MenuItem>Guide</MenuItem>
+    <MenuItem>Kampamocha</MenuItem>
+    <MenuItem>TuchaDesigns</MenuItem>
+    <MenuItem>Unahil</MenuItem>
   </Drawer>
 )
 
