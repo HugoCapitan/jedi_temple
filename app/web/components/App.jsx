@@ -1,9 +1,13 @@
 import React from 'react'
+import AppBar from 'material-ui/AppBar'
+
 
 const App = () => (
-  <div className="container">
-    <h1 className="text-center">Unahil Ventures Admin</h1> 
-    
+  <div>
+    <AppBar
+      title="Heberto Sites Admin"
+      iconClassNameRight="muidocs-icon-navigation-expand-more"
+    />
   </div>
 )
 
