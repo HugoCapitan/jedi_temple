@@ -8,6 +8,7 @@ import pictures     from './pictures'
 import products     from './products'
 import reservations from './reservations'
 import stores       from './stores'
+import texts        from './texts'
 import ui           from './ui'
 
 const adminApp = combineReducers({
@@ -19,6 +20,7 @@ const adminApp = combineReducers({
   products,
   reservations,
   stores,
+  texts,
   ui
 })
 
