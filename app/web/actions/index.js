@@ -38,12 +38,9 @@ export const failedRequest = error => ({
 
 export const fetchProducts = token => dispatch => {
   dispatch(requestProducts())
-  return axios.get('/api/products', { headers: { authorization: 'Bearer ' + token } })
+  return axios.get('/api/products', { headers: { 'Authorization': 'Bearer ' + token } })
     .then(
-      response => response.json(),
+      response => dispatch(receiveProducts(response.data)),
       error => dispatch(failedRequest('error on request'))
-    )
-    .then(
-      json => dispatch(receiveProducts(json.data))
     )
 }

@@ -10,7 +10,11 @@ function products (state = initialState, action) {
     case REQUEST_PRODUCTS:
       return {...state, isFetching: true}
     case RECEIVE_PRODUCTS: 
-      return {...state, items: action.products, isFetching: false}
+      return {
+        ...state,
+        isFetching: false,
+        items: action.products.reduce((acc, product) => ({...acc, [product._id]: product }), {})
+      }
     default:
       return state
   }
