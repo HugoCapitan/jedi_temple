@@ -1,5 +1,6 @@
 import React from 'react'
 import AppBar from 'material-ui/AppBar'
+import SideBar from './SideBar'
 
 const App = () => (
   <div>
@@ -7,6 +8,7 @@ const App = () => (
       title="Heberto Sites Admin"
       iconClassNameRight="muidocs-icon-navigation-expand-more"
     />
+    <SideBar />
   </div>
 )
 
