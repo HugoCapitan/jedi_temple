@@ -9,6 +9,7 @@ const initialState = {
   drawerOpen: false,
   fetchingError: null,
   productDialog: {
+    title: '',
     open: false,
     content: {}
   }
@@ -21,7 +22,11 @@ const ui = (state = initialState, action) => {
     case FAILED_REQUEST: 
       return { ...state, fetchingError: action.error }
     case OPEN_DIALOG:
-      return { ...state, [action.dialog]: { open: true, content: action.content } }
+      return { ...state, [action.dialog]: { 
+        open: true, 
+        content: action.content ? action.content : {}, 
+        title: action.content ? 'New Product' : 'Edit Product'
+      } }
     case TOGGLE_DRAWER: 
       return { ...state, drawerOpen: !state.drawerOpenopen }
     
