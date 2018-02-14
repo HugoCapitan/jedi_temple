@@ -11,9 +11,7 @@ import ProductList from './ProductList'
 
 import testStyles from '../styles/test'
 
-const products = [{name: 'Anillos', price: 549.99, stock: 15}, {name: 'Brazalete', price: 399.99, stock: 24}]
-
-const AppComponent = ({ error, toggleDrawer }) => (
+const AppComponent = ({ products, error, toggleDrawer }) => (
   <div>
     <AppBar
       title="Heberto Sites Admin"
@@ -42,6 +40,7 @@ const AppComponent = ({ error, toggleDrawer }) => (
 )
 
 const mapStateToProps = (state, ownProps) => ({
+  products: Object.values(state.products.items),
   error: state.ui.fetchingError
 })
 
