@@ -13,7 +13,7 @@ const ProductList = ({ products, editProduct }) => (
           primaryText={product.name}
           secondaryText={<p>US ${product.price} <br /> Stock: {product.stock}</p>}
           secondaryTextLines={2}
-          leftAvatar={<Avatar src={"http://lorempixel.com/200/200/people/" + index} />}
+          leftAvatar={<Avatar src={"http://lorempixum.com/200/200/people/" + index} />}
           rightIcon={<IconContentModeEdit />}
           onClick={editProduct}
         />
