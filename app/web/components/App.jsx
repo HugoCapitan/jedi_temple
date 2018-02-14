@@ -6,8 +6,11 @@ import { toggleDrawer } from '../actions'
 
 import SideBar from './SideBar'
 import ProductListHeader from './ProductListHeader'
+import ProductList from './ProductList'
 
 import testStyles from '../styles/test'
+
+const products = [{name: 'Anillos', price: 549.99, stock: 15}, {name: 'Brazalete', price: 399.99, stock: 24}]
 
 const AppComponent = ({ toggleDrawer }) => (
   <div>
@@ -19,6 +22,7 @@ const AppComponent = ({ toggleDrawer }) => (
     <div className="content">
       <div className={testStyles['product-list']}>
         <ProductListHeader title="Products"/>
+        <ProductList products={products} />
       </div>
     </div>
   </div>
