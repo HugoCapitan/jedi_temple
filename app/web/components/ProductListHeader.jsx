@@ -1,15 +1,13 @@
 import React from 'react'
 
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar'
+
 const ProductListHeader = ({ title, onEdit, onAdd }) => (
-  <div>
-    <h3>{title}</h3>
-    <button onClick={onEdit}>
-      <i>Edit</i>
-    </button>
-    <button onClick={onAdd}>
-      <i>Add New</i>
-    </button>
-  </div>
+  <Toolbar>
+    <ToolbarGroup>
+      <ToolbarTitle text={title} />
+    </ToolbarGroup>
+  </Toolbar>
 )
 
 export default ProductListHeader
