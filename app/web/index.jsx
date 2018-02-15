@@ -39,4 +39,5 @@ initData()
 
 function initData () {
   store.dispatch(fetchCollection(token, 'products'))
+  store.dispatch(fetchCollection(token, 'customFields'))
 }
