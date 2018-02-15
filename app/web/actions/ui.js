@@ -1,7 +1,7 @@
 import { 
   CHANGE_DRAWER_OPEN, 
   FAILED_REQUEST,
-  FINISHED_REQUEST,
+  FINISH_REQUEST,
   OPEN_ITEM_DIALOG,
   START_REQUEST,
   TOGGLE_DRAWER
@@ -18,8 +18,8 @@ export const failedRequest = message => ({
   message
 })
 
-export const finishedRequest = message => ({
-  type: FINISHED_REQUEST,
+export const finishRequest = message => ({
+  type: FINISH_REQUEST,
   message
 })
 

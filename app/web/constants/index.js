@@ -31,6 +31,6 @@ export const REQUEST_TEXTS        = 'REQUEST_TEXTS'
 export const RECEIVE_TEXTS        = 'RECEIVE_TEXTS'
 
 export const FAILED_REQUEST   = 'FAILED_REQUEST'
-export const FINISHED_REQUEST = 'FINISHED_REQUEST'
+export const FINISH_REQUEST   = 'FINISH_REQUEST'
 export const START_REQUEST    = 'START_REQUEST'
 

@@ -1,7 +1,7 @@
 import { 
   CHANGE_DRAWER_OPEN, 
   FAILED_REQUEST,
-  FINISHED_REQUEST,
+  FINISH_REQUEST,
   OPEN_ITEM_DIALOG,
   START_REQUEST,
   TOGGLE_DRAWER
@@ -25,7 +25,7 @@ const ui = (state = initialState, action) => {
       return { ...state, drawerOpen: action.open }
     case FAILED_REQUEST: 
       return { ...state, requestError: action.message }
-    case FINISHED_REQUEST:
+    case FINISH_REQUEST:
       return { ...state, isRequestOngoing: false }
     case OPEN_ITEM_DIALOG:
       return { ...state, itemDialog: { 
