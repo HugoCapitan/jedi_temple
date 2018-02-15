@@ -30,7 +30,7 @@ const ProductEdit = ({ open, title, product, onSave, onCancel }) => {
       contentStyle={customContentStyle}
       open={open}
     >
-      This dialog spans the entire width of the screen.
+      
     </Dialog>
   )
 }

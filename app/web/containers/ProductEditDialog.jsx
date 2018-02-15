@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+
 import ProductEdit from '../components/ProductEdit'
 
 const ProductEditDialogComponent = ({ open, productID, product, onSave, onCancel }) => (
@@ -20,7 +21,7 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-
+  onSave(product) { dispatch() }
 })
 
 const ProductEditDialog = connect(

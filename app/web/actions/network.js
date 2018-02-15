@@ -2,7 +2,7 @@ import axios from 'axios'
 import { receiveProducts, requestProducts } from './products'
 import { failedRequest } from './ui'
 
-export const requestCollection = (collection) => ({
+export const requestCollection = collection => ({
   type: `REQUEST_${collection.toUpperCase()}`
 })
 
