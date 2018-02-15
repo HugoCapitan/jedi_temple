@@ -36,8 +36,6 @@ class ProductEdit extends React.Component {
     const id        = event.target.name
     const value     = event.target.value
     const hasCustom = self.state.customs.find(custom => custom.custom_id === id)
-    console.log(value)
-
       
     if (hasCustom && event.target.value != '0' && !+event.target.value) {
       self.setState({
@@ -89,7 +87,7 @@ class ProductEdit extends React.Component {
       <FlatButton
         label={this.props.title === 'New Product' ? 'Add' : 'Save'}
         primary={true}
-        onClick={this.props.onSave}
+        onClick={() => { this.props.onSave(this.props.product, this.state) } }
       />
     ]
 
@@ -141,7 +139,6 @@ class ProductEdit extends React.Component {
           <div className={dialogStyles['half-column']}>
             {this.props.customs.map((custom, index) => {
               const pCustom = this.state.customs.find(c => c.custom_id === custom._id)
-              if (pCustom) console.log(pCustom)
               if (custom.type === 'string')
                 return (
                   <SelectField
