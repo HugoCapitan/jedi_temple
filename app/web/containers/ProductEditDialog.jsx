@@ -21,7 +21,8 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  onSave(product) { dispatch() }
+  onSave(product) { dispatch() },
+  onCancel(product) { dispatch() }
 })
 
 const ProductEditDialog = connect(
