@@ -3,6 +3,11 @@
  **************/
 export const SET_AUTH_TOKEN = 'SET_AUTH_TOKEN'
 
+/************
+ * PRODUCTS *
+ ************/
+export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
+
 /**************
  * UI ACTIONS *
  **************/

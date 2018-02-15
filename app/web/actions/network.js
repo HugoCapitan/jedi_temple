@@ -1,7 +1,7 @@
 import _     from 'lodash'
 import axios from 'axios'
 
-import { receiveProducts, requestProducts }           from './products'
+import { receiveProducts, requestProducts, updateProduct } from './products'
 import { failedRequest, finishRequest, startRequest } from './ui'
 
 export const fetchCollection = (token, collection) => dispatch => {
