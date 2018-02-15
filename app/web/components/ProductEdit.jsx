@@ -2,6 +2,7 @@ import React from 'react'
 
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
+import TextField from 'material-ui/TextField'
 
 const customContentStyle = {
   width: '100%',
@@ -30,7 +31,10 @@ const ProductEdit = ({ open, title, product, onSave, onCancel }) => {
       contentStyle={customContentStyle}
       open={open}
     >
-      
+      <TextField
+        value={product.name}
+        floatingLabelText="Name"
+      />
     </Dialog>
   )
 }
