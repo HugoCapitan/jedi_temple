@@ -17,7 +17,7 @@ const ProductEditDialogComponent = ({ open, productID, product, onSave, onCancel
 const mapStateToProps = (state, ownProps) => ({
   open: state.ui.itemDialog.open,
   productID: state.ui.itemDialog.itemID,
-  product: state.products.items[state.ui.itemDialog.itemID]
+  product: { ...state.products.items[state.ui.itemDialog.itemID] } 
 })
 
 const mapDispatchToProps = dispatch => ({
