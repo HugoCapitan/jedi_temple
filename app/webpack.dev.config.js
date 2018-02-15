@@ -1,4 +1,6 @@
 const axis = require('axis')
+const jeet = require('jeet')
+const rupture = require('rupture')
 const path = require('path')
 const webpack = require('webpack')
 
@@ -46,7 +48,7 @@ module.exports = {
         }, {
           loader: 'stylus-loader',
           options: {
-            use: [axis()]
+            use: [axis(), jeet(), rupture()]
           }
         }
       ]
