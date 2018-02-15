@@ -1,9 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
-import TextField from 'material-ui/TextField'
+import Dialog      from 'material-ui/Dialog'
+import FlatButton  from 'material-ui/FlatButton'
+import MenuItem    from 'material-ui/MenuItem'
+import TextField   from 'material-ui/TextField'
+import SelectField from 'material-ui/SelectField'
 
 import dialogStyles from '../styles/dialogs'
 
@@ -27,6 +29,54 @@ class ProductEdit extends React.Component {
     this.setState({
       [event.target.name]: event.target.value
     })
+  }
+
+  handleNumberCustomChange(event) {
+    const self = this
+    const id        = event.target.name
+    const value     = event.target.value
+    const hasCustom = self.state.customs.find(custom => custom.custom_id === id)
+    console.log(value)
+
+      
+    if (hasCustom && event.target.value != '0' && !+event.target.value) {
+      self.setState({
+        ...self.state,
+        customs: self.state.customs.filter(custom => custom.custom_id != id)
+      })
+    } else if (hasCustom) {
+      self.setState({
+        ...self.state,
+        customs: self.state.customs.map(custom => custom.custom_id === id ? { ...custom, value } : custom)
+      })
+    } else {
+      self.setState({
+        ...self.state,
+        customs: [ ...self.state.customs, { custom_id: id, value } ]
+      })
+    }
+  }
+
+  handleStringCustomChange(event, index, value, id) {
+    const self = this
+    const hasCustom = self.state.customs.find(custom => custom.custom_id === id) 
+
+    if (hasCustom && value) {
+      self.setState({
+        ...self.state,
+        customs: self.state.customs.map(custom => custom.custom_id === id ? {...custom, value} : custom)
+      })
+    } else if (!hasCustom && value) {
+      self.setState({
+        ...self.state,
+        customs: [ ...self.state.customs, { custom_id: id, value } ]
+      })
+    } else if (hasCustom && !value) {
+      self.setState({
+        ...self.state,
+        customs: self.state.customs.filter(custom => custom.custom_id != id)
+      })
+    }
   }
 
   render() {
@@ -87,9 +137,45 @@ class ProductEdit extends React.Component {
               value={this.state.description}
             />
           </div>
+
           <div className={dialogStyles['half-column']}>
-            
+            {this.props.customs.map((custom, index) => {
+              const pCustom = this.state.customs.find(c => c.custom_id === custom._id)
+              if (pCustom) console.log(pCustom)
+              if (custom.type === 'string')
+                return (
+                  <SelectField
+                    floatingLabelText={custom.name}
+                    fullWidth={true}
+                    key={index}
+                    name={custom._id}
+                    onChange={(event, index, value) => {
+                      this.handleStringCustomChange.call(this, event, index, value, custom._id)
+                    }}
+                    value={!!pCustom ? pCustom.value : undefined}
+                  >
+                    <MenuItem value={null} primaryText="" />                    
+                    {custom.values.map((cValue, cIndex) => (
+                      <MenuItem key={cIndex} value={cValue._id} primaryText={cValue.value} />
+                    ))}
+                  </SelectField> 
+                )
+              else
+                return (
+                  <TextField
+                    floatingLabelText={custom.name}
+                    fullWidth={true}
+                    key={index}
+                    name={custom._id}
+                    onChange={this.handleNumberCustomChange.bind(this)}
+                    type="number"
+                    value={!!pCustom ? pCustom.value : ''}
+                  /> 
+                )
+              }
+            )}
           </div>
+
         </div>
       </Dialog >
     )
