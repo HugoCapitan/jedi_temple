@@ -18,8 +18,8 @@ const ProductEditDialogComponent = ({ open, productID, product, customs, onSave,
 const mapStateToProps = (state, ownProps) => ({
   open: state.ui.itemDialog.open,
   productID: state.ui.itemDialog.itemID,
-  product: { ...state.products.items[state.ui.itemDialog.itemID] },
-  customs: state.customFields.filter(custom => customField.store === state.ui.route)
+  product: getProduct(state.products.items, state.ui.itemDialog.itemID),
+  customs: Object.values(state.customFields.items).filter(custom => custom.store === state.ui.route)
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -33,3 +33,9 @@ const ProductEditDialog = connect(
 )(ProductEditDialogComponent)
 
 export default ProductEditDialog
+
+function getProduct(products, itemID, route) {
+  const foundProduct = !!products[itemID] ? products[itemID] : 
+  { customs: [], description: '', images: [], name: '', price: null, stock: null, store: route }
+  return { ...foundProduct }
+}
