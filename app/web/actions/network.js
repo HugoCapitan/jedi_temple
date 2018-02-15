@@ -1,5 +1,7 @@
+import _     from 'lodash'
 import axios from 'axios'
-import { receiveProducts, requestProducts } from './products'
+
+import { receiveProducts, requestProducts }           from './products'
 import { failedRequest, finishRequest, startRequest } from './ui'
 
 export const fetchCollection = (token, collection) => dispatch => {
@@ -18,8 +20,20 @@ export const fetchCollection = (token, collection) => dispatch => {
     )
 }
 
-export const updateProduct = (newProduct) => (dispatch, getState) => {
-  const oldProduct = getState().products.items[newProduct._id]
+export const requestProductUpdate = (oldProduct, newProduct) => dispatch => {
+  // Check customs
+  const removedCustoms = _.differenceWith(oldProduct.customs, newProduct.customs, (oldVal, newVal) => 
+    oldVal.custom_id == newVal.custom_id
+  )
+
+  const addedCustoms = _.differenceWith(newProduct.customs, oldProduct.customs, (newVal, oldVal) => 
+    oldVal.custom_id == newVal.custom_id
+  )
+  console.log(removedCustoms)
+  console.log(addedCustoms)
+
+  // Check images
+  return () => {}
 }
 
 export function requestCollection (collection) {

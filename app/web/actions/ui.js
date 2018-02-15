@@ -1,5 +1,6 @@
 import { 
-  CHANGE_DRAWER_OPEN, 
+  CHANGE_DRAWER_OPEN,
+  CLOSE_ITEM_DIALOG,
   FAILED_REQUEST,
   FINISH_REQUEST,
   OPEN_ITEM_DIALOG,
@@ -11,6 +12,10 @@ import {
 export const changeDrawerOpen = open => ({
   type: CHANGE_DRAWER_OPEN,
   open
+})
+
+export const closeItemDialog = () => ({
+  type: CLOSE_ITEM_DIALOG
 })
 
 export const failedRequest = message => ({
