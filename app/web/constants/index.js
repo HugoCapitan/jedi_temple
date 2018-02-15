@@ -29,4 +29,8 @@ export const REQUEST_STORES       = 'REQUEST_STORES'
 export const RECEIVE_STORES       = 'RECEIVE_STORES'
 export const REQUEST_TEXTS        = 'REQUEST_TEXTS'
 export const RECEIVE_TEXTS        = 'RECEIVE_TEXTS'
-export const FAILED_REQUEST       = 'FAILED_REQUEST'
+
+export const FAILED_REQUEST   = 'FAILED_REQUEST'
+export const FINISHED_REQUEST = 'FINISHED_REQUEST'
+export const START_REQUEST    = 'START_REQUEST'
+
