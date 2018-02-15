@@ -3,10 +3,10 @@ import { connect } from 'react-redux'
 
 import ProductEdit from '../components/ProductEdit'
 
-const ProductEditDialogComponent = ({ open, title, product, onSave, onCancel }) => (
+const ProductEditDialogComponent = ({ open, productID, product, onSave, onCancel }) => (
   <ProductEdit
     open={open}
-    title={product._id ? 'Edit Product' : 'New Product' }
+    title={productID ? 'Edit Product' : 'New Product' }
     product={product}
     onSave={onSave}
     onCancel={onCancel}
@@ -15,8 +15,8 @@ const ProductEditDialogComponent = ({ open, title, product, onSave, onCancel }) 
 
 const mapStateToProps = (state, ownProps) => ({
   open: state.ui.itemDialog.open,
-  title: state.ui.productDialog.title,
-  product: state.products.items[ownProps.itemID]
+  productID: state.ui.itemDialog.itemID,
+  product: state.products.items[state.ui.itemDialog.itemID]
 })
 
 const mapDispatchToProps = dispatch => ({

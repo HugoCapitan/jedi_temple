@@ -13,7 +13,7 @@ const ProductsSectionComponent = ({ products, onAdd, onConfig, onEdit }) => (
   <div className="content">
     <div className={testStyles['product-list']}>
       <ProductListHeader title="Products" onAdd={onAdd} onConfig={onConfig} />
-      <CollectionList items={products} onItemEdit={onEdit} />
+      <CollectionList items={products} onEdit={onEdit} />
     </div>
 
     <ProductEditDialog />
@@ -21,11 +21,13 @@ const ProductsSectionComponent = ({ products, onAdd, onConfig, onEdit }) => (
 )
 
 const mapStateToProps = state => ({
-  products: state.products.items
+  products: filterProducts(state.products.items, state.ui.route)
 })
 
 const mapDispatchToProps = dispatch => ({
-  onAdd() { dispatch(openItemDialog('Product', '')) }
+  onAdd()    { dispatch(openItemDialog('Product', '')) },
+  onConfig() { dispatch(openConfigDialog('Product')) },
+  onEdit(id) { dispatch(openItemDialog('Product', id)) }
 })
 
 const ProductsSection = connect(
@@ -36,8 +38,8 @@ const ProductsSection = connect(
 export default ProductsSection
 
 
-function filterProducts (route, allProducts) {
-  return Object.values(allProducts.items)
+function filterProducts (allProducts, route) {
+  return Object.values(allProducts)
     .filter((product, acc) => product.store == route)
     .map(product => ({
       ...product, 
