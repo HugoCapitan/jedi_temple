@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+import { closeItemDialog, requestProductUpdate } from '../actions'
 
 import ProductEdit from '../components/ProductEdit'
 
@@ -23,8 +24,8 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  onSave(product) { dispatch() },
-  onCancel(product) { dispatch() }
+  onSave(oldProduct, newProduct) { dispatch(requestProductUpdate(oldProduct, newProduct)) },
+  onCancel() { dispatch(closeItemDialog()) }
 })
 
 const ProductEditDialog = connect(
