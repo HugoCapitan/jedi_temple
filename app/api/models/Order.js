@@ -1,5 +1,7 @@
+const _ = require('lodash')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const ObjectId = mongoose.Types.ObjectId
 
 const Product = require('./Product')
 const CustomField = require('./CustomField')
@@ -145,14 +147,14 @@ function handleProductPopulation(orderProduct) {
       }
 
       Promise.all(cQueries)
-      .then(customsObjects => {
+      .then(customsObjects => {        
         orderProduct.customs = customsObjects.map(customObject => {
-          const fullProductCustom = fullProduct.customs.find({ custom_id: customObject._id })
+          const fullProductCustom = fullProduct.customs.find(custom => _.isEqual(custom.custom_id, customObject._id))
           const key = customObject.name
           let value
     
           if (customObject.type === 'string') 
-            value = customObject.values.find({ _id: fullProductCustom.value }).value
+            value = customObject.values.find(value => _.isEqual(value._id, new ObjectId(fullProductCustom.value))).value
           else 
             value = customObject.unit_place === 'before' 
               ? `${customObject.unit}${fullProductCustom.value}` 

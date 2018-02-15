@@ -35,9 +35,30 @@ module.exports = async () => {
       path.resolve(__dirname, 'mocked_data/stores.json'), { encoding: 'utf-8' }
     ))
 
-    const instanceProducts = products.map(product => new Product(product))
+
+    const instancedCustoms = customs.map(custom => new CustomField(custom))
+    for (const product of products) {
+      product.customs = instancedCustoms.reduce((productCustoms, custom, index) => {
+        if (custom.store === product.store)
+          productCustoms.push({
+            custom_id: custom._id,
+            value: custom.type === 'string' ? custom.values[0]._id : '100'
+          })
+
+        return productCustoms
+      }, [])
+    }
+
+    const instancedProducts = products.map(product => new Product(product))
+
+    const firstSaves = []
+    for (const custom of instancedCustoms)   { firstSaves.push(custom.save()) }
+    for (const product of instancedProducts) { firstSaves.push(product.save()) }
+    
+    await Promise.all(firstSaves)
+
     for (const order of orders) {
-      order.products = instanceProducts.reduce((storeProds, product) => {
+      order.products = instancedProducts.reduce((storeProds, product) => {
         if (product.store === order.store) 
           storeProds.push({ code: product._id, quantity: 1 })
         
@@ -52,13 +73,11 @@ module.exports = async () => {
     })
 
     const saves = []
-    for (const client of clients)           { saves.push(new Client(client).save()) }
-    for (const custom of customs)           { saves.push(new CustomField(custom).save()) }
-    for (const handmade of handmades)       { saves.push(new HMProduct(handmade).save()) }
-    for (const order of orders)             { saves.push(new Order(order).save()) }
-    for (const product of instanceProducts) { saves.push(product.save()) }
-    for (const reservation of reservations) { saves.push(new Reservation(reservation).save()) }
-    for (const store of stores)             { saves.push(new Store(store).save()) }
+    for (const client of clients)            { saves.push(new Client(client).save()) }
+    for (const handmade of handmades)        { saves.push(new HMProduct(handmade).save()) }
+    for (const order of orders)              { saves.push(new Order(order).save()) }
+    for (const reservation of reservations)  { saves.push(new Reservation(reservation).save()) }
+    for (const store of stores)              { saves.push(new Store(store).save()) }
 
     saves.push( new Admin({ email: 'admin@unahil.com', password: 'theadminpassword' }).save() )
 
