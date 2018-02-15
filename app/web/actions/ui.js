@@ -1,7 +1,7 @@
 import { 
   CHANGE_DRAWER_OPEN, 
   FAILED_REQUEST,
-  OPEN_DIALOG,
+  OPEN_ITEM_DIALOG,
   TOGGLE_DRAWER
 } from '../constants'
 
@@ -16,10 +16,10 @@ export const failedRequest = error => ({
   error
 })
 
-export const openDialog = (dialog, content) => ({
-  type: OPEN_DIALOG,
-  dialog,
-  content
+export const openItemDialog = (itemClass, itemID) => ({
+  type: OPEN_ITEM_DIALOG,
+  itemClass,
+  itemID
 })
 
 export const toggleDrawer = () => ({

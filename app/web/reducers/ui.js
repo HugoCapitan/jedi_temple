@@ -1,17 +1,18 @@
 import { 
   CHANGE_DRAWER_OPEN, 
   FAILED_REQUEST,
-  OPEN_DIALOG,
+  OPEN_ITEM_DIALOG,
   TOGGLE_DRAWER
 } from '../constants'
 
 const initialState = {
+  route: 'kampamocha',
   drawerOpen: false,
   fetchingError: null,
-  productEditDialog: {
-    title: '',
+  itemDialog: {
     open: false,
-    content: {}
+    itemClass: '',
+    itemID: ''
   }
 }
 
@@ -21,11 +22,11 @@ const ui = (state = initialState, action) => {
       return { ...state, drawerOpen: action.open }
     case FAILED_REQUEST: 
       return { ...state, fetchingError: action.error }
-    case OPEN_DIALOG:
-      return { ...state, [action.dialog]: { 
-        open: true, 
-        content: action.content, 
-        title: action.content._id ? 'Edit Product' : 'New Product'
+    case OPEN_ITEM_DIALOG:
+      return { ...state, itemDialog: { 
+        open: true,
+        itemClass: action.itemClass,
+        itemID: action.itemID,
       } }
     case TOGGLE_DRAWER: 
       return { ...state, drawerOpen: !state.drawerOpenopen }

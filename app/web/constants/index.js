@@ -7,7 +7,7 @@ export const SET_AUTH_TOKEN = 'SET_AUTH_TOKEN'
  * UI ACTIONS *
  **************/
 export const CHANGE_DRAWER_OPEN = 'CHANGE_DRAWER_OPEN'
-export const OPEN_DIALOG = 'OPEN_DIALOG'
+export const OPEN_ITEM_DIALOG = 'OPEN_ITEM_DIALOG'
 export const TOGGLE_DRAWER = 'TOGGLE_DRAWER'
 
 /***********
