@@ -4,7 +4,7 @@ import Avatar from 'material-ui/Avatar'
 import { List, ListItem } from 'material-ui/List'
 import IconContentModeEdit from 'material-ui/svg-icons/editor/mode-edit'
 
-const CollectionList = ({ items, onItemEdit }) => (
+const CollectionList = ({ items, onEdit }) => (
   <div>
     <List>
       {items.map((item, index) => (
@@ -15,7 +15,7 @@ const CollectionList = ({ items, onItemEdit }) => (
           secondaryTextLines={2}
           leftAvatar={<Avatar src={item.avatar} />}
           rightIcon={<IconContentModeEdit />}
-          onClick={() => onItemEdit(item)}
+          onClick={ () => onEdit(item._id) }
         />
       ))}
     </List>
