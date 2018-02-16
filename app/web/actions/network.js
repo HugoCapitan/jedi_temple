@@ -20,20 +20,58 @@ export const fetchCollection = (token, collection) => dispatch => {
     )
 }
 
-export const requestProductUpdate = (oldProduct, newProduct) => dispatch => {
-  // Check customs
+export const requestProductUpdate = (oldProduct, newProduct) => (dispatch, getState) => {
+  const token = getState().authToken
+  const customsReqs = []
   const removedCustoms = _.differenceWith(oldProduct.customs, newProduct.customs, (oldVal, newVal) => 
     oldVal.custom_id == newVal.custom_id
   )
-
   const addedCustoms = _.differenceWith(newProduct.customs, oldProduct.customs, (newVal, oldVal) => 
     oldVal.custom_id == newVal.custom_id
   )
-  console.log(removedCustoms)
-  console.log(addedCustoms)
+  const modifiedCustoms = newProduct.customs.filter(newCustom => 
+    oldProduct.customs.find(oldCustom => newCustom.custom_id == oldCustom.custom_id && newCustom.value != oldCustom.value)
+  )
+  const productToSend = { name: newProduct.name, price: newProduct.pricem, stock: newProduct.stock, description: newProduct.description }
+  
+  dispatch(startRequest())
+  
+  customsReqs.push(axios.put(`/api/products/${oldProduct._id}/`, productToSend, {
+    headers: { 'Authorization': 'Bearer ' + token }
+  }))
+  
+  for (const removed of removedCustoms) {
+    customsReqs.push(
+      axios.delete(`/api/products/${oldProduct._id}/customs/${removed._id}/`, {
+        headers: { 'Authorization': 'Bearer ' +  token }
+      })
+    )
+  }
 
-  // Check images
-  return () => {}
+  for (const added of addedCustoms) {
+    customsReqs.push(
+      axios.post(`/api/products/${oldProduct._id}/customs/`, added, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+    )
+  }
+
+  for (const modified of modifiedCustoms) {
+    customsReqs.push(
+      axios.put(`/api/products/${oldProduct._id}/customs/${modified._id}/`, modified, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+    )
+  }
+
+  return Promise.all(customsReqs)
+    .then(
+      response => {
+        dispatch(updateProduct(newProduct))
+        dispatch(finishRequest('Product Updated'))
+      },
+      error => dispatch(failedRequest('Product Update Failed'))
+    )
 }
 
 export function requestCollection (collection) {
