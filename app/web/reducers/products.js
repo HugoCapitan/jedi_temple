@@ -1,4 +1,4 @@
-import { REQUEST_PRODUCTS, RECEIVE_PRODUCTS, UPDATE_PRODUCT } from '../constants'
+import { ADD_PRODUCT, REQUEST_PRODUCTS, RECEIVE_PRODUCTS, UPDATE_PRODUCT } from '../constants'
 
 const initialState = {
   isFetching: false,
@@ -7,6 +7,14 @@ const initialState = {
 
 function products (state = initialState, action) {
   switch (action.type) {
+    case ADD_PRODUCT:
+      return {
+        ...state,
+        items: { 
+          [action.product._id]: action.product,
+          ...state.items
+        }
+      }
     case REQUEST_PRODUCTS:
       return {...state, isFetching: true}
     case RECEIVE_PRODUCTS: 

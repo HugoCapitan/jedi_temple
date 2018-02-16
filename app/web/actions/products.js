@@ -1,9 +1,15 @@
-import { 
+import {
+  ADD_PRODUCT,
   REQUEST_PRODUCTS, 
   RECEIVE_PRODUCTS,
-  UPDATE_PRODUCT 
+  UPDATE_PRODUCT
 } from '../constants'
 
+export const addProduct = product => ({
+  type: ADD_PRODUCT,
+  product
+})
+ 
 export const requestProducts = () => ({
   type: REQUEST_PRODUCTS
 })
