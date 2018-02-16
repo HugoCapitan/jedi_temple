@@ -16,7 +16,7 @@ export const receiveProducts = products => ({
   products
 })
 
-export const removeProducts = productID => ({
+export const removeProduct = productID => ({
   type: REMOVE_PRODUCT,
   productID
 })

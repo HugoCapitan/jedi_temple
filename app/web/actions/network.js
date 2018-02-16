@@ -1,7 +1,7 @@
 import _     from 'lodash'
 import axios from 'axios'
 
-import { addProduct, receiveProducts, requestProducts, updateProduct } from './products'
+import { addProduct, receiveProducts, removeProduct, requestProducts, updateProduct } from './products'
 import { failedRequest, finishRequest, startRequest, closeItemDialog } from './ui'
 
 export const fetchCollection = (token, collection) => dispatch => {
@@ -22,7 +22,6 @@ export const fetchCollection = (token, collection) => dispatch => {
 
 export const requestAddProduct = newProduct => (dispatch, getState) => {
   const token = getState().authToken
-  console.log(newProduct)
 
   dispatch(startRequest())
   return axios.post('/api/products/', newProduct, {
@@ -82,6 +81,21 @@ export const requestProductUpdate = (oldProduct, newProduct) => (dispatch, getSt
       },
       error => dispatch(failedRequest('Please Reload the window'))
     )
+}
+
+export const requestProductRemove = productID => (dispatch, getState) => {
+  const token = getState().authToken
+
+  dispatch(startRequest())
+  return axios.delete(`/api/products/${productID}`, { 
+    headers: {'Authorization': 'Bearer ' + token } 
+  })
+  .then(
+    removed => {
+      dispatch(removeProduct(productID))
+      dispatch(finishRequest('Product Removed'))
+    }
+  )
 }
 
 export function requestCollection (collection) {
