@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 import { 
   ADD_PRODUCT, 
   RECEIVE_PRODUCTS,
