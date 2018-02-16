@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import AppBar from 'material-ui/AppBar'
 import Snackbar from 'material-ui/Snackbar'
+import CircularProgress from 'material-ui/CircularProgress'
 
 import { toggleDrawer } from '../actions'
 
@@ -11,7 +12,27 @@ import Store from '../containers/Store'
 
 import testStyles from '../styles/test'
 
-const AppComponent = ({ error, toggleDrawer }) => (
+const ProgressOutStyle = {
+  position: 'absolute',
+  top: '0',
+  display: 'inline-block',
+  width: '80px',
+  height: '80px',
+  left: '0',
+  height: '100%',
+  'z-index': '9999',
+  width: '100%',
+  'background-color': '#46464694'
+}
+
+const ProgressInStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)'
+}
+
+const AppComponent = ({ error, waiting, toggleDrawer }) => (
   <div>
     <AppBar
       title="Heberto Sites Admin"
@@ -31,11 +52,16 @@ const AppComponent = ({ error, toggleDrawer }) => (
       /> ) 
       : ''
     }
+    { waiting ?  
+      ( <CircularProgress size={80} thickness={5} style={ProgressOutStyle} innerStyle={ProgressInStyle} /> ) 
+      : ''
+    }
   </div>
 )
 
 const mapStateToProps = (state, ownProps) => ({
-  error: state.ui.fetchingError
+  error: state.ui.requestError,
+  waiting: state.ui.isRequestOngoing
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
