@@ -18,12 +18,7 @@ const CustomFieldEdit = ({ custom, onSave }) => (
       <ListItem disabled={true} primaryText={`Type: ${custom.type}`}/>
       <ListItem primaryText="Show in site" leftCheckbox={<CheckBox checked={custom.show} />} />
       <ListItem primaryText="Allow filter" leftCheckbox={<CheckBox checked={custom.filter} />} />
-    </List>
-
-    <Divider />
     { custom.type === 'number' ?
-    <List>
-      <Subheader>Number Field Configuration</Subheader>
       <ListItem disabled={true} innerDivStyle={{ paddingTop: '0' }}>
         <TextField 
           floatingLabelText="Min Value (Leave blank for auto)"
@@ -52,14 +47,21 @@ const CustomFieldEdit = ({ custom, onSave }) => (
           />
         </RadioButtonGroup>
       </ListItem>
-    </List>
     :
     'hey'
     }
+    </List>
     <FlatButton
       label="Save"
-      primary={true}
       onClick={onSave}
+      primary={true}
+      style={{ float: 'right', margin: '0 10px 10px 0' }}
+    />
+    <FlatButton
+      label="Cancel"
+      onClick={onSave}
+      primary={true}
+      style={{ float: 'right', margin: '0 0 10px 0' }}
     />
   </div>
 )
