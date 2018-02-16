@@ -5,21 +5,9 @@ import { closeItemDialog, requestProductUpdate, requestAddProduct } from '../act
 
 import ProductEdit from '../components/ProductEdit'
 
-const ProductEditDialogComponent = ({ open, productID, product, customs, onSave, onNew, onCancel }) => (
-  <ProductEdit
-    open={open}
-    title={productID ? 'Edit Product' : 'New Product' }
-    product={product}
-    customs={customs}
-    onSave={onSave}
-    onNew={onNew}
-    onCancel={onCancel}
-  />
-)
-
 const mapStateToProps = (state, ownProps) => ({
   open: state.ui.itemDialog.open,
-  productID: state.ui.itemDialog.itemID,
+  title: state.ui.itemDialog.itemID ? 'Edit Product' : 'New Product',
   product: getProduct(state.products.items, state.ui.itemDialog.itemID, state.ui.route),
   customs: Object.values(state.customFields.items).filter(custom => custom.store === state.ui.route)
 })
@@ -33,7 +21,7 @@ const mapDispatchToProps = dispatch => ({
 const ProductEditDialog = connect(
   mapStateToProps,
   mapDispatchToProps
-)(ProductEditDialogComponent)
+)(ProductEdit)
 
 export default ProductEditDialog
 
