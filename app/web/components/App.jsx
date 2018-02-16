@@ -44,7 +44,7 @@ const AppComponent = ({ error, waiting, toggleDrawer }) => (
 
     { error ?  
       ( <Snackbar
-        open={error}
+        open={!!error}
         message={error}
         autoHideDuration={5000}
         action="retry"
