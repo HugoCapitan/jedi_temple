@@ -45,6 +45,6 @@ function filterProducts (allProducts, route) {
       ...product, 
       primaryText: product.name, 
       secondaryText: <p>US ${product.price}<br />Stock: {product.stock}</p>,
-      avatar: product.images[0].url
+      // avatar: product.images[0].url
     })) 
 }
