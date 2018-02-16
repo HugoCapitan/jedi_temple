@@ -31,7 +31,7 @@ const ui = (state = initialState, action) => {
         itemID: ''
       } }
     case FAILED_REQUEST: 
-      return { ...state, requestError: action.message }
+      return { ...state, isRequestOngoing: false, requestError: action.message }
     case FINISH_REQUEST:
       return { ...state, isRequestOngoing: false }
     case OPEN_ITEM_DIALOG:

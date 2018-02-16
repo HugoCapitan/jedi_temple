@@ -20,9 +20,9 @@ const ProgressOutStyle = {
   height: '80px',
   left: '0',
   height: '100%',
-  'z-index': '9999',
+  zIndex: '9999',
   width: '100%',
-  'background-color': '#46464694'
+  backgroundColor: '#46464694'
 }
 
 const ProgressInStyle = {
