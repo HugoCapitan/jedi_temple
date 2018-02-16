@@ -6,16 +6,17 @@ export const SET_AUTH_TOKEN = 'SET_AUTH_TOKEN'
 /************
  * PRODUCTS *
  ************/
-export const ADD_PRODUCT = 'ADD_PRODUCT'
+export const ADD_PRODUCT    = 'ADD_PRODUCT'
+export const REMOVE_PRODUCT = 'REMOVE_PRODUCT'
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
 
 /**************
  * UI ACTIONS *
  **************/
 export const CHANGE_DRAWER_OPEN = 'CHANGE_DRAWER_OPEN'
-export const CLOSE_ITEM_DIALOG = 'CLOSE_ITEM_DIALOG'
-export const OPEN_ITEM_DIALOG = 'OPEN_ITEM_DIALOG'
-export const TOGGLE_DRAWER = 'TOGGLE_DRAWER'
+export const CLOSE_ITEM_DIALOG  = 'CLOSE_ITEM_DIALOG'
+export const OPEN_ITEM_DIALOG   = 'OPEN_ITEM_DIALOG'
+export const TOGGLE_DRAWER      = 'TOGGLE_DRAWER'
 
 /***********
  * NETWORK *
