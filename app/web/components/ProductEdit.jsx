@@ -89,7 +89,7 @@ class ProductEdit extends React.Component {
         label={this.props.title === 'New Product' ? 'Add' : 'Save'}
         primary={true}
         onClick={() => { 
-          if (this.props.id) 
+          if (this.props.product._id) 
             this.props.onSave(this.props.product, this.state)
           else 
             this.props.onNew(this.state)
@@ -185,6 +185,7 @@ ProductEdit.propTypes = {
   product:  PropTypes.object.isRequired,
   customs:  PropTypes.array.isRequired,
   onSave:   PropTypes.func.isRequired,
+  onNew:    PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired
 }
 
