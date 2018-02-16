@@ -3,7 +3,10 @@ import PropTypes from 'prop-types'
 
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
+import IconButton from 'material-ui/IconButton'
+import IconNavigationClose from 'material-ui/svg-icons/navigation/close'
 import Toolbar from 'material-ui/Toolbar/Toolbar'
+import ToolbarGroup from 'material-ui/Toolbar/ToolbarGroup'
 import ToolbarTitle from 'material-ui/Toolbar/ToolbarTitle'
 
 import ListHeader from './ListHeader'
@@ -30,24 +33,25 @@ class ProductsConfig extends React.Component {
     const customContentStyle = {
       width: '100%',
       maxWidth: 'none',
+      top: '50%',
+      position: 'absolute',
+      transform: 'translate(0, -50%)'
     }
 
-    const actions = [
-      <FlatButton
-        label="Done"
-        primary={true}
-        onClick={this.props.onDone}
-      />
-    ]
+    const CloseButton = (
+      <IconButton>
+        <IconNavigationClose />
+      </IconButton>
+    )
   
     return (
       <Dialog
-          actions={actions}
-          bodyStyle={ {padding: '0'} }
-          contentStyle={customContentStyle}
-          modal={true}
-          open={true}
-          titleClassName="hidden"
+        autoDetectWindowHeight={false}
+        bodyStyle={ {maxHeight: '95%', padding: '0px'} }
+        contentStyle={customContentStyle}
+        modal={true}
+        open={true}
+        titleClassName="hidden"
       >
   
         <div className={dialogStyles['small-span']}>
@@ -57,10 +61,18 @@ class ProductsConfig extends React.Component {
   
         <div className={dialogStyles['big-span']}>
           <Toolbar>
-            <ToolbarTitle text={ !!this.state.selectedCustom ? `Configure ${this.state.selectedCustom.name} field` : 'Select a field to begin' }/>
+            <ToolbarGroup>
+              <ToolbarTitle 
+                text={ !!this.state.selectedCustom ? `Configure ${this.state.selectedCustom.name} field` : 'Select a field to begin' }
+              />
+            </ToolbarGroup>
+            <ToolbarGroup lastChild={true}>
+              {CloseButton}
+            </ToolbarGroup>
+            
           </Toolbar>
           { !!this.state.selectedCustom 
-            ? <CustomFieldEdit />
+            ? <CustomFieldEdit custom={this.state.selectedCustom} />
             : <p>No field selected</p>
           }
         </div>
