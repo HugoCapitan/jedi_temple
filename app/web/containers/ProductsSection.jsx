@@ -4,8 +4,10 @@ import { connect } from 'react-redux'
 import { openItemDialog, requestProductRemove } from '../actions'
 
 import CollectionList    from '../components/CollectionList'
+
 import ProductListHeader from '../components/ProductListHeader'
 import ProductEditDialog from './ProductEditDialog'
+import ProductsConfigDialog    from './ProductsConfigDialog'
 
 import testStyles from '../styles/test'
 
@@ -17,6 +19,7 @@ const ProductsSectionComponent = ({ products, onAdd, onConfig, onEdit, onDelete 
     </div>
 
     <ProductEditDialog />
+    <ProductsConfigDialog />
   </div>
 )
 
