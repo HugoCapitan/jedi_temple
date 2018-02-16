@@ -21,7 +21,6 @@ class ProductEdit extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps)
     this.setState({ ...nextProps.product })
   }
 
@@ -87,7 +86,12 @@ class ProductEdit extends React.Component {
       <FlatButton
         label={this.props.title === 'New Product' ? 'Add' : 'Save'}
         primary={true}
-        onClick={() => { this.props.onSave(this.props.product, this.state) } }
+        onClick={() => { 
+          if (this.props.id) 
+            this.props.onSave(this.props.product, this.state)
+          else 
+            this.props.onNew(this.state)
+        }}
       />
     ]
 
