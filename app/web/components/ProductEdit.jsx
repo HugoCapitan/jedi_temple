@@ -7,6 +7,8 @@ import MenuItem    from 'material-ui/MenuItem'
 import TextField   from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField'
 
+import CustomFieldDropdown from './CustomFieldDropdown'
+
 import dialogStyles from '../styles/dialogs'
 
 const customContentStyle = {
@@ -54,7 +56,7 @@ class ProductEdit extends React.Component {
     }
   }
 
-  handleStringCustomChange(event, index, value, id) {
+  handleStringCustomChange(event, value, id) {
     const self = this
     const hasCustom = self.state.customs.find(custom => custom.custom_id === id) 
 
@@ -142,24 +144,18 @@ class ProductEdit extends React.Component {
 
           <div className={dialogStyles['half-column']}>
             {this.props.customs.map((custom, index) => {
-              const pCustom = this.state.customs.find(c => c.custom_id === custom._id)
+              let pCustom = this.state.customs.find(c => c.custom_id === custom._id)
+              if (!pCustom) pCustom = {}
               if (custom.type === 'string')
                 return (
-                  <SelectField
-                    floatingLabelText={custom.name}
-                    fullWidth={true}
+                  <CustomFieldDropdown 
+                    cValues={custom.values}
+                    handleChange={this.handleStringCustomChange.bind(this)}
+                    id={custom._id}
                     key={index}
-                    name={custom._id}
-                    onChange={(event, index, value) => {
-                      this.handleStringCustomChange.call(this, event, index, value, custom._id)
-                    }}
-                    value={!!pCustom ? pCustom.value : undefined}
-                  >
-                    <MenuItem value={null} primaryText="" />                    
-                    {custom.values.map((cValue, cIndex) => (
-                      <MenuItem key={cIndex} value={cValue._id} primaryText={cValue.value} />
-                    ))}
-                  </SelectField> 
+                    name={custom.name}
+                    selected={pCustom.value}
+                  />
                 )
               else
                 return (
@@ -170,7 +166,7 @@ class ProductEdit extends React.Component {
                     name={custom._id}
                     onChange={this.handleNumberCustomChange.bind(this)}
                     type="number"
-                    value={!!pCustom ? pCustom.value : ''}
+                    value={pCustom.value || ''}
                   /> 
                 )
               }
