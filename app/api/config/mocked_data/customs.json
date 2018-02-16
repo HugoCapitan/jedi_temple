@@ -1,21 +1,23 @@
 [{
-  "name": "Number CustomField",
+  "name": "Weight",
   "show": true,
   "store": "kampamocha",
   "type": "number",
   "min": "auto",
   "max": "500",
-  "unit": "cm",
+  "unit": "grams",
   "unit_place": "after"
 }, {
-  "name": "String CustomField",
+  "name": "Material",
   "show": true, 
   "store": "kampamocha",
   "type": "string",
   "values": [{
-    "value": "A value"
+    "value": "Gold"
     }, {
-    "value": "Another Value"
+    "value": "Silver"
+    },  {
+    "value": "Rose Gold"
   }]
 }, {
   "name": "Number CustomField",
