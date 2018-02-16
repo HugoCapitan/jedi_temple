@@ -21,7 +21,7 @@ const CollectionList = ({ items, onEdit, onDelete }) => {
             primaryText={item.primaryText}
             secondaryText={item.secondaryText}
             secondaryTextLines={2}
-            leftAvatar={<Avatar src={item.avatar} />}
+            leftAvatar={item.avatar}
             rightIconButton={deleteButton(item._id)}
             onClick={ () => onEdit(item._id) }
           />
