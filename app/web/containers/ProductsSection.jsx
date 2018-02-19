@@ -5,8 +5,9 @@ import { openItemDialog, requestProductRemove } from '../actions'
 
 import CollectionList    from '../components/CollectionList'
 
-import ProductListHeader from '../components/ProductListHeader'
-import EditProductDialog from './dialogs/EditProductDialog'
+import ProductListHeader     from '../components/ProductListHeader'
+import EditProductDialog     from './dialogs/EditProductDialog'
+import CustomsSettingsDialog from './dialogs/CustomsSettingsDialog'
 
 import testStyles from '../styles/test'
 
@@ -18,6 +19,7 @@ const ProductsSectionComponent = ({ products, onAdd, onConfig, onEdit, onDelete 
     </div>
 
     <EditProductDialog />
+    <CustomsSettingsDialog />
   </div>
 )
 
