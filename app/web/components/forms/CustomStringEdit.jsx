@@ -9,9 +9,9 @@ import IconContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle
 import List from 'material-ui/List/List'
 import ListItem from 'material-ui/List/ListItem'
 
-import dialogStyles from '../styles/dialogs'
+import dialogStyles from '../../styles/dialogs'
 
-const CustomFieldEdit = ({ custom, onSave }) => (
+const CustomFieldEdit = ({ custom, formActions, onValueAdd, onValueRemove }) => (
   <div className={dialogStyles['left-border']}>
     <List>
       <ListItem disabled={true} primaryText={`Type: ${custom.type}`}/>
@@ -23,7 +23,7 @@ const CustomFieldEdit = ({ custom, onSave }) => (
         primaryText="Values"
         initiallyOpen={true}
         rightIconButton={(
-          <IconButton>
+          <IconButton onClick={onValueAdd}>
             <IconContentAddCircle />
           </IconButton>
         )}
@@ -36,7 +36,7 @@ const CustomFieldEdit = ({ custom, onSave }) => (
           primaryText={cValue.value}
           insetChildren={true}
           rightIconButton={
-            <IconButton onClick={}>
+            <IconButton onClick={onValueRemove}>
               <IconContentRemoveCircle />
             </IconButton>
           }
@@ -44,19 +44,15 @@ const CustomFieldEdit = ({ custom, onSave }) => (
       ))}
     </List>
 
-    <div style={{ display: 'inline-block', width:'100%' }}>
-      <FlatButton
-        label="Save"
-        onClick={onSave}
-        primary={true}
-        style={{ float: 'right',  margin: '0 10px 5px 0' }}
-      />
-      <FlatButton
-        label="Cancel"
-        onClick={onSave}
-        primary={true}
-        style={{ float: 'right',  margin: '0 0 5px 0' }}
-      />
+    <div className={dialogStyles['bottom-buttons']}>
+      {actions.map((action, index) => 
+        <FlatButton
+          label={action.label}
+          onClick={action.onClick}
+          primary={true}
+          style={{ float: 'right',  margin: '0 10px 5px 0' }}
+        />
+      )}
     </div>
   </div>
 )
