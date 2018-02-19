@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { openItemDialog, requestProductRemove } from '../actions'
+import { openItemDialog, openSettingsDialog, requestProductRemove } from '../actions'
 
 import CollectionList    from '../components/CollectionList'
 
@@ -29,7 +29,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onAdd()    { dispatch(openItemDialog('Product', '')) },
-  onConfig() { dispatch(openConfigDialog('Product')) },
+  onConfig() { dispatch(openSettingsDialog('customs')) },
   onEdit(id) { dispatch(openItemDialog('Product', id)) },
   onDelete(productID) { dispatch(requestProductRemove(productID)) }
 })

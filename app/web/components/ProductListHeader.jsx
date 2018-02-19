@@ -6,7 +6,7 @@ import IconContentAddCircle from 'material-ui/svg-icons/content/add-circle-outli
 import IconButton from 'material-ui/IconButton'
 import FontIcon from 'material-ui/FontIcon'
 
-const ProductListHeader = ({ title, onAdd, onEdit }) => (
+const ProductListHeader = ({ title, onAdd, onConfig }) => (
   <Toolbar>
     <ToolbarGroup>
       <ToolbarTitle text={title} />
@@ -15,7 +15,7 @@ const ProductListHeader = ({ title, onAdd, onEdit }) => (
       <IconButton touch={true} onClick={onAdd}>
         <IconContentAddCircle />
       </IconButton>
-      <IconButton touch={true} onClick={onEdit}>
+      <IconButton touch={true} onClick={onConfig}>
         <IconActionSettings />
       </IconButton>
     </ToolbarGroup>        
