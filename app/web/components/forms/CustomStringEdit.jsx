@@ -14,7 +14,7 @@ import dialogStyles from '../../styles/dialogs'
 class CustomFieldEdit extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { ...props.custom }
+    this.state = { custom: this.props.custom, valueDialog: { open: true, text: '' } }
   }
 
   handleAddValue(value) {
@@ -26,7 +26,17 @@ class CustomFieldEdit extends React.Component {
   }
 
   handleCheck(event, isChecked) {
-    this.setState({ [event.target.name]: isChecked })
+    this.setState({ custom: { 
+      ...this.state.custom, 
+      [event.target.name]: isChecked 
+    } })
+  }
+
+  toggleValueDialog() {
+    this.setState({ valueDialog: {
+      open: true,
+      text: ''
+    } })
   }
 
   render() {
@@ -36,19 +46,19 @@ class CustomFieldEdit extends React.Component {
           <ListItem disabled={true} primaryText="Field Type: String"/>
           <ListItem 
             primaryText="Show in site" 
-            leftCheckbox={<CheckBox checked={this.state.show} name="show" onCheck={this.handleCheck.bind(this)} />} 
+            leftCheckbox={<CheckBox checked={this.state.custom.show} name="show" onCheck={this.handleCheck.bind(this)} />} 
           />
           <ListItem 
             primaryText="Allow filter" 
-            leftCheckbox={<CheckBox checked={this.state.filter} name="filter" onCheck={this.handleCheck.bind(this)} />} 
+            leftCheckbox={<CheckBox checked={this.state.custom.filter} name="filter" onCheck={this.handleCheck.bind(this)} />} 
           />
           <Divider />
-          <ListItem 
+          <ListItem
             disabled={true}
             primaryText="Values"
             initiallyOpen={true}
             rightIconButton={(
-              <IconButton onClick={this.handleAddValue}>
+              <IconButton onClick={this.toggleValueDialog.bind(this)}>
                 <IconContentAddCircle />
               </IconButton>
             )}
@@ -56,7 +66,7 @@ class CustomFieldEdit extends React.Component {
         </List>
         <List>
           <Divider inset={true}/>
-          {this.state.values.map(cValue => (
+          {this.state.custom.values.map(cValue => (
             <ListItem 
               primaryText={cValue.value}
               insetChildren={true}
