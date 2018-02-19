@@ -11,50 +11,77 @@ import ListItem from 'material-ui/List/ListItem'
 
 import dialogStyles from '../../styles/dialogs'
 
-const CustomFieldEdit = ({ custom, formActions, onValueAdd, onValueRemove }) => (
-  <div className={dialogStyles['left-border']}>
-    <List>
-      <ListItem disabled={true} primaryText="Field Type: String"/>
-      <ListItem primaryText="Show in site" leftCheckbox={<CheckBox checked={custom.show} />} />
-      <ListItem primaryText="Allow filter" leftCheckbox={<CheckBox checked={custom.filter} />} />
-      <Divider />
-      <ListItem 
-        disabled={true}
-        primaryText="Values"
-        initiallyOpen={true}
-        rightIconButton={(
-          <IconButton onClick={onValueAdd}>
-            <IconContentAddCircle />
-          </IconButton>
-        )}
-      />
-    </List>
-    <List>
-      <Divider inset={true}/>
-      {custom.values.map(cValue => (
-        <ListItem 
-          primaryText={cValue.value}
-          insetChildren={true}
-          rightIconButton={
-            <IconButton onClick={onValueRemove}>
-              <IconContentRemoveCircle />
-            </IconButton>
-          }
-      />
-      ))}
-    </List>
+class CustomFieldEdit extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { ...props.custom }
+  }
 
-    <div className={dialogStyles['bottom-buttons']}>
-      {formActions.map((action, index) => 
-        <FlatButton
-          label={action.label}
-          onClick={action.onClick}
-          primary={true}
-          style={{ float: 'right',  margin: '0 10px 5px 0' }}
-        />
-      )}
-    </div>
-  </div>
-)
+  handleAddValue(value) {
+
+  }
+
+  handleRemoveValue(id) {
+
+  }
+
+  handleCheck(event, isChecked) {
+    this.setState({ [event.target.name]: isChecked })
+  }
+
+  render() {
+    return (
+      <div className={dialogStyles['left-border']}>
+        <List>
+          <ListItem disabled={true} primaryText="Field Type: String"/>
+          <ListItem 
+            primaryText="Show in site" 
+            leftCheckbox={<CheckBox checked={this.state.show} name="show" onCheck={this.handleCheck.bind(this)} />} 
+          />
+          <ListItem 
+            primaryText="Allow filter" 
+            leftCheckbox={<CheckBox checked={this.state.filter} name="filter" onCheck={this.handleCheck.bind(this)} />} 
+          />
+          <Divider />
+          <ListItem 
+            disabled={true}
+            primaryText="Values"
+            initiallyOpen={true}
+            rightIconButton={(
+              <IconButton onClick={this.handleAddValue}>
+                <IconContentAddCircle />
+              </IconButton>
+            )}
+          />
+        </List>
+        <List>
+          <Divider inset={true}/>
+          {this.state.values.map(cValue => (
+            <ListItem 
+              primaryText={cValue.value}
+              insetChildren={true}
+              rightIconButton={
+                <IconButton onClick={this.handleRemoveValue}>
+                  <IconContentRemoveCircle />
+                </IconButton>
+              }
+          />
+          ))}
+        </List>
+
+        <div className={dialogStyles['bottom-buttons']}>
+          {this.props.formActions.map((action, index) => 
+            <FlatButton
+              label={action.label}
+              onClick={action.onClick}
+              primary={true}
+              style={{ float: 'right',  margin: '0 10px 5px 0' }}
+            />
+          )}
+        </div>
+      </div>
+    )
+  }
+}
 
 export default CustomFieldEdit
