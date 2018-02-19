@@ -37,7 +37,7 @@ export const requestAddProduct = newProduct => (dispatch, getState) => {
   )
 }
 
-export const requestProductUpdate = (oldProduct, newProduct) => (dispatch, getState) => {
+export const requestProductUpdate = (newProduct, oldProduct) => (dispatch, getState) => {
   const token = getState().authToken
   const reqOptions = { headers: { 'Authorization': 'Bearer ' + token } }
   const customsReqs = []
