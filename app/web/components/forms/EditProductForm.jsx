@@ -39,7 +39,7 @@ class EditProductForm extends React.Component {
     const hasCustom = this.state.customs.find(custom => custom.custom_id === id) 
 
     if (hasCustom && value) this.setState( editCustom(this.state, id, value) )
-    else if (!hasCustom && value) this.setState( addCutsom(this.setState, id, value) )
+    else if (!hasCustom && value) this.setState( addCutsom(this.state, id, value) )
     else if (hasCustom && !value) this.setState( removeCustom(this.state, id) )
   }
 
@@ -98,18 +98,16 @@ class EditProductForm extends React.Component {
             if (custom.type === 'string')
               return (
                 <CustomFieldDropdown 
-                  cValues={custom.values}
+                  custom={custom}
                   handleChange={this.handleStringCustomChange.bind(this)}
-                  id={custom._id}
                   key={index}
-                  name={custom.name}
                   selected={pCustom.value}
                 />
               )
             else
               return (
                 <TextField
-                  floatingLabelText={custom.name}
+                  floatingLabelText={`${custom.name} (${custom.unit})`}
                   fullWidth={true}
                   key={index}
                   name={custom._id}
