@@ -19,6 +19,11 @@ import CustomStringEdit from '../../components/forms/CustomStringEdit'
 import CustomNumberEdit from '../../components/forms/CustomNumberEdit'
 import ListHeader       from '../../components/ListHeader'
 
+import {
+  closeSettingsDialog
+
+} from '../../actions'
+
 import dialogStyles from '../../styles/dialogs'
 
 class component extends React.Component {
@@ -43,7 +48,7 @@ class component extends React.Component {
     }
 
     const CloseButton = (
-      <IconButton>
+      <IconButton onClick={this.props.onClose}>
         <IconNavigationClose />
       </IconButton>
     )
@@ -54,7 +59,7 @@ class component extends React.Component {
         bodyStyle={ {maxHeight: '95%', padding: '0px'} }
         contentStyle={customContentStyle}
         modal={true}
-        open={true}
+        open={this.props.open}
         titleClassName="hidden"
       >
         <div className={dialogStyles['small-span']}>
@@ -85,11 +90,12 @@ class component extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+  open: state.ui.settingsDialog.open && state.ui.settingsDialog.category === 'customs',
   customs: getCustoms(state.customFields.items, state.ui.route)
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-
+  onClose() { dispatch(closeSettingsDialog()) }
 })
 
 const CustomSettingsDialog = connect(
@@ -100,13 +106,14 @@ const CustomSettingsDialog = connect(
 export default CustomSettingsDialog
 
 
-// CustomSettingsDialog.propTypes = {
-//   customs: PropTypes.array.isRequired,
-//   onEdit: PropTypes.func.isRequired,
-//   onAdd: PropTypes.func.isRequired,
-//   onDone: PropTypes.func.isRequired,
-//   onRemove: PropTypes.func.isRequired
-// }
+component.propTypes = {
+  open:           PropTypes.bool.isRequired,
+  customs:        PropTypes.array.isRequired,
+  onClose:        PropTypes.func.isRequired,
+  onUpdateCustom: PropTypes.func.isRequired,
+  onAddCustom:    PropTypes.func.isRequired,
+  onRemoveCustom: PropTypes.func.isRequired
+}
 
 
 function getCustoms (items, route) {
