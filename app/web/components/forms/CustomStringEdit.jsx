@@ -14,7 +14,7 @@ import dialogStyles from '../../styles/dialogs'
 const CustomFieldEdit = ({ custom, formActions, onValueAdd, onValueRemove }) => (
   <div className={dialogStyles['left-border']}>
     <List>
-      <ListItem disabled={true} primaryText={`Type: ${custom.type}`}/>
+      <ListItem disabled={true} primaryText="Field Type: String"/>
       <ListItem primaryText="Show in site" leftCheckbox={<CheckBox checked={custom.show} />} />
       <ListItem primaryText="Allow filter" leftCheckbox={<CheckBox checked={custom.filter} />} />
       <Divider />

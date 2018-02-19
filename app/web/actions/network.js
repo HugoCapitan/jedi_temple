@@ -20,6 +20,8 @@ export const fetchCollection = (token, collection) => dispatch => {
     )
 }
 
+export const requestAddCustom = () => (dispatch, getState) => {}
+
 export const requestAddProduct = newProduct => (dispatch, getState) => {
   const token = getState().authToken
 
@@ -34,6 +36,25 @@ export const requestAddProduct = newProduct => (dispatch, getState) => {
       dispatch(closeItemDialog())
     },
     error => dispatch(failedRequest('Error adding product'))
+  )
+}
+
+export const requestCustomRemove = () => (dispatch, getState) => {}
+
+export const requestCustomUpdate = () => (dispatch, getState) => {}
+
+export const requestProductRemove = productID => (dispatch, getState) => {
+  const token = getState().authToken
+
+  dispatch(startRequest())
+  return axios.delete(`/api/products/${productID}`, { 
+    headers: {'Authorization': 'Bearer ' + token } 
+  })
+  .then(
+    removed => {
+      dispatch(removeProduct(productID))
+      dispatch(finishRequest('Product Removed'))
+    }
   )
 }
 
@@ -83,20 +104,6 @@ export const requestProductUpdate = (newProduct, oldProduct) => (dispatch, getSt
     )
 }
 
-export const requestProductRemove = productID => (dispatch, getState) => {
-  const token = getState().authToken
-
-  dispatch(startRequest())
-  return axios.delete(`/api/products/${productID}`, { 
-    headers: {'Authorization': 'Bearer ' + token } 
-  })
-  .then(
-    removed => {
-      dispatch(removeProduct(productID))
-      dispatch(finishRequest('Product Removed'))
-    }
-  )
-}
 
 export function requestCollection (collection) {
   return { type: `REQUEST_${collection.toUpperCase()}` }

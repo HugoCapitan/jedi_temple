@@ -20,8 +20,10 @@ import CustomNumberEdit from '../../components/forms/CustomNumberEdit'
 import ListHeader       from '../../components/ListHeader'
 
 import {
-  closeSettingsDialog
-
+  closeSettingsDialog,
+  requestAddCustom,
+  requestCustomRemove,
+  requestCustomUpdate
 } from '../../actions'
 
 import dialogStyles from '../../styles/dialogs'
@@ -34,7 +36,7 @@ class component extends React.Component {
   
   selectCustom(id) {
     const selectedCustom = this.props.customs.find(cust => cust._id === id)
-    if (selectedCustom) 
+    if (selectedCustom)
       this.setState({ ...this.state, selectedCustom })
   }
 
@@ -52,6 +54,11 @@ class component extends React.Component {
         <IconNavigationClose />
       </IconButton>
     )
+
+    const editFormActions = [{
+      label: 'Save',
+      onClick: this.props.onUpdateCustom
+    }]
 
     return (
       <Dialog
@@ -79,7 +86,10 @@ class component extends React.Component {
           </Toolbar>
           {!!this.state.selectedCustom ?  
             (this.state.selectedCustom.type === 'string'
-              ? <CustomStringEdit />
+              ? <CustomStringEdit 
+                  custom={this.state.selectedCustom}
+                  formActions={editFormActions}
+                />
               : <CustomNumberEdit />
             ) : 'Select a field'
           }
@@ -95,7 +105,10 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  onClose() { dispatch(closeSettingsDialog()) }
+  onClose() { dispatch(closeSettingsDialog()) },
+  onUpdateCustom(newCustom, oldCustom) { dispatch(requestCustomUpdate(newCustom, oldCustom)) },
+  onRemoveCustom(id) { dispatch(requestCustomRemove(id)) },
+  onAddCustom(newCustom) { dispatch(requestAddCustom(newCustom)) }
 })
 
 const CustomSettingsDialog = connect(
