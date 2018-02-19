@@ -2,18 +2,18 @@ import React from 'react'
 import MenuItem from 'material-ui/MenuItem'
 import SelectField from 'material-ui/SelectField'
 
-const CustomFieldDropdown = ({ name, id, cValues, selected, handleChange }) => (
+const CustomFieldDropdown = ({ custom, selected, handleChange }) => (
   <SelectField
-    floatingLabelText={name}
+    floatingLabelText={custom.name}
     fullWidth={true}
-    name={id}
+    name={custom._id}
     onChange={(event, index, value) => {
-      handleChange(event, value, id)
+      handleChange(event, value, custom._id)
     }}
     value={selected}
   >
     <MenuItem value={undefined} primaryText="" />                    
-    {cValues.map((cVal, index) => (
+    {custom.values.map((cVal, index) => (
       <MenuItem key={index} value={cVal._id} primaryText={cVal.value} />
     ))}
   </SelectField>
