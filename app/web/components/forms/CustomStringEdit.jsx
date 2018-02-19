@@ -45,7 +45,7 @@ const CustomFieldEdit = ({ custom, formActions, onValueAdd, onValueRemove }) => 
     </List>
 
     <div className={dialogStyles['bottom-buttons']}>
-      {actions.map((action, index) => 
+      {formActions.map((action, index) => 
         <FlatButton
           label={action.label}
           onClick={action.onClick}
