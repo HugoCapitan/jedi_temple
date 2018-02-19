@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import FlatButton  from 'material-ui/FlatButton'
 import MenuItem    from 'material-ui/MenuItem'
 import TextField   from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField'
@@ -45,6 +46,16 @@ class EditProductForm extends React.Component {
   render() {
     return (
       <div className={dialogStyles.fullscreen}>
+        <div className={dialogStyles['bottom-buttons']}>
+          {this.props.actions.map((action, index) => 
+            <FlatButton
+              key={index}
+              label={action.label}
+              primary={true}
+              onClick={action.onClick}
+            />
+          )}
+        </div>
         <div className={dialogStyles['half-column']}>
           <TextField
             floatingLabelText="Name"
