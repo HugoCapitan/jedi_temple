@@ -36,7 +36,7 @@ class EditProductForm extends React.Component {
   }
 
   handleStringCustomChange(event, value, id) {
-    const hasCustom = self.state.customs.find(custom => custom.custom_id === id) 
+    const hasCustom = this.state.customs.find(custom => custom.custom_id === id) 
 
     if (hasCustom && value) this.setState( editCustom(this.state, id, value) )
     else if (!hasCustom && value) this.setState( addCutsom(this.setState, id, value) )
@@ -52,7 +52,7 @@ class EditProductForm extends React.Component {
               key={index}
               label={action.label}
               primary={true}
-              onClick={action.onClick}
+              onClick={() => { action.onClick(this.state, this.props.product) }}
             />
           )}
         </div>
