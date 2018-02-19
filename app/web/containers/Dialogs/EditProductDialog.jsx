@@ -2,33 +2,42 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import Dialog      from 'material-ui/Dialog'
-import FlatButton  from 'material-ui/FlatButton'
 
 import { closeItemDialog, requestProductUpdate, requestAddProduct } from '../../actions'
 
 import EditProductForm from '../../components/forms/EditProductForm'
 
 const component = ({ open, title, product, customs, onSave, onCancel }) => {
-  const actions = [
-    <FlatButton
-      label="Cancel"
-      primary={true}
-      onClick={onCancel}
-    />
-  ]
+  const formActions = [{
+    label: 'Cancel',
+    onClick: onCancel
+  }, {
+    label: 'Save',
+    onClick: onSave
+  }]
+
+  const customContentStyle = {
+    maxWidth: 'none',
+    position: 'absolute',
+    top: '50%',
+    transform: 'translate(0, -50%)',
+    width: '100%'
+  }
 
   return (
     <Dialog
-      title={title}
-      actions={actions}
+      autoDetectWindowHeight={false}
+      bodyStyle={{ maxHeight: '95%' }}
+      contentStyle={customContentStyle}
       modal={true}
-      contentStyle={{ width: '100%', maxWidth: 'none' }}
       open={open}
+      title={title}
     >
       <EditProductForm 
         product={product}
         customs={customs}
         onSave={onSave}
+        actions={formActions}
       />
     </Dialog>
   )
