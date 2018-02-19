@@ -7,13 +7,13 @@ import { closeItemDialog, requestProductUpdate, requestAddProduct } from '../../
 
 import EditProductForm from '../../components/forms/EditProductForm'
 
-const component = ({ open, title, product, customs, onSave, onCancel }) => {
+const component = ({ open, title, product, customs, onSave, onUpdate, onCancel }) => {
   const formActions = [{
     label: 'Cancel',
     onClick: onCancel
   }, {
     label: 'Save',
-    onClick: onSave
+    onClick: title === 'New Product' ? onSave : onUpdate
   }]
 
   const customContentStyle = {
@@ -43,7 +43,7 @@ const component = ({ open, title, product, customs, onSave, onCancel }) => {
   )
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = state => ({
   open: state.ui.itemDialog.open,
   title: state.ui.itemDialog.itemID ? 'Edit Product' : 'New Product',
   product: getProduct(state.products.items, state.ui.itemDialog.itemID, state.ui.route),
@@ -51,10 +51,8 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  onSave(oldProduct, newProduct) { state.ui.itemDialog.itemID 
-    ? dispatch(requestProductUpdate(oldProduct, newProduct)) 
-    : dispatch(requestAddProduct(newProduct)) 
-  },
+  onSave(newProduct) { dispatch(requestAddProduct(newProduct)) },
+  onUpdate(newProduct, oldProduct) { dispatch(requestProductUpdate(newProduct, oldProduct)) },
   onCancel() { dispatch(closeItemDialog()) }
 })
 
