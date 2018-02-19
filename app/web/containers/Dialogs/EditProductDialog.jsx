@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import Dialog      from 'material-ui/Dialog'
 import FlatButton  from 'material-ui/FlatButton'
 
-import { closeItemDialog, requestProductUpdate, requestAddProduct } from '../actions'
+import { closeItemDialog, requestProductUpdate, requestAddProduct } from '../../actions'
 
 import EditProductForm from '../../components/forms/EditProductForm'
 
@@ -23,7 +23,7 @@ const component = ({ open, title, product, customs, onSave, onCancel }) => {
       actions={actions}
       modal={true}
       contentStyle={{ width: '100%', maxWidth: 'none' }}
-      open={this.props.open}
+      open={open}
     >
       <EditProductForm 
         product={product}
@@ -49,12 +49,12 @@ const mapDispatchToProps = dispatch => ({
   onCancel() { dispatch(closeItemDialog()) }
 })
 
-const ProductEditDialog = connect(
+const EditProductDialog = connect(
   mapStateToProps,
   mapDispatchToProps
-)(ProductEdit)
+)(component)
 
-export default ProductEditDialog
+export default EditProductDialog
 
 
 function getProduct(products, itemID, route) {
