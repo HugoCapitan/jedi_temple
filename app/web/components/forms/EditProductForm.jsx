@@ -5,9 +5,9 @@ import MenuItem    from 'material-ui/MenuItem'
 import TextField   from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField'
 
-import CustomFieldDropdown from './CustomFieldDropdown'
+import CustomFieldDropdown from '../CustomFieldDropdown'
 
-import dialogStyles from '../styles/dialogs'
+import dialogStyles from '../../styles/dialogs'
 
 class EditProductForm extends React.Component {
   constructor(props) {
@@ -115,13 +115,13 @@ class EditProductForm extends React.Component {
   }
 }
 
-ProductEdit.propTypes = { 
+EditProductForm.propTypes = { 
   product:  PropTypes.object.isRequired,
   customs:  PropTypes.array.isRequired,
   onSave:   PropTypes.func.isRequired
 }
 
-export default ProductEdit
+export default EditProductForm
 
 
 function addCutsom(state, custom_id, value) {
