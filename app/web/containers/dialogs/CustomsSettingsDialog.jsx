@@ -15,8 +15,10 @@ import {
   orange500
 } from 'material-ui/styles/colors'
 
-import CollectionList from '../../components/CollectionList'
-import ListHeader     from '../../components/ListHeader'
+import CollectionList   from '../../components/CollectionList'
+import CustomStringEdit from '../../components/forms/CustomStringEdit'
+import CustomNumberEdit from '../../components/forms/CustomNumberEdit'
+import ListHeader       from '../../components/ListHeader'
 
 import dialogStyles from '../../styles/dialogs'
 
