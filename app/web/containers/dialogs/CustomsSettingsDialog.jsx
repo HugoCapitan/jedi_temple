@@ -9,7 +9,6 @@ import IconNavigationClose from 'material-ui/svg-icons/navigation/close'
 import Toolbar             from 'material-ui/Toolbar/Toolbar'
 import ToolbarGroup        from 'material-ui/Toolbar/ToolbarGroup'
 import ToolbarTitle        from 'material-ui/Toolbar/ToolbarTitle'
-
 import {
   blue500,
   orange500
@@ -73,6 +72,12 @@ class component extends React.Component {
               {CloseButton}
             </ToolbarGroup>
           </Toolbar>
+          {!!this.state.selectedCustom ?  
+            (this.state.selectedCustom.type === 'string'
+              ? <CustomStringEdit />
+              : <CustomNumberEdit />
+            ) : 'Select a field'
+          }
         </div>
       </Dialog>
     )
