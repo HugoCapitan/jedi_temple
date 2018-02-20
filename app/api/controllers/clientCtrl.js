@@ -9,26 +9,13 @@ module.exports = {
   apiCreate,
   apiRead, 
   apiRemove, 
-  apiUpdate,
-
-  apiCreateAddress,
-  apiRemoveAddress,
-  apiUpdateAddress,
-
-  apiAddOrder,
-  apiRemoveOrder,
-
-  apiAddReservation,
-  apiRemoveReservation,
-
-  apiAddWish,
-  apiRemoveWish
+  apiUpdate
 }
 
 async function apiAll(req, res) {
   try {
     let all = await Client.find().exec()
-    all = all.map(removePswd)
+    // all = all.map(removePswd)
 
     res.status(200).json(all)
   } catch (e) {
@@ -92,8 +79,11 @@ async function apiRemove(req, res) {
 
 async function apiUpdate(req, res) {
   try {
-    let updatedClient = await Client.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
-    updatedClient = removePswd(updatedClient)
+    const clientToUpdate = await Client.findById(req.params.id).exec()
+    Object.assign(clientToUpdate, req.body)
+    const updatedClient = await clientToUpdate.save()
+    // let updatedClient = await Client.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
+    // updatedClient = removePswd(updatedClient)
     res.status(200).json(updatedClient)
   } catch (e) {
     if (e.name === 'ValidationError')
@@ -105,216 +95,6 @@ async function apiUpdate(req, res) {
     else
       sendError(500, 'Unexpected Error', e, res)
 
-  }
-}
-
-async function apiCreateAddress(req, res) {
-  try {
-    let clientToUpdate = await Client.findById(req.params.client_id).exec()
-    if (!clientToUpdate) {
-      let notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
-      notFoundError.name = "NotFoundError"
-      throw notFoundError
-    }
-    clientToUpdate.addresses.push(req.body)
-    await clientToUpdate.save()
-    clientToUpdate = removePswd(clientToUpdate)
-    res.status(200).json(clientToUpdate)
-  } catch (e) {
-    if (e.name === 'NotFoundError')
-      sendError(404, e.message, e, res)
-    else if (e.name === 'ValidationError')
-      sendError(403, 'Validation Error', e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
-  }
-}
-
-async function apiRemoveAddress(req, res) {
-  try {
-    let clientToUpdate = await Client.findById(req.params.client_id).exec()
-    if (!clientToUpdate) {
-      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
-      notFoundError.name = "NotFoundError"
-      throw notFoundError
-    }
-    clientToUpdate.addresses.pull({ _id: req.params.address_id })
-
-    await clientToUpdate.save()
-    clientToUpdate = removePswd(clientToUpdate)
-    res.status(200).json(clientToUpdate)
-  } catch (e) {
-    if (e.name === 'NotFoundError')
-      sendError(404, e.message, e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
-  }
-}
-
-async function apiUpdateAddress(req, res) {
-  try {
-    let clientToUpdate = await Client.findById(req.params.client_id).exec()
-    if (!clientToUpdate) {
-      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
-      notFoundError.name = "NotFoundError"
-      throw notFoundError
-    }
-
-    const addressToUpdate = clientToUpdate.addresses.id(req.params.address_id)
-    if (!addressToUpdate) {
-      const notFoundError = new Error(`Address with id: ${req.params.address_id}, not found for client with id: ${req.params.client_id}`)
-      notFoundError.name = 'NotFoundError'
-      throw notFoundError
-    }
-    Object.assign(addressToUpdate, req.body)
-
-    clientToUpdate = removePswd(clientToUpdate)
-    await clientToUpdate.save()
-    res.status(200).json(clientToUpdate)
-  } catch (e) {
-    if (e.name === 'NotFoundError')
-      sendError(404, e.message, e, res)
-    else if (e.name === 'ValidationError')
-      sendError(403, 'Validation Error', e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
-  }
-}
-
-
-
-async function apiAddOrder(req, res) {
-  try {
-    let clientToUpdate = await Client.findById(req.params.client_id).exec()
-    if (!clientToUpdate) {
-      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
-      notFoundError.name = "NotFoundError"
-      throw notFoundError
-    }
-
-    clientToUpdate.orders.push(req.params.order_id)
-    await clientToUpdate.save()
-
-    clientToUpdate = removePswd(clientToUpdate)
-    res.status(200).json(clientToUpdate)
-  } catch (e) {
-    if (e.name === 'NotFoundError')
-      sendError(404, e.message, e, res)
-    else if (e.name === 'ValidationError')
-      sendError(403, 'Validation Error', e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
-  }
-}
-
-async function apiAddReservation(req, res) {
-  try {
-    let clientToUpdate = await Client.findById(req.params.client_id).exec()
-    if (!clientToUpdate) {
-      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
-      notFoundError.name = "NotFoundError"
-      throw notFoundError
-    }
-
-    clientToUpdate.reservations.push(req.params.reservation_id)
-    await clientToUpdate.save()
-    clientToUpdate = removePswd(clientToUpdate)
-    res.status(200).json(clientToUpdate)
-  } catch (e) {
-    if (e.name === 'NotFoundError')
-      sendError(404, e.message, e, res)
-    else if (e.name === 'ValidationError')
-      sendError(403, 'Validation Error', e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
-  }
-}
-
-async function apiAddWish(req, res) {
-  try {
-    let clientToUpdate = await Client.findById(req.params.client_id).exec()
-    if (!clientToUpdate) {
-      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
-      notFoundError.name = "NotFoundError"
-      throw notFoundError
-    }
-
-    clientToUpdate.wishlist.push(req.params.wish_id)
-    await clientToUpdate.save()
-    clientToUpdate = removePswd(clientToUpdate)
-    res.status(200).json(clientToUpdate)
-  } catch (e) {
-    if (e.name === 'NotFoundError')
-      sendError(404, e.message, e, res)
-    else if (e.name === 'ValidationError')
-      sendError(403, 'Validation Error', e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
-  }
-}
-
-
-
-async function apiRemoveOrder(req, res) {
-  try {
-    let clientToUpdate = await Client.findById(req.params.client_id).exec()
-    if (!clientToUpdate) {
-      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
-      notFoundError.name = "NotFoundError"
-      throw notFoundError
-    }
-
-    clientToUpdate.orders.pull(req.params.order_id)
-    await clientToUpdate.save()
-    clientToUpdate = removePswd(clientToUpdate)
-    res.status(200).json(clientToUpdate)
-  } catch (e) {
-    if (e.name === 'NotFoundError')
-      sendError(404, e.message, e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
-  }
-}
-
-async function apiRemoveReservation(req, res) {
-  try {
-    let clientToUpdate = await Client.findById(req.params.client_id).exec()
-    if (!clientToUpdate) {
-      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
-      notFoundError.name = "NotFoundError"
-      throw notFoundError
-    }
-
-    clientToUpdate.reservations.pull(req.params.reservation_id)
-    await clientToUpdate.save()
-    clientToUpdate = removePswd(clientToUpdate)
-    res.status(200).json(clientToUpdate)
-  } catch (e) {
-    if (e.name === 'NotFoundError')
-      sendError(404, e.message, e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
-  }
-}
-
-async function apiRemoveWish(req, res) {
-  try {
-    let clientToUpdate = await Client.findById(req.params.client_id).exec()
-    if (!clientToUpdate) {
-      const notFoundError = new Error(`Client with id: ${req.params.client_id}, not found`)
-      notFoundError.name = "NotFoundError"
-      throw notFoundError
-    }
-
-    clientToUpdate.wishlist.pull(req.params.wish_id)
-    await clientToUpdate.save()
-    clientToUpdate = removePswd(clientToUpdate)
-    res.status(200).json(clientToUpdate)
-  } catch (e) {
-    if (e.name === 'NotFoundError')
-      sendError(404, e.message, e, res)
-    else
-      sendError(500, 'Unexpected Error', e, res)
   }
 }
 
