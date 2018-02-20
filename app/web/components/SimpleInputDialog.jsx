@@ -52,6 +52,7 @@ class SimpleInputDialog extends React.Component {
       >
         <TextField 
           value={this.state.inputValue}
+          autoFocus={true}
           onChange={this.handleChange.bind(this)}
         />
       </Dialog>
