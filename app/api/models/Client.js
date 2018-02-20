@@ -129,11 +129,6 @@ function preSaveValidation(self) {
       e.name = 'ValidationError'
       reject(e)
     }
-    if (!self.isNew && self.isModified('password')) {
-      const e = new Error('Password should be modified via update')
-      e.name = 'ValidationError'
-      reject(e)
-    }
     if (!self.isNew && self.isModified('store')) {
       const e = new Error('Store is not updatable')
       e.name = 'ValidationError'
