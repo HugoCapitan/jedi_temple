@@ -1,8 +1,9 @@
 import _     from 'lodash'
 import axios from 'axios'
 
+import { addCustom } from './customFields'
 import { addProduct, receiveProducts, removeProduct, requestProducts, updateProduct } from './products'
-import { failedRequest, finishRequest, startRequest, closeItemDialog } from './ui'
+import { failedRequest, finishRequest, startRequest, closeItemDialog, closeSettingsDialog } from './ui'
 
 export const fetchCollection = (token, collection) => dispatch => {
   let endpoint = collection
@@ -20,7 +21,22 @@ export const fetchCollection = (token, collection) => dispatch => {
     )
 }
 
-export const requestAddCustom = () => (dispatch, getState) => {}
+export const requestAddCustom = newCustom => (dispatch, getState) => {
+  const token = getState().authToken
+
+  dispatch(startRequest())
+  return axios.post('/api/custom_fields/', newCustom, {
+    headers: { 'Authorization': 'Bearer ' + token }
+  })
+  .then(
+    response => {
+      dispatch(addCustom(response.data))
+      dispatch(finishRequest('CustomField Saved'))
+      dispatch(closeSettingsDialog)
+    },
+    error => dispatch(failedRequest('Error saving CustomField'))
+  )
+}
 
 export const requestAddProduct = newProduct => (dispatch, getState) => {
   const token = getState().authToken
@@ -41,7 +57,21 @@ export const requestAddProduct = newProduct => (dispatch, getState) => {
 
 export const requestCustomRemove = () => (dispatch, getState) => {}
 
-export const requestCustomUpdate = () => (dispatch, getState) => {}
+export const requestCustomUpdate = (newCustom, oldCustom) => (dispatch, getState) => {
+  const token = getState().authToken
+  const reqOptions = { headers: { 'Authorization': 'Bearer ' + token } }
+  const requests = []
+
+  let customToSend = { name: newCustom.name, show: newCustom.show, filter: newCustom.filter }
+
+  if (oldCustom.type === 'string') {
+    const newValues = _.differenceWith(newCustom.values, oldCustom.values, (newVal, oldVal) => oldVal.value === newVal.value)
+    const removedValues = _.differenceWith(oldCustom.values, newCustom.values, (oldVal, newVal) => oldVal.value === newVal.vaue)
+
+    console.log('new', newValues)
+    console.log('removed', removedValues)
+  }
+}
 
 export const requestProductRemove = productID => (dispatch, getState) => {
   const token = getState().authToken
@@ -61,7 +91,7 @@ export const requestProductRemove = productID => (dispatch, getState) => {
 export const requestProductUpdate = (newProduct, oldProduct) => (dispatch, getState) => {
   const token = getState().authToken
   const reqOptions = { headers: { 'Authorization': 'Bearer ' + token } }
-  const customsReqs = []
+  const requests = []
   const removedCustoms = _.differenceWith(oldProduct.customs, newProduct.customs, (oldVal, newVal) => 
     oldVal.custom_id == newVal.custom_id
   )
@@ -75,21 +105,21 @@ export const requestProductUpdate = (newProduct, oldProduct) => (dispatch, getSt
   
   dispatch(startRequest())
 
-  customsReqs.push( axios.put(`/api/products/${oldProduct._id}/`, productToSend, reqOptions) )
+  requests.push( axios.put(`/api/products/${oldProduct._id}/`, productToSend, reqOptions) )
   
   for (const removed of removedCustoms) {
-    customsReqs.push( axios.delete(`/api/products/${oldProduct._id}/customs/${removed._id}/`, reqOptions) )
+    requests.push( axios.delete(`/api/products/${oldProduct._id}/customs/${removed._id}/`, reqOptions) )
   }
 
   for (const added of addedCustoms) {
-    customsReqs.push( axios.post(`/api/products/${oldProduct._id}/customs/`, added, reqOptions) )
+    requests.push( axios.post(`/api/products/${oldProduct._id}/customs/`, added, reqOptions) )
   }
 
   for (const modified of modifiedCustoms) {
-    customsReqs.push( axios.put(`/api/products/${oldProduct._id}/customs/${modified._id}/`, modified, reqOptions) )
+    requests.push( axios.put(`/api/products/${oldProduct._id}/customs/${modified._id}/`, modified, reqOptions) )
   }
 
-  return Promise.all(customsReqs)
+  return Promise.all(requests)
     .then(
       responses => axios.get(`/api/products/${oldProduct._id}/`, reqOptions),
       error => dispatch(failedRequest('Product Update Failed'))
