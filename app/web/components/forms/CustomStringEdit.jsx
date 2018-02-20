@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 import CheckBox from 'material-ui/Checkbox'
 import Divider from 'material-ui/Divider'
@@ -97,7 +98,7 @@ class CustomStringEdit extends React.Component {
           {this.props.formActions.map((action, index) => 
             <FlatButton
               label={action.label}
-              onClick={action.onClick}
+              onClick={() => { action.onClick(this.state.custom, this.props.custom) } }
               primary={action.primary}
               style={{ float: 'right',  margin: '0 10px 5px 0' }}
             />
@@ -116,3 +117,14 @@ class CustomStringEdit extends React.Component {
 }
 
 export default CustomStringEdit
+
+CustomStringEdit.propTypes = {
+  custom: PropTypes.object.isRequired,
+  formActions: PropTypes.arrayOf(
+    PropTypes.objectOf({
+      label:   PropTypes.string.isRequired,
+      onClick: PropTypes.func.isRequired,
+      primary: PropTypes.bool
+    })
+  ).isRequired
+}
