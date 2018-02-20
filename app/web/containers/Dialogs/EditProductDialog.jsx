@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import Dialog      from 'material-ui/Dialog'
 
-import { closeItemDialog, requestProductUpdate, requestAddProduct } from '../../actions'
+import { closeItemDialog, requestProductUpdate, requestProductAdd } from '../../actions'
 
 import EditProductForm from '../../components/forms/EditProductForm'
 
@@ -51,7 +51,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  onSave(newProduct) { dispatch(requestAddProduct(newProduct)) },
+  onSave(newProduct) { dispatch(requestProductAdd(newProduct)) },
   onUpdate(newProduct, oldProduct) { dispatch(requestProductUpdate(newProduct, oldProduct)) },
   onCancel() { dispatch(closeItemDialog()) }
 })

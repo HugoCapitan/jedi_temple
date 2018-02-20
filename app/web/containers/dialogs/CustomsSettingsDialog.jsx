@@ -21,7 +21,7 @@ import ListHeader       from '../../components/ListHeader'
 
 import {
   closeSettingsDialog,
-  requestAddCustom,
+  requestCustomAdd,
   requestCustomRemove,
   requestCustomUpdate
 } from '../../actions'
@@ -112,7 +112,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   onClose() { dispatch(closeSettingsDialog()) },
   onUpdateCustom(newCustom, oldCustom) { dispatch(requestCustomUpdate(newCustom, oldCustom)) },
   onRemoveCustom(id) { dispatch(requestCustomRemove(id)) },
-  onAddCustom(newCustom) { dispatch(requestAddCustom(newCustom)) }
+  onAddCustom(newCustom) { dispatch(requestCustomAdd(newCustom)) }
 })
 
 const CustomSettingsDialog = connect(

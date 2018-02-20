@@ -38,6 +38,6 @@ renderApp()
 initData()
 
 function initData () {
-  store.dispatch(fetchCollection(token, 'products'))
-  store.dispatch(fetchCollection(token, 'customFields'))
+  store.dispatch(fetchCollection('products'))
+  store.dispatch(fetchCollection('customFields'))
 }
