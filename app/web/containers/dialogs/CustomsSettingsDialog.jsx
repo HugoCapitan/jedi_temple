@@ -33,6 +33,10 @@ class component extends React.Component {
     super(props)
     this.state = { selectedCustom: undefined }
   }
+
+  componentWillReceiveProps() {
+    this.setState({ selectedCustom: undefined })
+  }
   
   selectCustom(id) {
     const selectedCustom = this.props.customs.find(cust => cust._id === id)
