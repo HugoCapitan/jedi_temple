@@ -66,10 +66,16 @@ export const requestCustomUpdate = (newCustom, oldCustom) => (dispatch, getState
 
   if (oldCustom.type === 'string') {
     const newValues = _.differenceWith(newCustom.values, oldCustom.values, (newVal, oldVal) => oldVal.value === newVal.value)
-    const removedValues = _.differenceWith(oldCustom.values, newCustom.values, (oldVal, newVal) => oldVal.value === newVal.vaue)
+    const removedValues = _.differenceWith(oldCustom.values, newCustom.values, (oldVal, newVal) => oldVal.value === newVal.value)
 
-    console.log('new', newValues)
-    console.log('removed', removedValues)
+    requests.push(
+      ...newValues.map(newVal => axios.post(`/api/custom_fields/${oldCustom._id}`, newVal, reqOptions)),
+      ...removedValues.map(remVal => axios.delete(`/api/custom_fields/${oldCustom._id}/values/${remVal._id}/`, reqOptions))
+    )
+  } else if (oldCustom.type === 'number') {
+    customToSend = { ...customToSend, 
+      unit: newCustom.unit, unit_place: newCustom.unit_place, min: newCustom.min, max: newCustom.max 
+    }
   }
 }
 
