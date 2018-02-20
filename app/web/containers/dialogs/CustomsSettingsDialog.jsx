@@ -57,24 +57,24 @@ class component extends React.Component {
 
     const editFormActions = [{
       label: 'Save',
+      primary: true,
       onClick: this.props.onUpdateCustom
     }]
 
     return (
       <Dialog
-        autoDetectWindowHeight={false}
-        bodyStyle={ {maxHeight: '95%', padding: '0px'} }
+        bodyStyle={ { padding: '0px', width: '100%'} }
         contentStyle={customContentStyle}
         modal={true}
         open={this.props.open}
         titleClassName="hidden"
       >
-        <div className={dialogStyles['small-span']}>
+        <div className={dialogStyles['small-span']} style={ { maxHeight: 'inherit' } }>
           <ListHeader title="Fields" />
           <CollectionList items={this.props.customs} onDelete={this.props.onDelete} onEdit={this.selectCustom.bind(this)} />
         </div>
-        <div className={dialogStyles['big-span']}>
-          <Toolbar>
+        <div className={dialogStyles['big-span']} style={ { maxHeight: 'inherit', display: 'flex', flexDirection: 'column' } }>
+          <Toolbar style={{ flexBasis: '56px' }}>
             <ToolbarGroup>
               <ToolbarTitle 
                 text={ !!this.state.selectedCustom ? `Configure ${this.state.selectedCustom.name} field` : 'Select a field to begin' }
