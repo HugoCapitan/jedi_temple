@@ -54,21 +54,20 @@ ClientSchema._middlewareFuncs = {
     const self = this
 
     preSaveValidation(self)
-    .then(()     => handlePassword(self))
-    .then(hashed => {
-      const currentDate = new Date()
-      
-      if (self.isNew) 
-        self.uniqueness = `${self.store}__${self.email}`
-      
-      if (hashed && hashed.hasOwnProperty('hash') && hashed.hasOwnProperty('salt')) {
-        self.password = hashed.hash
-        self.salt = hashed.salt
+    .then(() => self.isNew || self.isModified('password')
+      ? uModels.hashPassword(self.password)
+      : false
+    )
+    .then(hash => {
+      if (hash) {
+        self.password = hash.hash
+        self.salt = hash.salt
       }
 
-      if (!self.created_at) 
-        self.created_at = currentDate
+      if (self.isNew) self.uniqueness = `${self.store}__${self.email}`
 
+      const currentDate = new Date()         
+      if (!self.created_at) self.created_at = currentDate
       self.updated_at = currentDate
 
       return next() 
@@ -103,13 +102,7 @@ const Client = mongoose.model('Client', ClientSchema)
 module.exports = Client
 
 async function handlePassword(context) {
-  if (context.hasOwnProperty('isNew') && !context.isNew) 
-    return false
-
-  const hashed = await uModels.hashPassword(context.password)
-    .catch(err => { throw err })
-
-  return hashed
+  
 }
 
 function preSaveValidation(self) {
