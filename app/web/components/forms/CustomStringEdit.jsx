@@ -25,7 +25,7 @@ class CustomStringEdit extends React.Component {
     if (!exists)
       this.setState({
         custom: { ...this.state.custom,
-          values: [ ...this.state.custom.values, { value } ]
+          values: [ { value }, ...this.state.custom.values ]
         }
       })
 
@@ -56,7 +56,7 @@ class CustomStringEdit extends React.Component {
 
   render() {
     return (
-      <div className={dialogStyles['left-border']} style={ { overflowY: 'scroll' } }>
+      <div className={dialogStyles['left-border']} style={ { overflowY: 'scroll', marginBottom: '52px' } }>
         <List>
           <ListItem disabled={true} primaryText="Field Type: String"/>
           <ListItem 
@@ -70,7 +70,7 @@ class CustomStringEdit extends React.Component {
           <Divider />
           <ListItem
             disabled={true}
-            primaryText="Values"
+            primaryText="Values:"
             initiallyOpen={true}
             rightIconButton={(
               <IconButton onClick={this.toggleValueDialog.bind(this)}>
@@ -78,8 +78,6 @@ class CustomStringEdit extends React.Component {
               </IconButton>
             )}
           />
-        </List>
-        <List>
           <Divider inset={true}/>
           {this.state.custom.values.map((cValue, index) => (
             <ListItem 
@@ -100,7 +98,7 @@ class CustomStringEdit extends React.Component {
             <FlatButton
               label={action.label}
               onClick={action.onClick}
-              primary={true}
+              primary={action.primary}
               style={{ float: 'right',  margin: '0 10px 5px 0' }}
             />
           )}
