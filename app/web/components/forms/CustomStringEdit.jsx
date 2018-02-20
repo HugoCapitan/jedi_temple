@@ -9,9 +9,11 @@ import IconContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle
 import List from 'material-ui/List/List'
 import ListItem from 'material-ui/List/ListItem'
 
+import SimpleInputDialog from '../SimpleInputDialog'
+
 import dialogStyles from '../../styles/dialogs'
 
-class CustomFieldEdit extends React.Component {
+class CustomStringEdit extends React.Component {
   constructor(props) {
     super(props)
     this.state = { custom: this.props.custom, valueDialog: { open: true, text: '' } }
@@ -68,6 +70,7 @@ class CustomFieldEdit extends React.Component {
           <Divider inset={true}/>
           {this.state.custom.values.map(cValue => (
             <ListItem 
+              key={cValue._id}
               primaryText={cValue.value}
               insetChildren={true}
               rightIconButton={
@@ -89,9 +92,14 @@ class CustomFieldEdit extends React.Component {
             />
           )}
         </div>
+
+        <SimpleInputDialog 
+          open={this.state.valueDialog.open}
+          title="New Value"
+        />
       </div>
     )
   }
 }
 
-export default CustomFieldEdit
+export default CustomStringEdit
