@@ -2,7 +2,7 @@ import _     from 'lodash'
 import axios from 'axios'
 
 import { addCustom } from './customFields'
-import { addProduct, receiveProducts, removeProduct, requestProducts, updateProduct } from './products'
+import { addProduct, removeProduct, updateProduct } from './products'
 import { failedRequest, finishRequest, startRequest, closeItemDialog, closeSettingsDialog } from './ui'
 
 export function fetchCollection(collection) {
