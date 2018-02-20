@@ -16,11 +16,16 @@ import dialogStyles from '../../styles/dialogs'
 class CustomStringEdit extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { custom: this.props.custom, valueDialog: { open: true, text: '' } }
+    this.state = { custom: this.props.custom, valueDialog: { open: false, text: '' } }
   }
 
   handleAddValue(value) {
-
+    this.setState({
+      custom: { ...this.state.custom,
+        values: [ ...this.state.custom.values, { value } ]
+      },
+      valueDialog: { open: false, text: '' }
+    })
   }
 
   handleRemoveValue(id) {
@@ -36,7 +41,7 @@ class CustomStringEdit extends React.Component {
 
   toggleValueDialog() {
     this.setState({ valueDialog: {
-      open: true,
+      open: !this.state.valueDialog.open,
       text: ''
     } })
   }
@@ -96,6 +101,8 @@ class CustomStringEdit extends React.Component {
         <SimpleInputDialog 
           open={this.state.valueDialog.open}
           title="New Value"
+          onDone={this.handleAddValue.bind(this)}
+          onCancel={this.toggleValueDialog.bind(this)}
         />
       </div>
     )
