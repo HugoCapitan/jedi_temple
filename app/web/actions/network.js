@@ -62,7 +62,7 @@ export function requestCustomUpdate (newCustom, oldCustom) {
       const removedValues = _.differenceWith(oldCustom.values, newCustom.values, (oldVal, newVal) => oldVal.value === newVal.value)
   
       requests.push(
-        ...newValues.map(newVal => axios.post(`/api/custom_fields/${oldCustom._id}`, newVal, reqOptions)),
+        ...newValues.map(newVal => axios.post(`/api/custom_fields/${oldCustom._id}/values`, newVal, reqOptions)),
         ...removedValues.map(remVal => axios.delete(`/api/custom_fields/${oldCustom._id}/values/${remVal._id}/`, reqOptions))
       )
     } else if (oldCustom.type === 'number') {
