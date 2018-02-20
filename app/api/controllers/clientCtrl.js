@@ -15,9 +15,7 @@ module.exports = {
 async function apiAll(req, res) {
   try {
     let all = await Client.find().exec()
-    // all = all.map(removePswd)
-
-    res.status(200).json(all)
+    res.status(200).json(all.map(removePswd))
   } catch (e) {
     sendError(500, 'Unexpected Error', e, res)
   }
@@ -26,8 +24,7 @@ async function apiAll(req, res) {
 async function apiCreate(req, res) {
   try {
     let newClient = await new Client(req.body).save()
-    newClient = removePswd(newClient)
-    res.status(200).json(newClient)
+    res.status(200).json(removePswd(newClient))
   } catch (e) {
     if (e.name === 'ValidationError')
       sendError(403, 'Validation Error', e, res)
@@ -47,9 +44,7 @@ async function apiRead(req, res) {
       throw notFoundError
     }
 
-    Object.assign(foundClient, {password: undefined, salt: undefined})
-
-    res.status(200).json(foundClient)
+    res.status(200).json(removePswd(foundClient))
   } catch(e) {
     if (e.name === 'NotFoundError')
       sendError(404, `Client with id: ${req.params.id}, not found`, e, res)
@@ -68,7 +63,7 @@ async function apiRemove(req, res) {
       throw notFoundError
     }
 
-    res.status(200).json(removedClient)
+    res.status(200).json(removePswd(removedClient))
   } catch (e) {
     if (e.name === 'CastError' || e.name === 'NotFoundError')
       sendError(404, `Client with id: ${req.params.id}, not found`, e, res)
@@ -79,12 +74,8 @@ async function apiRemove(req, res) {
 
 async function apiUpdate(req, res) {
   try {
-    const clientToUpdate = await Client.findById(req.params.id).exec()
-    Object.assign(clientToUpdate, req.body)
-    const updatedClient = await clientToUpdate.save()
-    // let updatedClient = await Client.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
-    // updatedClient = removePswd(updatedClient)
-    res.status(200).json(updatedClient)
+    let updatedClient = await Client.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
+    res.status(200).json(removePswd(updatedClient))
   } catch (e) {
     if (e.name === 'ValidationError')
       sendError(403, 'Validation Error', e, res)
@@ -100,7 +91,5 @@ async function apiUpdate(req, res) {
 
 
 function removePswd(client) {
-  Object.assign(client, { password: undefined, salt: undefined })
-
-  return client
+  return Object.assign(client, { password: undefined, salt: undefined })
 }
