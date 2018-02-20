@@ -11,18 +11,9 @@ export const addProduct = product => ({
   product
 })
 
-export const receiveProducts = products => ({
-  type: RECEIVE_PRODUCTS,
-  products
-})
-
 export const removeProduct = productID => ({
   type: REMOVE_PRODUCT,
   productID
-})
- 
-export const requestProducts = () => ({
-  type: REQUEST_PRODUCTS
 })
 
 export const updateProduct = product => ({
