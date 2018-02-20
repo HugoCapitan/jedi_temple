@@ -20,16 +20,24 @@ class CustomStringEdit extends React.Component {
   }
 
   handleAddValue(value) {
-    this.setState({
-      custom: { ...this.state.custom,
-        values: [ ...this.state.custom.values, { value } ]
-      },
-      valueDialog: { open: false, text: '' }
-    })
+    const exists = this.state.custom.values.find(cVal => cVal.value === value)
+
+    if (!exists)
+      this.setState({
+        custom: { ...this.state.custom,
+          values: [ ...this.state.custom.values, { value } ]
+        }
+      })
+
+    this.setState({ valueDialog: { open: false, text: '' } })
   }
 
-  handleRemoveValue(id) {
-
+  handleRemoveValue(value) {
+    this.setState({ 
+      custom: { ...this.state.custom,
+        values: this.state.custom.values.filter(cVal => cVal.value != value)
+      } 
+    })
   }
 
   handleCheck(event, isChecked) {
@@ -48,7 +56,7 @@ class CustomStringEdit extends React.Component {
 
   render() {
     return (
-      <div className={dialogStyles['left-border']}>
+      <div className={dialogStyles['left-border']} style={ { overflowY: 'scroll' } }>
         <List>
           <ListItem disabled={true} primaryText="Field Type: String"/>
           <ListItem 
@@ -73,13 +81,13 @@ class CustomStringEdit extends React.Component {
         </List>
         <List>
           <Divider inset={true}/>
-          {this.state.custom.values.map(cValue => (
+          {this.state.custom.values.map((cValue, index) => (
             <ListItem 
-              key={cValue._id}
+              key={index}
               primaryText={cValue.value}
               insetChildren={true}
               rightIconButton={
-                <IconButton onClick={this.handleRemoveValue}>
+                <IconButton onClick={() => { this.handleRemoveValue.call(this, cValue.value) } }>
                   <IconContentRemoveCircle />
                 </IconButton>
               }
