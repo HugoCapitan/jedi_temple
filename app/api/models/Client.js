@@ -79,9 +79,12 @@ ClientSchema._middlewareFuncs = {
     const self = this
 
     preUpdateValidation(self)
-    .then(()     => handlePassword(self._update))
+    .then(() => self._update.hasOwnProperty('password') 
+      ? uModels.hashPassword(self._update.password)
+      : false
+    )
     .then(hashed => {
-      if (hashed && hashed.hasOwnProperty('hash') && hashed.hasOwnProperty('salt')) {
+      if (hashed) {
         self._update.password = hashed.hash
         self._update.salt = hashed.salt
       }
@@ -100,10 +103,6 @@ ClientSchema.pre('findOneAndUpdate', ClientSchema._middlewareFuncs.preUpdate)
 const Client = mongoose.model('Client', ClientSchema)
 
 module.exports = Client
-
-async function handlePassword(context) {
-  
-}
 
 function preSaveValidation(self) {
   return new Promise((resolve, reject) => {
