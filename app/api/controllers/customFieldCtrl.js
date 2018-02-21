@@ -75,7 +75,16 @@ async function apiRemove (req, res) {
 
 async function apiUpdate (req, res) {
   try {
-    const updatedCustomField = await CustomField.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
+    const specialUpdate = {}
+    if (req.body.name) specialUpdate.name = req.body.name
+    if (req.body.values) specialUpdate.values = req.body.values
+    delete req.body.name
+    delete req.body.values
+
+    let updatedCustomField = await CustomField.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
+
+    Object.assign(updatedCustomField, specialUpdate)
+    updatedCustomField = await updatedCustomField.save()
 
     res.status(200).json(updatedCustomField)
   } catch (e) {
