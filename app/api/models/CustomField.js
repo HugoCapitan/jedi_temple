@@ -128,12 +128,11 @@ CustomFieldSchema._middlewareFuncs = {
       customs: { $elemMatch: { custom_id: self._conditions._id } }
     }).exec()
     .then(productsToModify => {
-      const saves = []            
-      for (const product of productsToModify) {
+      const saves = productsToModify.map(product => {
         const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
         product.customs.pull({ _id: customToRemove._id })
-        saves.push(product.save())
-      }
+        return product.save
+      })
 
       return Promise.all(saves)
     })
