@@ -170,9 +170,15 @@ describe('preSave Middleware', () => {
   })
 
   test('Should call Product.find if max modified', done => {
-    const maxUpdated = { max: 500 }
-    const _update = maxUpdated
-    const boundMiddleware = bindMiddleware({ _conditions: { _id: 'pinacolada' }, _update })
+    const context = { 
+      ...validNumberCustom, 
+      isNew: false, 
+      _id: 'pinacolada',
+      min: '500',
+      max: '600',
+      isModified: jest.fn(p => p === 'min' || p === 'max') 
+    }
+    const boundMiddleware = bindMiddleware(context)
     const expectedQuery = { 
       customs: { $elemMatch: { custom_id: 'pinacolada' } } 
     }
@@ -186,11 +192,48 @@ describe('preSave Middleware', () => {
     boundMiddleware(next)      
   })
 
-  test('Should correctly call update and save on necessary products', done => {
-    const maxUpdated = { min: '450', max: '500' }
-    const _update = maxUpdated
+  test('Should not call Product.find if max modified', done => {
+    const context = { 
+      ...validNumberCustom, 
+      isNew: false, 
+      _id: 'pinacolada',
+      isModified: jest.fn(p => false) 
+    }
+    const boundMiddleware = bindMiddleware(context)
+    const next = err => {
+      expect(Product.find.mock.calls.length).toBe(0)
+      done()
+    }
 
-    const boundMiddleware = bindMiddleware({ _conditions: { _id: 'pinacolada' }, _update })
+    boundMiddleware(next)      
+  })
+
+  test('Should not call Product.find if max modified', done => {
+    const context = { 
+      ...validNumberCustom, 
+      isNew: true, 
+      _id: 'pinacolada',
+      isModified: jest.fn(p => false) 
+    }
+    const boundMiddleware = bindMiddleware(context)
+    const next = err => {
+      expect(Product.find.mock.calls.length).toBe(0)
+      done()
+    }
+
+    boundMiddleware(next)      
+  })
+
+  test('Should correctly call update and save on necessary products', done => {
+    const context = { 
+      ...validNumberCustom, 
+      isNew: false, 
+      _id: 'pinacolada',
+      min: '500',
+      max: '600',
+      isModified: jest.fn(p => p === 'min' || p === 'max') 
+    }
+    const boundMiddleware = bindMiddleware(context)
 
     const foundProducts = [{ 
         customs: [{ 
@@ -214,8 +257,6 @@ describe('preSave Middleware', () => {
     }))
     
     const next = err => {
-      expect(err).toBeFalsy()
-
       expect(foundProducts[0].customs.length).toBe(0)
       expect(foundProducts[0].customs.pull.mock.calls.length).toBe(1)
       expect(foundProducts[0].customs.pull.mock.calls[0][0]).toEqual({ _id: 'ajua' })
