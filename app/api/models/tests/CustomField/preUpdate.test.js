@@ -132,6 +132,50 @@ describe('preUpdate Middleware', () => {
     boundMiddleware(next)
   })
 
+  test('Should correctly call update and save on necessary products', done => {
+    const maxUpdated = { min: 'auto', max: '500' }
+    const _update = maxUpdated
+
+    const boundMiddleware = bindMiddleware({ _conditions: { _id: 'pinacolada' }, _update })
+
+    const foundProducts = [{ 
+        customs: [{ 
+        _id: 'ajua', 
+        custom_id: 'pinacolada', 
+        value: '900' 
+      }], 
+      save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+    }, { 
+      customs: [{ 
+        _id: 'notajua', 
+        custom_id: 'pinacolada', 
+        value: '400' 
+      }], 
+      save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+    }]
+    foundProducts[0].customs.pull = jest.fn(() => { foundProducts[0].customs.pop() })
+    foundProducts[1].customs.pull = jest.fn(() => { foundProducts[1].customs.pop() })
+    Product.find = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => { resolve(foundProducts) })
+    }))
+    
+    const next = err => {
+      expect(err).toBeFalsy()
+
+      expect(foundProducts[0].customs.length).toBe(0)
+      expect(foundProducts[0].customs.pull.mock.calls.length).toBe(1)
+      expect(foundProducts[0].customs.pull.mock.calls[0][0]).toEqual({ _id: 'ajua' })
+      expect(foundProducts[0].save.mock.calls.length).toBe(1)
+
+      expect(foundProducts[1].customs.length).toBe(1)
+      expect(foundProducts[1].customs.pull.mock.calls.length).toBe(0)
+      expect(foundProducts[1].save.mock.calls.length).toBe(0)
+      done()
+    }
+
+    boundMiddleware(next)
+  })
+
   test('Should call next with Product.find Error', done => {
     const maxUpdated = { min: '450', max: '500' }
     const _update = maxUpdated
