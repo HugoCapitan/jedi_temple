@@ -155,6 +155,11 @@ function preSaveValidations(self) {
       err.name = 'ValidationError'
       reject(err)
     }
+    if (self.isModified('_values')) {
+      let err = new Error('_values is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
     if (!self.isNew && self.isModified('store')) {
       let err = new Error('Store is not updatable')
       err.name = 'ValidationError'
@@ -162,11 +167,6 @@ function preSaveValidations(self) {
     }
     if (!self.isNew && self.isModified('type')) {
       let err = new Error('Type is not updatable')
-      err.name = 'ValidationError'
-      reject(err)
-    }
-    if (!self.isNew && self.isModified('_values')) {
-      let err = new Error('_values is not updatable')
       err.name = 'ValidationError'
       reject(err)
     }
@@ -201,11 +201,6 @@ function preUpdateValidations(self) {
     }
     if (self._update.hasOwnProperty('store')) {
       err = new Error('Store is not updatable')
-      err.name = 'ValidationError'
-      reject(err)
-    }
-    if (self._update.hasOwnProperty('_store')) {
-      err = new Error('_store is not updatable')
       err.name = 'ValidationError'
       reject(err)
     }
@@ -251,34 +246,38 @@ async function productCustomRemovedValue(self) {
   return saves
 }
 
-async function productCustomUpdatedMinMax(self) {
-  if (!(self._update.min && self._update.min != 'auto') && !(self._update.max && self._update.max != 'auto'))
+async function productCustomUpdatedMinMax(context, id) {
+  if (!context.hasOwnProperty('isNew')) context.isNew = false
+  if (context.isNew || // <- IS NEW?
+      (!context.hasOwnProperty('min') && !context.hasOwnProperty('max')) || // NONE EXISTS?
+      (context.min === 'auto' && context.max === 'auto') ||  // BOTH ARE AUTO?
+      (context.hasOwnProperty('isModified') && !context.isModified('min') && !context.isModified('max')) // NONE WAS MODIFIED?
+     )
     return []
 
   const productsToModify = await Product.find({
-    customs: { $elemMatch: { custom_id: self._conditions._id } }
+    customs: { $elemMatch: { custom_id: id } }
   })
   .exec()
   .catch(e => { throw e })
 
-  const filtered = []
-  if (self._update.min) {
-    filtered.push(...productsToModify.filter(product =>
-      !!product.customs.find(custom => _.isEqual(custom.custom_id, self._conditions._id) && parseInt(custom.value) > parseInt(self._update.min))
-    ))
-  }
-  if (self._update.max) {
-    filtered.push(...productsToModify.filter(product =>
-      !!product.customs.find(custom => _.isEqual(custom.custom_id, self._conditions._id) && parseInt(custom.value) < parseInt(self._update.max))
-    ))
-  }
+  const saves = productsToModify
+  .filter(product => {
+    let shouldRemove = false
+    pCustom = product.customs.find(custom => _.isEqual(custom.custom_id, id))
 
-  let saves = []
-  for (const product of filtered) {
-    const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
+    if (context.min && context.min != 'auto' && parseInt(pCustom.value) < parseInt(context.min))
+      shouldRemove = true
+    if (context.max && context.max != 'auto' && parseInt(pCustom.value) > parseInt(context.max))
+      shouldRemove = true
+
+    return shouldRemove
+  })
+  .map(product => {
+    const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, id))
     product.customs.pull({ _id: customToRemove._id })
-    saves.push(product.save())
-  }
+    return product.save()
+  })
 
   return saves
 }
