@@ -4,7 +4,7 @@ const suid = new shortUniqueId()
 
 module.exports = {
   createOrdercode(date) {
-    return `${date.getDate}-${date.getMonth}-${date.getFullYear}-${suid.randomUUID(8)}`
+    return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}-${suid.randomUUID(8)}`
   },
   hashPassword(password) {
     return new Promise((resolve, reject) => {
