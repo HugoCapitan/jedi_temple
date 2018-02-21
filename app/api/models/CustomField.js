@@ -89,7 +89,6 @@ CustomFieldSchema._middlewareFuncs = {
     .then(results => {
       const currentDate = new Date()
       
-      console.log(!!self.values)
       if (self.type === 'string' && !self.values)
         self.values = []
 
@@ -111,7 +110,7 @@ CustomFieldSchema._middlewareFuncs = {
   preUpdate(next) {
     const self = this
     preUpdateValidations(self)
-    .then(() => productCustomUpdatedMinMax(self._update, self._conditions.id))
+    .then(() => productCustomUpdatedMinMax(self._update, self._conditions._id))
     .then(savePromises => Promise.all(savePromises))
     .then(results => {
       const currentDate = new Date()
@@ -127,8 +126,8 @@ CustomFieldSchema._middlewareFuncs = {
     Product.find({
       customs: { $elemMatch: { custom_id: self._conditions._id } }
     }).exec()
-    .then(productsToModify => {
-      const saves = productsToModify.map(product => {
+    .then(foundProducts => {
+      const saves = foundProducts.map(product => {
         const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
         product.customs.pull({ _id: customToRemove._id })
         return product.save
