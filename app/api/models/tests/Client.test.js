@@ -296,6 +296,20 @@ describe('Client model', () => {
       boundMiddleware(next)
     })
 
+    test('Should leave password untouched', done => {
+      hashSpy = jest.spyOn(models, 'hashPassword')
+      const _update = { name: 'someshit' }
+      const boundMiddleware = bindMiddleware({_update})
+      const next = err => {
+        expect(hashSpy).toHaveBeenCalledTimes(0)
+        expect(_update.password).toBeFalsy()
+        expect(_update.salt).toBeFalsy()
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
     test('Should throw validation error if modified store', done => {
       const _update = {store: 'kampamocha'}
       const boundMiddleware = bindMiddleware({_update})
