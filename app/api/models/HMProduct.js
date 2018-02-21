@@ -51,32 +51,6 @@ HMProductSchema._middlewareFuncs = {
   preUpdate(next) {
     const self = this
 
-    if (self._update.hasOwnProperty('materials')) {
-      const err = new Error('Materials should be updated via HMProduct.save')
-      err.name = 'ValidationError'
-      return next(err)
-    }
-    if (self._update.hasOwnProperty('models')) {
-      const err = new Error('Models should be updated via HMProduct.save')
-      err.name = 'ValidationError'
-      return next(err)
-    }
-    if (self._update.hasOwnProperty('store')) {
-      const err = new Error('Store is not updatable')
-      err.name = 'ValidationError'
-      return next(err)
-    }
-    if (self._update.hasOwnProperty('slug')) {
-      const err = new Error('Slug is not updatable')
-      err.name = 'ValidationError'
-      return next(err)
-    }
-    if (self._update.hasOwnProperty('name')) {
-      const err = new Error('Name should be updated via save')
-      err.name = 'ValidationError'
-      return next(err)
-    }
-
     self._update.updated_at = new Date()    
 
     return next()
@@ -131,6 +105,38 @@ function preSaveValidation(self) {
   
     if (Object.values( modelsCount ).find( v => v > 1 )) {
       const err = new Error(`Duplicated value for model in ${self.name} HMProduct`)
+      err.name = 'ValidationError'
+      reject(err)
+    }
+
+    resolve()
+  })
+}
+
+function preUpdateValidation(self) {
+  return new Promise((resolve, reject) => {
+    if (self._update.hasOwnProperty('name')) {
+      const err = new Error('Name should be updated via save')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('store')) {
+      const err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('slug')) {
+      const err = new Error('Slug is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('materials') && !self._update.hasOwnProperty('models')) {
+      const err = new Error('Update object should also have a models array')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('models') && !self._update.hasOwnProperty('materials')) {
+      const err = new Error('Update object should also have a materials array')
       err.name = 'ValidationError'
       reject(err)
     }
