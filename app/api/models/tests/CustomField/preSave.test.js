@@ -80,6 +80,8 @@ describe('preSave Middleware', () => {
     boundMiddleware(next)      
   })
 
+  test('Should add empty array to values')
+
   test('Should update _values', done => {
     validStringCustom.values.push( { value: 'wazap wazap' } )
     const context = new CustomField( validStringCustom )
@@ -97,7 +99,7 @@ describe('preSave Middleware', () => {
     }
 
     boundMiddleware(next)
-  })    
+  })
 
   test('Should call Product.find with custom query for products with removed value', done => {
     const removedValueCustom = getRemovedValueCustom('heylisten')
@@ -161,6 +163,115 @@ describe('preSave Middleware', () => {
       expect( foundProducts[1].customs.pull.mock.calls.length ).toBe(1)
       expect( foundProducts[1].customs.pull.mock.calls[0][0] ).toEqual({ _id: 'anothernotajua2' })
       expect( foundProducts[1].save.mock.calls.length ).toBe(1)
+      done()
+    }
+
+    boundMiddleware(next)
+  })
+
+  test('Should call Product.find if max modified', done => {
+    const maxUpdated = { max: 500 }
+    const _update = maxUpdated
+    const boundMiddleware = bindMiddleware({ _conditions: { _id: 'pinacolada' }, _update })
+    const expectedQuery = { 
+      customs: { $elemMatch: { custom_id: 'pinacolada' } } 
+    }
+    const next = err => {
+      expect(err).toBeFalsy()
+      expect(Product.find.mock.calls.length).toBe(1)
+      expect(Product.find.mock.calls[0][0]).toEqual(expectedQuery)
+      done()
+    }
+
+    boundMiddleware(next)      
+  })
+
+  test('Should correctly call update and save on necessary products', done => {
+    const maxUpdated = { min: '450', max: '500' }
+    const _update = maxUpdated
+
+    const boundMiddleware = bindMiddleware({ _conditions: { _id: 'pinacolada' }, _update })
+
+    const foundProducts = [{ 
+        customs: [{ 
+        _id: 'ajua', 
+        custom_id: 'pinacolada', 
+        value: '900' 
+      }], 
+      save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+    }, { 
+      customs: [{ 
+        _id: 'notajua', 
+        custom_id: 'pinacolada', 
+        value: '400' 
+      }], 
+      save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+    }]
+    foundProducts[0].customs.pull = jest.fn(() => { foundProducts[0].customs.pop() })
+    foundProducts[1].customs.pull = jest.fn(() => { foundProducts[1].customs.pop() })
+    Product.find = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => { resolve(foundProducts) })
+    }))
+    
+    const next = err => {
+      expect(err).toBeFalsy()
+
+      expect(foundProducts[0].customs.length).toBe(0)
+      expect(foundProducts[0].customs.pull.mock.calls.length).toBe(1)
+      expect(foundProducts[0].customs.pull.mock.calls[0][0]).toEqual({ _id: 'ajua' })
+      expect(foundProducts[0].save.mock.calls.length).toBe(1)
+
+      expect(foundProducts[1].customs.length).toBe(0)
+      expect(foundProducts[1].customs.pull.mock.calls.length).toBe(1)
+      expect(foundProducts[1].customs.pull.mock.calls[0][0]).toEqual({ _id: 'notajua' })
+      expect(foundProducts[1].save.mock.calls.length).toBe(1)
+      done()
+    }
+
+    boundMiddleware(next)
+  })
+
+  test('Should correctly call update and save on necessary products', done => {
+    const context = { 
+      ...validNumberCustom, 
+      isNew: false, 
+      _id: 'pinacolada',
+      min: 'auto',
+      max: '600',
+      isModified: jest.fn(p => p === 'min' || p === 'max') 
+    }
+    const boundMiddleware = bindMiddleware(context)
+
+    const foundProducts = [{ 
+        customs: [{ 
+        _id: 'ajua', 
+        custom_id: 'pinacolada', 
+        value: '900' 
+      }], 
+      save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+    }, { 
+      customs: [{ 
+        _id: 'notajua', 
+        custom_id: 'pinacolada', 
+        value: '400' 
+      }], 
+      save: jest.fn(() => new Promise((resolve, reject) => { resolve() }))
+    }]
+    foundProducts[0].customs.pull = jest.fn(() => { foundProducts[0].customs.pop() })
+    foundProducts[1].customs.pull = jest.fn(() => { foundProducts[1].customs.pop() })
+    Product.find = jest.fn(() => ({
+      exec: () => new Promise((resolve, reject) => { resolve(foundProducts) })
+    }))
+    
+    const next = err => {
+      expect(foundProducts[0].customs.length).toBe(0)
+      expect(foundProducts[0].customs.pull.mock.calls.length).toBe(1)
+      expect(foundProducts[0].customs.pull.mock.calls[0][0]).toEqual({ _id: 'ajua' })
+      expect(foundProducts[0].save.mock.calls.length).toBe(1)
+
+      expect(foundProducts[1].customs.length).toBe(1)
+      expect(foundProducts[1].customs.pull.mock.calls.length).toBe(0)
+      expect(foundProducts[1].save.mock.calls.length).toBe(0)
       done()
     }
 
