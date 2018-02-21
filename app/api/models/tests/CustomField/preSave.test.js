@@ -80,7 +80,18 @@ describe('preSave Middleware', () => {
     boundMiddleware(next)      
   })
 
-  test('Should add empty array to values')
+  test('Should add empty array to values', done => {
+    const context = validStringCustom
+    delete context.values
+    const boundMiddleware = bindMiddleware(context)
+    const next = err => {
+      expect(context.values).toEqual([])
+      expect(context._values).toEqual([])
+      done()
+    }
+
+    boundMiddleware(next)
+  })
 
   test('Should update _values', done => {
     validStringCustom.values.push( { value: 'wazap wazap' } )
