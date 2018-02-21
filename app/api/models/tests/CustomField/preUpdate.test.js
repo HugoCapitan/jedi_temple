@@ -29,7 +29,8 @@ describe('preUpdate Middleware', () => {
   
   test('Should call next', done => {
     const _update = { show: false }
-    const boundMiddleware = bindMiddleware({ _update })
+    const _conditions = { _id: 'stereoband' }
+    const boundMiddleware = bindMiddleware({ _update, _conditions })
     const next = err => {
       expect(err).toBeFalsy()
       done()
@@ -41,7 +42,8 @@ describe('preUpdate Middleware', () => {
   test('Should update updated_at date', done => {
     const newField = { show: false }
     const _update = newField
-    const boundMiddleware = bindMiddleware({ _update })
+    const _conditions = { _id: 'stereoband' }
+    const boundMiddleware = bindMiddleware({ _update, _conditions })
     const next = err => {
       expect(err).toBeFalsy()
       expect( uValid.isThisMinute(newField.updated_at) ).toBeTruthy()
