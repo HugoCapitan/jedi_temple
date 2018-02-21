@@ -84,7 +84,10 @@ CustomFieldSchema._middlewareFuncs = {
 
     const saves = []
     preSaveValidations(self)
-    .then(() => Promise.all([productCustomRemovedValue(self), productCustomUpdatedMinMax(self, self._id)]))
+    .then(() => self.type === 'string' 
+      ? productCustomRemovedValue(self)
+      : productCustomUpdatedMinMax(self, self._id)
+    )
     .then(updates => Promise.all(updates))
     .then(results => {
       const currentDate = new Date()
