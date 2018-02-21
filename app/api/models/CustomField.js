@@ -230,23 +230,29 @@ function preUpdateValidations(self) {
 }
 
 async function productCustomRemovedValue(self) {
-  if (self.isNew || self.type != 'string' || self.values.length >= self._values.length)
+  const removedValues = _.differenceWith(self._values, self.values, (_valid, val) => _valid == val._id)
+
+  if (self.isNew || self.type != 'string' || !removedValues.length)
     return []
 
-  const saves = []
-  const removedId = self._values.find(cId => !self.values.find(cVal => cVal._id == cId))
-
-  const productsToModify = await Product.find({
-    customs: { $elemMatch: { custom_id: self._id, value_id: removedId } }
+  const foundProducts = await Product.find({
+    customs: { $elemMatch: { custom_id: self._id } }
   })
   .exec()
   .catch(e => { throw e })
 
-  for (const product of productsToModify) {
-    const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._id))
-    product.customs.pull({ _id: customToRemove._id })
-    saves.push(product.save())
-  }
+
+  const saves = foundProducts
+  .reduce((acc, product) => {
+    const pCustom = product.customs.find(pCustom => _.isEqual(self._id, pCustom.custom_id))  
+    
+    if (_.includes(removedValues, pCustom.value)) {
+      product.customs.pull({ _id: pCustom._id })    
+      acc.push(product.save())
+    } 
+
+    return acc
+  }, [])
 
   return saves
 }
@@ -268,7 +274,7 @@ async function productCustomUpdatedMinMax(context, id) {
   const saves = productsToModify
   .filter(product => {
     let shouldRemove = false
-    pCustom = product.customs.find(custom => _.isEqual(custom.custom_id, id))
+    const pCustom = product.customs.find(custom => custom.custom_id == id)
 
     if (context.min && context.min != 'auto' && parseInt(pCustom.value) < parseInt(context.min))
       shouldRemove = true
@@ -278,7 +284,7 @@ async function productCustomUpdatedMinMax(context, id) {
     return shouldRemove
   })
   .map(product => {
-    const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, id))
+    const customToRemove = product.customs.find(c => c.custom_id == id)
     product.customs.pull({ _id: customToRemove._id })
     return product.save()
   })
