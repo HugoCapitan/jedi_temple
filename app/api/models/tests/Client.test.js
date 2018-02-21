@@ -136,7 +136,6 @@ describe('Client model', () => {
 
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
-        expect(err).toBeFalsy()
         expect( hashSpy ).toHaveBeenCalled()
         expect( context.password ).toBeTruthy()
         expect( context.salt ).toBeTruthy()
@@ -147,8 +146,24 @@ describe('Client model', () => {
       boundMiddleware(next)
     })
 
+    test('Should leave password untouched', done => {
+      const hashSpy = jest.spyOn(models, 'hashPassword')
+      const expectedPswd = validClient.password    
+      const context = { ...validClient, salt: 'somesalt', isNew: false }
+      const boundMiddleware = bindMiddleware(context)
+      const next = err => {
+        expect(hashSpy).toHaveBeenCalledTimes(0)
+        expect(context.password).toBe(expectedPswd)
+        expect(context.salt).toBe('somesalt')
+        models.hashPassword.mockRestore()
+        done()
+      }
+
+      boundMiddleware(next)
+    })
+
     test('Should call next with salt error', done => {
-      const context = { ...validClient, salt: 'someshittysalt', isModified: jest.fn(prop => prop === 'salt') }
+      const context = { isModified: jest.fn(prop => prop === 'salt') }
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
         expect(err.message).toBe('Salt is not updatable')
@@ -160,7 +175,7 @@ describe('Client model', () => {
     })
 
     test('Should call next with uniqueness error', done => {
-      const context = { ...validClient, uniqueness: 'someshittysalt', isModified: jest.fn(prop => prop === 'uniqueness') }
+      const context = { isModified: jest.fn(prop => prop === 'uniqueness') }
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
         expect(err.message).toBe('Uniqueness is not updatable')
@@ -172,10 +187,7 @@ describe('Client model', () => {
     })
 
     test('Should call next with store modification error', done => {
-      const context      = validClient
-      context.isNew      = false
-      context.isModified = jest.fn(prop => prop == 'store' ? true : false)
-
+      const context = { isNew: false, isModified: jest.fn(prop => prop == 'store' ? true : false) }
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
         expect(err.message).toBe('Store is not updatable')
@@ -186,22 +198,8 @@ describe('Client model', () => {
       boundMiddleware(next)
     })
 
-    test('Should call next with modified password error', done => {
-      const context = { ...validClient, password: 'someshittysalt', isNew: false, isModified: jest.fn(prop => prop === 'password') }
-      const boundMiddleware = bindMiddleware(context)
-      const next = err => {
-        expect(err.message).toBe('Password should be modified via update')
-        expect(err.name).toBe('ValidationError')
-        done()
-      }
-
-      boundMiddleware(next)
-    })
-
     test('Should call next with email modification error', done => {
-      const context      = validClient
-      context.isNew      = false
-      context.isModified = jest.fn(prop => prop == 'email' ? true : false)
+      const context = { isNew: false, isModified: jest.fn(prop => prop == 'email' ? true : false) }
 
       const boundMiddleware = bindMiddleware(context)
       const next = err => {
@@ -216,7 +214,6 @@ describe('Client model', () => {
     test('Shoul call next with no password error', done => {
       delete validClient.password
       const context = validClient
-      context.isNew = true
 
       const boundMiddleware = bindMiddleware(context)
       const next = err => {        
