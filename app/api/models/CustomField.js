@@ -131,9 +131,9 @@ CustomFieldSchema._middlewareFuncs = {
     }).exec()
     .then(foundProducts => {
       const saves = foundProducts.map(product => {
-        const customToRemove = product.customs.find(c => _.isEqual(c.custom_id, self._conditions._id))
+        const customToRemove = product.customs.find(c => c.custom_id == self._conditions._id)
         product.customs.pull({ _id: customToRemove._id })
-        return product.save
+        return product.save()
       })
 
       return Promise.all(saves)
