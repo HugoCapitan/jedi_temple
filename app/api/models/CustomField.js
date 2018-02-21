@@ -89,6 +89,10 @@ CustomFieldSchema._middlewareFuncs = {
     .then(results => {
       const currentDate = new Date()
       
+      console.log(!!self.values)
+      if (self.type === 'string' && !self.values)
+        self.values = []
+
       if (self.type === 'string') 
         self._values = self.values.map(val => val._id.toString())
     
@@ -247,7 +251,6 @@ async function productCustomRemovedValue(self) {
 }
 
 async function productCustomUpdatedMinMax(context, id) {
-  if (!context.hasOwnProperty('isNew')) context.isNew = false
   if (context.isNew || // <- IS NEW?
       (!context.hasOwnProperty('min') && !context.hasOwnProperty('max')) || // NONE EXISTS?
       (context.min === 'auto' && context.max === 'auto') ||  // BOTH ARE AUTO?
