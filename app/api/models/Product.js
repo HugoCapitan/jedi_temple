@@ -67,22 +67,22 @@ ProductSchema._middlewareFuncs = {
   preUpdate(next) {
     const self = this
 
-    if (self._update.hasOwnProperty(slug)) {
+    if (self._update.hasOwnProperty('slug')) {
       const err = new Error('Slug is read-only')
       err.name = 'ValidationError'
       return next(err)
     }
-    if (self._update.hasOwnProperty(store)) {
+    if (self._update.hasOwnProperty('store')) {
       const err = new Error('Store is not updatable')
       err.name = 'ValidationError'
       return next(err)
     }
-    if (self._update.name) {
+    if (self._update.hasOwnProperty('name')) {
       const err = new Error('Name should be updated via save')
       err.name = 'ValidationError'
       return next(err)
     }
-    if (self._update.customs && areRepeatedCustoms(self._update.customs)) {
+    if (self._update.hasOwnProperty('customs') && areRepeatedCustoms(self._update.customs)) {
       const err = new Error('Repeated custom.')
       err.name = 'ValidationError'
       return next(err)
