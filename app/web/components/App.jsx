@@ -32,34 +32,42 @@ const ProgressInStyle = {
   transform: 'translate(-50%, -50%)'
 }
 
-const AppComponent = ({ error, waiting, toggleDrawer }) => (
-  <div>
-    <AppBar
-      title="Heberto Sites Admin"
-      onLeftIconButtonClick={toggleDrawer}
-    />
-    <SideBar />
-    
-    <Store estore="kampamocha" />
+const AppComponent = ({ route, error, waiting, toggleDrawer }) => {
+  let store = ''
 
-    { error ?  
-      ( <Snackbar
-        open={!!error}
-        message={error}
-        autoHideDuration={5000}
-        action="retry"
-        // onRequestClose={}
-      /> ) 
-      : ''
-    }
-    { waiting ?  
-      ( <CircularProgress size={80} thickness={5} style={ProgressOutStyle} innerStyle={ProgressInStyle} /> ) 
-      : ''
-    }
-  </div>
-)
+  if (route === 'kampamocha')
+    store = <Store estore="kampamocha" />
+    
+  return (
+    <div>
+      <AppBar
+        title={`Heberto Sites Admin | ${route}`}
+        onLeftIconButtonClick={toggleDrawer}
+      />
+      <SideBar />
+      
+      {store}
+  
+      { error ?  
+        ( <Snackbar
+          open={!!error}
+          message={error}
+          autoHideDuration={5000}
+          action="retry"
+          // onRequestClose={}
+        /> ) 
+        : ''
+      }
+      { waiting ?  
+        ( <CircularProgress size={80} thickness={5} style={ProgressOutStyle} innerStyle={ProgressInStyle} /> ) 
+        : ''
+      }
+    </div>
+  )
+}
 
 const mapStateToProps = (state, ownProps) => ({
+  route: state.ui.route,
   error: state.ui.requestError,
   waiting: state.ui.isRequestOngoing
 })
