@@ -23,7 +23,8 @@ const initialState = {
     category: ''
   },
   requestError: null,
-  route: 'kampamocha'
+  route: 'kampamocha',
+  section: 'general'
 }
 
 const ui = (state = initialState, action) => {
