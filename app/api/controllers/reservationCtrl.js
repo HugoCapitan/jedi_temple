@@ -7,9 +7,7 @@ module.exports = {
   apiCreate, 
   apiRead, 
   apiRemove, 
-  apiUpdate,
-
-  apiUpdateDatesPrice
+  apiUpdate
 }
 
 async function apiAll(req, res) {
@@ -87,26 +85,5 @@ async function apiUpdate(req, res) {
     else
       sendError(500, 'Unexpected Error', e, res)
 
-  }
-}
-
-async function apiUpdateDatesPrice(req, res) {
-  try {
-    const reservationToUpdate = await Reservation.findById(req.params.id).exec()
-    if (!reservationToUpdate) {
-      const err = new Error(`Reservation with id: ${req.params.id}, not found`)
-      err.name = 'NotFoundError'
-      throw err
-    }
-    Object.assign(reservationToUpdate, req.body)
-    await reservationToUpdate.save()
-    res.status(200).json(reservationToUpdate)
-  } catch(e) {
-    if (e.name === 'ValidationError')
-      sendError(403, 'Validation Error', e, res)
-    else if (e.name === 'NotFoundError')
-      sendError(404, e.message, e, res)
-    else 
-      sendError(500, 'Unexpected Error', e, res)    
   }
 }
