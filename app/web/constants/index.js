@@ -21,10 +21,9 @@ export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
  * UI ACTIONS *
  **************/
 export const CHANGE_DRAWER_OPEN    = 'CHANGE_DRAWER_OPEN'
+export const CHANGE_SECTION        = 'CHANGE_SECTION'
 export const CLOSE_ITEM_DIALOG     = 'CLOSE_ITEM_DIALOG'
-export const CLOSE_SETTINGS_DIALOG = 'CLOSE_SETTINGS_DIALOG'
 export const OPEN_ITEM_DIALOG      = 'OPEN_ITEM_DIALOG'
-export const OPEN_SETTINGS_DIALOG  = 'OPEN_SETTINGS_DIALOG'
 export const TOGGLE_DRAWER         = 'TOGGLE_DRAWER'
 
 /***********
