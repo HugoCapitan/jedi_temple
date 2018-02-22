@@ -119,6 +119,7 @@ class CustomNumberEdit extends React.Component {
         <div className={dialogStyles['bottom-buttons']}>
           {this.props.formActions.map((action, index) => 
             <FlatButton
+              key={index}
               label={action.label}
               onClick={() => { action.onClick(this.state.custom) } }
               primary={action.primary}
@@ -135,11 +136,5 @@ export default CustomNumberEdit
 
 CustomNumberEdit.propTypes = {
   custom: PropTypes.object.isRequired,
-  formActions: PropTypes.arrayOf(
-    PropTypes.objectOf({
-      label:   PropTypes.string.isRequired,
-      onClick: PropTypes.func.isRequired,
-      primary: PropTypes.bool
-    })
-  ).isRequired
+  formActions: PropTypes.array.isRequired
 }
