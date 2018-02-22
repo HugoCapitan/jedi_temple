@@ -72,7 +72,15 @@ async function apiRemove(req, res) {
 
 async function apiUpdate(req, res) {
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
+    const specialUpdate = {}
+    if (req.body.name) specialUpdate.name = req.body.name
+    delete req.body.name
+
+    let updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, {new: true}).exec()
+
+    Object.assign(updatedProduct, specialUpdate)
+    updatedProduct = await updatedProduct.save()
+
     res.status(200).json(updatedProduct)
   } catch (e) {
     if (e.name === 'ValidationError')
