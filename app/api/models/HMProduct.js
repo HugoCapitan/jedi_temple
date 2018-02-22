@@ -37,7 +37,7 @@ HMProductSchema._middlewareFuncs = {
       const currentDate = new Date()
 
       if (self.isModified('materials') || self.isModified('models'))
-        self.models = _.intersectionWith(self.models, self.materials, (model, material) => model.material_id == material._id)
+        self.models = self.models.filter(model => !!self.materials.find( mat => _.isEqual(mat._id, model.material_id) ))
 
       if (self.isNew) 
         self.created_at = currentDate
@@ -57,8 +57,8 @@ HMProductSchema._middlewareFuncs = {
     preUpdateValidation(self)
     .then(() => {
       if (self._update.hasOwnProperty('models') && self._update.hasOwnProperty('materials'))
-        self._update.models = _.intersectionWith(self._update.models, self._update.materials, 
-          (model, material) => model.material_id == material._id
+        self._update.models = self._update.models.filter(model =>
+          !!self._update.materials.find(mat => mat._id == model.material_id)
         )
 
       self._update.updated_at = new Date()    
