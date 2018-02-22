@@ -131,6 +131,7 @@ export function requestProductUpdate(newProduct) {
     const productID = newProduct._id
     const update    = formatProductToSend(newProduct)
 
+    dispatch(startRequest())
     return axios.put(`/api/products/${productID}/`, update, { headers: { 'Authorization': 'Bearer ' + token } })
       .then(
         response => {
