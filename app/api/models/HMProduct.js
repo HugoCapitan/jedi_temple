@@ -36,13 +36,16 @@ HMProductSchema._middlewareFuncs = {
     .then(() => {
       const currentDate = new Date()
 
+      if (self.isModified('materials') || self.isModified('models'))
+        self.models = _.intersectionWith(self.models, self.materials, (model, material) => model.material_id == material._id)
+
       if (self.isNew) 
         self.created_at = currentDate
 
       if (self.isModified('name'))
         self.slug = uCommon.slugify(`${self.store}__${self.name}`)
 
-      self.updated_at = currentDate      
+      self.updated_at = currentDate
 
       return next()
     })
@@ -51,9 +54,17 @@ HMProductSchema._middlewareFuncs = {
   preUpdate(next) {
     const self = this
 
-    self._update.updated_at = new Date()    
+    preUpdateValidation(self)
+    .then(() => {
+      if (self._update.hasOwnProperty('models') && self._update.hasOwnProperty('materials'))
+        self._update.models = _.intersectionWith(self._update.models, self._update.materials, 
+          (model, material) => model.material_id == material._id
+        )
 
-    return next()
+      self._update.updated_at = new Date()    
+      return next()
+    })
+    .catch(err => next(err))
   }
 }
 
@@ -68,42 +79,21 @@ module.exports = HMProduct
 function preSaveValidation(self) {
   return new Promise((resolve, reject) => {
     if (self.isModified('slug')) {
-      err = new Error('Slug is not updatable')
+      const err = new Error('Slug is not updatable')
       err.name = 'ValidationError'
       reject(err)
     }
     if (!self.isNew && self.isModified('store')) {
-      err = new Error('Store is not updatable')
+      const err = new Error('Store is not updatable')
       err.name = 'ValidationError'
       reject(err)
     }
-
-    const materialsCount = self.materials.reduce((matacc, material) => {
-      !!matacc[material.material_name] ? ++matacc[material.material_name] : matacc[material.material_name] = 1
-      return matacc
-    }, {})
-  
-    if (Object.values( materialsCount ).find( v => v > 1 )) {
-      let err = new Error(`Duplicated value for materials in ${self.name} HMProduct`)
+    if (validateMaterials(self.materials)) {
+      const err = new Error(`Duplicated value for materials in ${self.name} HMProduct`)
       err.name = 'ValidationError'
       reject(err)
     }
-
-    modelsIndexesToRemove = []
-    const modelsCount = self.models.reduce((modacc, model, index) => {
-      if (!self.materials.find(selfMaterial => _.isEqual(model.material_id , selfMaterial._id))) {
-        modelsIndexesToRemove.push(index)
-        return modacc
-      }
-
-      const modelIdentificator = `${model.material_id}:${model.model_name}`
-      !!modacc[modelIdentificator] ? ++modacc[modelIdentificator] : modacc[modelIdentificator] = 1
-      return modacc
-    }, {})
-
-    self.models = self.models.filter((m, index) => !_.includes(modelsIndexesToRemove, index))
-  
-    if (Object.values( modelsCount ).find( v => v > 1 )) {
+    if (validateModels(self.models)) {
       const err = new Error(`Duplicated value for model in ${self.name} HMProduct`)
       err.name = 'ValidationError'
       reject(err)
@@ -140,7 +130,32 @@ function preUpdateValidation(self) {
       err.name = 'ValidationError'
       reject(err)
     }
+    if (self._update.hasOwnProperty('materials') && validateMaterials(self._update.materials)) {
+      const err = new Error(`Duplicated value for material in ${self.name} HMProduct`)
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    if (self._update.hasOwnProperty('models') && validateModels(self._update.models)) {
+      const err = new Error(`Duplicated value for model in ${self.name} HMProduct`)
+      err.name = 'ValidationError'
+      reject(err)
+    }
 
     resolve()
   })
+}
+
+function validateMaterials(materials) {
+  const materialsCount = _.countBy(materials, 'material_name')
+  return !!Object.values( materialsCount ).find( v => v > 1 )
+}
+
+function validateModels(models) {
+  const modelsCount = models.reduce((modacc, model, index) => {
+    const modelIdentificator = `${model.material_id}:${model.model_name}`
+    !!modacc[modelIdentificator] ? ++modacc[modelIdentificator] : modacc[modelIdentificator] = 1
+    return modacc
+  }, {})
+
+  return !!Object.values( modelsCount ).find( v => v > 1 )
 }
