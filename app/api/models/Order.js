@@ -78,11 +78,12 @@ OrderSchema._middlewareFuncs = {
     const populations = self.products.map(handleProductPopulation)    
     Promise.all(populations)
     .then(results => {
+      self.products = results
       const currentDate = new Date()
       self.updated_at = currentDate
       if (!self.created_at) self.created_at = currentDate 
       if (!self.order_code) self.order_code = uModels.createOrdercode(currentDate)
-      
+
       return next()
     })
     .catch(e => next(e))
@@ -97,7 +98,19 @@ OrderSchema._middlewareFuncs = {
       return next(err)
     }
 
-    return next()
+    let populations = self._update.hasOwnProperty('products')
+      ? self._update.products.map(handleProductPopulation)
+      : []
+
+    Promise.all(populations)
+    .then(results => {
+      if (results.length) self._update.products = results
+
+      self._update.updated_at = new Date()
+
+      return next()
+    }) 
+    .catch(e => next(e))
   }
 }
 
@@ -117,12 +130,7 @@ function handleProductPopulation(orderProduct) {
     .then(fullProduct => {
       if (!fullProduct) reject(new Error('Product not found'))
 
-      const cQueries = []
-      for (const c of fullProduct.customs) {
-        cQueries.push(
-          CustomField.findById(c.custom_id).exec()
-        )
-      }
+      const cQueries = fullProduct.customs.map(c => CustomField.findById(c.custom_id).exec())
 
       Promise.all(cQueries)
       .then(customsObjects => {        
