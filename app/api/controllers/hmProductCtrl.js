@@ -72,7 +72,14 @@ async function apiRemove(req, res) {
 
 async function apiUpdate(req, res) {
   try {
-    const updatedHMProduct = await HMProduct.findByIdAndUpdate(req.params.id, req.body, { new: true }).exec()
+    const specialUpdate = {}
+    if (req.body.name) specialUpdate.name = req.body.name
+    delete req.body.name
+
+    let updatedHMProduct = await HMProduct.findByIdAndUpdate(req.params.id, req.body, { new: true }).exec()
+    
+    Object.assign(updatedHMProduct, specialUpdate)
+    updatedHMProduct = await updatedHMProduct.save()
 
     res.status(200).json(updatedHMProduct)
   } catch (e) {
