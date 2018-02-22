@@ -94,7 +94,10 @@ class component extends React.Component {
                   custom={this.state.selectedCustom}
                   formActions={editFormActions}
                 />
-              : <CustomNumberEdit />
+              : <CustomNumberEdit 
+                  custom={this.state.selectedCustom}
+                  formActions={editFormActions}
+                />
             ) : 'Select a field'
           }
         </div>
