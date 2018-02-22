@@ -72,7 +72,7 @@ ReservationSchema._middlewareFuncs = {
 
     if ((self._update.hasOwnProperty('arrive_date') || self._update.hasOwnProperty('departure_date') || 
          self._update.hasOwnProperty('night_price')) && (!self._update.hasOwnProperty('arrive_date') ||
-        !self._update.hasOwnProperty('departure_date') || !self._update._hasOwnProperty('night_price'))
+        !self._update.hasOwnProperty('departure_date') || !self._update.hasOwnProperty('night_price'))
     ) {
       const err = new Error('arrive_date, departure_date and night_price should be together in case of update of any')
       err.name = 'ValidationError'
