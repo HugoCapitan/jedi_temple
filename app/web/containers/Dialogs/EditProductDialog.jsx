@@ -67,6 +67,6 @@ export default EditProductDialog
 function getProduct(products, itemID, route) {
   const foundProduct = !!products[itemID] 
     ? products[itemID]
-    : { customs: [], description: '', images: [], name: '', price: undefined, stock: undefined, store: route }
+    : { customs: [], description: '', images: [], name: '', price: '', stock: '', store: route }
   return { ...foundProduct }
 }
