@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 const uCommons = require('../utils')
@@ -40,8 +41,18 @@ ProductSchema._middlewareFuncs = {
   preSave(next) {
     const self = this
 
-    if (this.isModified('slug')) {
+    if (self.isModified('slug')) {
       const err = new Error('Slug is read-only')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if (!self.isNew && self.isModified('store')) {
+      const err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if (areRepeatedCustoms(self.customs)) {
+      const err = new Error('Repeated custom.')
       err.name = 'ValidationError'
       return next(err)
     }
@@ -56,14 +67,26 @@ ProductSchema._middlewareFuncs = {
   preUpdate(next) {
     const self = this
 
-    if (self._update.slug) {
+    if (self._update.hasOwnProperty(slug)) {
       const err = new Error('Slug is read-only')
       err.name = 'ValidationError'
       return next(err)
     }
-
-    if (self._update.name) 
-      self._update.slug = uCommons.slugify(self._update.name)
+    if (self._update.hasOwnProperty(store)) {
+      const err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if (self._update.name) {
+      const err = new Error('Name should be updated via save')
+      err.name = 'ValidationError'
+      return next(err)
+    }
+    if (self._update.customs && areRepeatedCustoms(self._update.customs)) {
+      const err = new Error('Repeated custom.')
+      err.name = 'ValidationError'
+      return next(err)
+    }
 
     self._update.updated_at = new Date()
 
@@ -74,11 +97,10 @@ ProductSchema._middlewareFuncs = {
 
     Client.find({ wishlist: self._conditions._id }).exec()
     .then(clientsToModify => {
-      const saves = []
-      for (const client of clientsToModify) {
+      const saves = clientsToModify.map(client => {
         client.wishlist.pull(self._conditions._id)
-        saves.push(client.save())
-      }
+        return client.save()
+      })
 
       return Promise.all(saves)
     })
@@ -96,3 +118,8 @@ ProductSchema.pre('findOneAndRemove', ProductSchema._middlewareFuncs.preRemove)
 const Product = mongoose.model('Product', ProductSchema)
 
 module.exports = Product
+
+function areRepeatedCustoms(customs) {
+  const customsCount = _.countBy(customs, 'custom_id')
+  return !!Object.values( customsCount ).find(val => val > 1)
+}
