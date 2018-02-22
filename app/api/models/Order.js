@@ -74,27 +74,15 @@ OrderSchema._middlewareFuncs = {
       err.name = 'ValidationError'
       return next(err)
     }
-    if (!self.isNew && self.isModified('status')) {
-      const err = new Error('Status should be modified via order.udpate')
-      err.name = 'ValidationError'
-      return next(err)
-    }
 
-    const currentDate = new Date()
-    self.updated_at = currentDate
-
-    if (!self.created_at) 
-      self.created_at = currentDate
-
-    if (!self.order_code)
-      self.order_code = uModels.createOrdercode(currentDate)
-
-    const populations = []
-    for (const product of self.products)
-      populations.push( handleProductPopulation(product) )
-    
+    const populations = self.products.map(handleProductPopulation)    
     Promise.all(populations)
     .then(results => {
+      const currentDate = new Date()
+      self.updated_at = currentDate
+      if (!self.created_at) self.created_at = currentDate 
+      if (!self.order_code) self.order_code = uModels.createOrdercode(currentDate)
+      
       return next()
     })
     .catch(e => next(e))
@@ -103,19 +91,9 @@ OrderSchema._middlewareFuncs = {
   preUpdate(next) {
     const self = this
 
-    if (self._update.products) {
-      const err = new Error('Addresses and products should be updated via save')
-      err.name = 'ValidationError'
-      return next(err)
-    }
-    if (self._update.billing_address) {
-      const err = new Error('Addresses and products should be updated via save')
-      err.name = 'ValidationError'
-      return next(err)
-    }
-    if (self._update.shipping_address) {
-      const err = new Error('Addresses and products should be updated via save')
-      err.name = 'ValidationError'
+    if (self._update.hasOwnProperty('order_code')) {
+      const err = new Error('order_code is read only')
+      err.name = 'Validation Error'
       return next(err)
     }
 
