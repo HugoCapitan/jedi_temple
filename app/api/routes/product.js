@@ -8,15 +8,4 @@ module.exports = app => {
     .get(productCtrl.apiRead)
     .put(productCtrl.apiUpdate)
     .delete(productCtrl.apiRemove)
-
-
-  app.post('/products/:product_id/customs/', productCtrl.apiAddCustom)
-  app.route('/products/:product_id/customs/:custom_id')
-    .put(productCtrl.apiUpdateCustom)
-    .delete(productCtrl.apiRemoveCustom)
-
-  app.post('/products/:product_id/images/', productCtrl.apiAddImage)
-  app.route('/products/:product_id/images/:image_id')
-    .put(productCtrl.apiUpdateImage)
-    .delete(productCtrl.apiRemoveImage)
 }

@@ -8,6 +8,4 @@ module.exports = api => {
     .get(reservationCtrl.apiRead)
     .put(reservationCtrl.apiUpdate)
     .delete(reservationCtrl.apiRemove)
-
-  api.put('/reservations/:id/specials', reservationCtrl.apiUpdateDatesPrice)
 }
