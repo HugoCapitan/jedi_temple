@@ -2,16 +2,22 @@ import _ from 'lodash'
 import React from 'react'
 import { connect } from 'react-redux'
 
-import ProductsSection from './ProductsSection'
+import GeneralSection from './GeneralSection'
 
-const EStoreComponent = ({ route }) => (
-  <div>
-    <ProductsSection />
-  </div>
-)
+const EStoreComponent = ({ section }) => {
+  let displaySection = ''
+
+  if (section === 'general') displaySection = <GeneralSection />
+
+  return (
+    <div>
+      { displaySection }
+    </div>
+  )
+}
 
 const mapStateToProps = state => ({
-  route: state.ui.route
+  section: state.ui.section
 })
 
 const EStore = connect(
