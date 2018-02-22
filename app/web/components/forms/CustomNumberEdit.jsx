@@ -23,6 +23,29 @@ class CustomNumberEdit extends React.Component {
     this.state = { custom: this.props.custom }
   }
 
+  handleChange(event) {
+    const name = event.target.name
+    let value = event.target.value
+    if ((name === 'max' || name === 'min') && value != '0' && !+value)
+      value = 'auto'
+
+    this.setState({
+      custom: {
+        ...this.state.custom,
+        [name]: value
+      }
+    })
+  }
+
+  handlePlaceChange(event, value) {
+    this.setState({
+      custom: {
+        ...this.state.custom,
+        unit_place: value
+      }
+    })
+  }
+
   handleCheck(event, isChecked) {
     this.setState({ custom: { 
       ...this.state.custom, 
@@ -55,27 +78,39 @@ class CustomNumberEdit extends React.Component {
             <TextField 
               floatingLabelText="Min Value (Leave blank for auto)"
               fullWidth={true}
-              value={this.state.custom.min != 'auto' ? this.state.custom.min : undefined} 
+              name="min"
+              value={this.state.custom.min != 'auto' ? this.state.custom.min : ''} 
+              onChange={this.handleChange.bind(this)}
             />
             <TextField 
               floatingLabelText="Max Value" 
               fullWidth={true}
-              value={this.state.custom.max != 'auto' ? this.state.custom.max : undefined} 
+              name="max"
+              onChange={this.handleChange.bind(this)}
+              value={this.state.custom.max != 'auto' ? this.state.custom.max : ''} 
             />
             <TextField 
               floatingLabelText="Unit (For display porpouses)" 
               fullWidth={true}
+              name="unit"
+              onChange={this.handleChange.bind(this)}
+              required={true}
               value={this.state.custom.unit} 
             />
-            <p>Unit Position</p>        
-            <RadioButtonGroup name="shipSpeed" defaultSelected="not_light">
+            <p>Unit Position:</p>        
+            <RadioButtonGroup 
+              name="unit_place" 
+              defaultSelected="after"
+              valueSelected={this.state.custom.unit_place}
+              onChange={this.handlePlaceChange.bind(this)}
+            >
               <RadioButton
-                value="light"
-                label="Right"
+                value="after"
+                label="After Value"
               />
               <RadioButton
-                value="not_light"
-                label="Left"
+                value="before"
+                label="Before Value"
               />
             </RadioButtonGroup>
           </ListItem>
