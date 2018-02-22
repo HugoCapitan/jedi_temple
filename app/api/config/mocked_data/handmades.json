@@ -1,12 +1,29 @@
 [{
   "name": "bracelet",
   "store": "kampamocha",
-  "materials": [{
-    "material_name": "24K Yellow Gold",
-    "material_price": 999.99
-  }, {
-    "material_name": "14K Yellow Gold",
-    "material_price": 599.99
+  "models": [{
+      "model_name": "Model 1",
+      "material_id": "5a8e11b1dc70cd4b1b40a988",
+      "_id": "5a8e1303dc70cd4b1b40a9b9"
+  },
+  {
+      "model_name": "Model 2",
+      "material_id": "5a8e11b1dc70cd4b1b40a988",
+      "_id": "5a8e1303dc70cd4b1b40a9b8"
+  },{
+      "model_name": "model 3",
+      "material_id": "5a8e11b1dc70cd4b1b40a987",
+      "_id": "5a8e132cdc70cd4b1b40a9ba"
+  }],
+	"materials": [{
+      "material_name": "24K Yellow Gold",
+      "material_price": 999.99,
+      "_id": "5a8e11b1dc70cd4b1b40a988"
+  },
+  {
+      "material_name": "14K Yellow Gold",
+      "material_price": 599.99,
+      "_id": "5a8e11b1dc70cd4b1b40a987"
   }]
 }, {
   "name": "Necklace",
