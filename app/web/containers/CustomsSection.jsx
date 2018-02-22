@@ -14,19 +14,19 @@ import {
   orange500
 } from 'material-ui/styles/colors'
 
-import CollectionList   from '../../components/CollectionList'
-import CustomStringEdit from '../../components/forms/CustomStringEdit'
-import CustomNumberEdit from '../../components/forms/CustomNumberEdit'
-import ListHeader       from '../../components/ListHeader'
+import CollectionList   from '../components/CollectionList'
+import CustomStringEdit from '../components/forms/CustomStringEdit'
+import CustomNumberEdit from '../components/forms/CustomNumberEdit'
+import ListHeader       from '../components/ListHeader'
 
 import {
   closeSettingsDialog,
   requestCustomAdd,
   requestCustomRemove,
   requestCustomUpdate
-} from '../../actions'
+} from '../actions'
 
-import dialogStyles from '../../styles/dialogs'
+import dialogStyles from '../styles/dialogs'
 
 class component extends React.Component {
   constructor(props) {
@@ -66,18 +66,12 @@ class component extends React.Component {
     }]
 
     return (
-      <Dialog
-        bodyStyle={ { padding: '0px', width: '100%'} }
-        contentStyle={customContentStyle}
-        modal={true}
-        open={this.props.open}
-        titleClassName="hidden"
-      >
+      <div>
         <div className={dialogStyles['small-span']} style={ { maxHeight: 'inherit' } }>
           <ListHeader title="Fields" />
           <CollectionList items={this.props.customs} onDelete={this.props.onDelete} onEdit={this.selectCustom.bind(this)} />
         </div>
-        <div className={dialogStyles['big-span']} style={ { maxHeight: 'inherit', display: 'flex', flexDirection: 'column' } }>
+        <div className={dialogStyles['big-span']} style={ { maxHeight: 'inherit' } }>
           <Toolbar style={{ flexBasis: '56px' }}>
             <ToolbarGroup>
               <ToolbarTitle 
@@ -101,7 +95,7 @@ class component extends React.Component {
             ) : 'Select a field'
           }
         </div>
-      </Dialog>
+      </div>
     )
   }
 }
