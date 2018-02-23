@@ -2,13 +2,15 @@ import React       from 'react'
 import PropTypes   from 'prop-types'
 import { connect } from 'react-redux'
 
-import Avatar              from 'material-ui/Avatar'
-import Dialog              from 'material-ui/Dialog'
-import IconButton          from 'material-ui/IconButton'
-import IconNavigationClose from 'material-ui/svg-icons/navigation/close'
-import Toolbar             from 'material-ui/Toolbar/Toolbar'
-import ToolbarGroup        from 'material-ui/Toolbar/ToolbarGroup'
-import ToolbarTitle        from 'material-ui/Toolbar/ToolbarTitle'
+import Avatar               from 'material-ui/Avatar'
+import Dialog               from 'material-ui/Dialog'
+import IconButton           from 'material-ui/IconButton'
+import IconContentAddCircle from 'material-ui/svg-icons/content/add-circle-outline'
+import IconNavigationBack   from 'material-ui/svg-icons/navigation/arrow-back'
+import ListItem             from 'material-ui/List/ListItem'
+import Toolbar              from 'material-ui/Toolbar/Toolbar'
+import ToolbarGroup         from 'material-ui/Toolbar/ToolbarGroup'
+import ToolbarTitle         from 'material-ui/Toolbar/ToolbarTitle'
 import {
   blue500,
   orange500
@@ -20,6 +22,7 @@ import CustomNumberEdit from '../components/forms/CustomNumberEdit'
 import ListHeader       from '../components/ListHeader'
 
 import {
+  changeSection,
   requestCustomAdd,
   requestCustomRemove,
   requestCustomUpdate
@@ -54,7 +57,7 @@ class component extends React.Component {
 
     const CloseButton = (
       <IconButton onClick={this.props.onClose}>
-        <IconNavigationClose />
+        <IconNavigationBack />
       </IconButton>
     )
 
@@ -64,21 +67,29 @@ class component extends React.Component {
       onClick: this.props.onUpdateCustom
     }]
 
+    const newCustom = (
+      <ListItem 
+        onClick={this.handleNewCustom}
+        primaryText="Add a Field"
+        rightIcon={<IconContentAddCircle />}
+      />
+    )
+
     return (
       <div>
         <div className={dialogStyles['small-span']} style={ { maxHeight: 'inherit' } }>
-          <ListHeader title="Fields" />
-          <CollectionList items={this.props.customs} onDelete={this.props.onDelete} onEdit={this.selectCustom.bind(this)} />
+          <ListHeader title="Fields" leftIcon={CloseButton} />
+          <CollectionList items={this.props.customs} addItem={newCustom} onDelete={this.props.onDelete} onEdit={this.selectCustom.bind(this)} />
         </div>
         <div className={dialogStyles['big-span']} style={ { maxHeight: 'inherit' } }>
           <Toolbar style={{ flexBasis: '56px' }}>
-            <ToolbarGroup>
+            <ToolbarGroup firstChild={true}>
               <ToolbarTitle 
                 text={ !!this.state.selectedCustom ? `Configure ${this.state.selectedCustom.name} field` : 'Select a field to begin' }
               />
             </ToolbarGroup>
             <ToolbarGroup lastChild={true}>
-              {CloseButton}
+              
             </ToolbarGroup>
           </Toolbar>
           {!!this.state.selectedCustom ?  
@@ -104,7 +115,7 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  onClose() { dispatch(closeSettingsDialog()) },
+  onClose() { dispatch(changeSection('general')) },
   onUpdateCustom(newCustom, oldCustom) { dispatch(requestCustomUpdate(newCustom, oldCustom)) },
   onRemoveCustom(id) { dispatch(requestCustomRemove(id)) },
   onAddCustom(newCustom) { dispatch(requestCustomAdd(newCustom)) }
