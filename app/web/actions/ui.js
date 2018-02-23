@@ -1,5 +1,6 @@
 import { 
   CHANGE_DRAWER_OPEN,
+  CHANGE_SECTION,
   CLOSE_ITEM_DIALOG,
   CLOSE_SETTINGS_DIALOG,
   FAILED_REQUEST,
@@ -14,6 +15,11 @@ import {
 export const changeDrawerOpen = open => ({
   type: CHANGE_DRAWER_OPEN,
   open
+})
+
+export const changeSection = section =>({
+  type: CHANGE_SECTION,
+  section
 })
 
 export const closeItemDialog = () => ({

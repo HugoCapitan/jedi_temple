@@ -1,5 +1,6 @@
 import { 
-  CHANGE_DRAWER_OPEN, 
+  CHANGE_DRAWER_OPEN,
+  CHANGE_SECTION,
   CLOSE_ITEM_DIALOG,
   FAILED_REQUEST,
   FINISH_REQUEST,
@@ -25,6 +26,8 @@ const ui = (state = initialState, action) => {
   switch (action.type) {
     case CHANGE_DRAWER_OPEN: 
       return { ...state, drawerOpen: action.open }
+    case CHANGE_SECTION:
+      return { ...state, section: action.section }
     case CLOSE_ITEM_DIALOG:
       return { ...state, itemDialog: {
         open: false,
