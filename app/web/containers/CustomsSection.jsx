@@ -20,6 +20,7 @@ import CollectionList   from '../components/CollectionList'
 import CustomStringEdit from '../components/forms/CustomStringEdit'
 import CustomNumberEdit from '../components/forms/CustomNumberEdit'
 import ListHeader       from '../components/ListHeader'
+import NewCustom        from '../components/forms/NewCustom'
 
 import {
   changeSection,
@@ -34,17 +35,24 @@ import baseStyles from '../styles/base'
 class component extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { selectedCustom: undefined }
+    this.state = { selectedCustom: undefined, newCustom: undefined }
   }
 
   componentWillReceiveProps() {
     this.setState({ selectedCustom: undefined })
   }
+
+  handleNewCustom() {
+    this.setState({
+      selectedCustom: undefined,
+      newCustom: { name: '', type: '',  }
+    })
+  }
   
   selectCustom(id) {
     const selectedCustom = this.props.customs.find(cust => cust._id === id)
     if (selectedCustom)
-      this.setState({ ...this.state, selectedCustom })
+      this.setState({ newCustom: undefined, selectedCustom })
   }
 
   render() {
@@ -70,7 +78,7 @@ class component extends React.Component {
 
     const newCustom = (
       <ListItem 
-        onClick={this.handleNewCustom}
+        onClick={this.handleNewCustom.bind(this)}
         primaryText="Add a Field"
         rightIcon={<IconContentAddCircle />}
       />
@@ -82,11 +90,18 @@ class component extends React.Component {
           <ListHeader title="Fields" leftIcon={CloseButton} />
           <CollectionList items={this.props.customs} addItem={newCustom} onDelete={this.props.onDelete} onEdit={this.selectCustom.bind(this)} />
         </div>
-        <div className={dialogStyles['big-span']} style={ { height: '100%', display: 'flex', flexDirection: 'column' } }>
+        <div className={`${dialogStyles['big-span']} ${dialogStyles['left-border']}`} style={ { height: '100%', display: 'flex', flexDirection: 'column' } }>
           <Toolbar style={{ flexBasis: '56px', height: '56px', minHeight: '56px' }}>
             <ToolbarGroup firstChild={true}>
               <ToolbarTitle 
-                text={ !!this.state.selectedCustom ? `Configure ${this.state.selectedCustom.name} field` : 'Select a field to begin' }
+                text={ !!this.state.selectedCustom 
+                  ? `Configure ${this.state.selectedCustom.name} field` 
+                  : (
+                    !!this.state.newCustom
+                    ? 'New Custom Field'
+                    : 'Select a field to begin'
+                  ) 
+                }
               />
             </ToolbarGroup>
             <ToolbarGroup lastChild={true}>
@@ -104,7 +119,13 @@ class component extends React.Component {
                     custom={this.state.selectedCustom}
                     formActions={editFormActions}
                   />
-              ) : 'Select a field'
+              ):(
+              !!this.state.newCustom 
+                ? <NewCustom 
+                    custom={this.state.newCustom}
+                  />
+                : 'Select something'
+              )
             }
           </div>          
         </div>
