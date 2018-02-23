@@ -6,7 +6,7 @@ import IconActionDelete from 'material-ui/svg-icons/action/delete'
 import IconButton from 'material-ui/IconButton'
 
 
-const CollectionList = ({ items, onEdit, onDelete }) => {
+const CollectionList = ({ items, addItem, onEdit, onDelete }) => {
   const deleteButton = (prodID) => (
     <IconButton onClick={() => { onDelete(prodID) }} >
       <IconActionDelete />
@@ -15,6 +15,7 @@ const CollectionList = ({ items, onEdit, onDelete }) => {
   return (
     <div>
       <List>
+          { addItem || '' }
         {items.map((item, index) => (
           <ListItem 
             key={index}
