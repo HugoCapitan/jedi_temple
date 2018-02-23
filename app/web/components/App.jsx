@@ -11,6 +11,7 @@ import SideBar from './SideBar'
 import Store from '../containers/Store'
 
 import testStyles from '../styles/test'
+import baseStyles from '../styles/base'
 
 const ProgressOutStyle = {
   position: 'absolute',
@@ -39,15 +40,17 @@ const AppComponent = ({ route, error, waiting, toggleDrawer }) => {
     store = <Store estore="kampamocha" />
     
   return (
-    <div>
-      <AppBar
-        title={`Heberto Sites Admin | ${route}`}
-        onLeftIconButtonClick={toggleDrawer}
-      />
-      <SideBar />
+    <div className={baseStyles['full-container']}>
+      <div className={baseStyles['full-flex']}>
+        <AppBar
+          title={`Heberto Sites Admin | ${route}`}
+          onLeftIconButtonClick={toggleDrawer}
+        />
+       {store}
+        
+      </div>
       
-      {store}
-  
+      <SideBar />
       { error ?  
         ( <Snackbar
           open={!!error}

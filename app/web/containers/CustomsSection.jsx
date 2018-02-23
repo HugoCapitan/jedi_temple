@@ -29,6 +29,7 @@ import {
 } from '../actions'
 
 import dialogStyles from '../styles/dialogs'
+import baseStyles from '../styles/base'
 
 class component extends React.Component {
   constructor(props) {
@@ -47,12 +48,12 @@ class component extends React.Component {
   }
 
   render() {
-    const customContentStyle = {
-      width: '100%',
-      maxWidth: 'none',
-      top: '50%',
+    const containerStyle = {
       position: 'absolute',
-      transform: 'translate(0, -50%)'
+      top: '0',
+      bottom: '0',
+      left: '0',
+      right: '0'
     }
 
     const CloseButton = (
@@ -76,13 +77,13 @@ class component extends React.Component {
     )
 
     return (
-      <div>
+      <div style={containerStyle}>
         <div className={dialogStyles['small-span']} style={ { maxHeight: 'inherit' } }>
           <ListHeader title="Fields" leftIcon={CloseButton} />
           <CollectionList items={this.props.customs} addItem={newCustom} onDelete={this.props.onDelete} onEdit={this.selectCustom.bind(this)} />
         </div>
-        <div className={dialogStyles['big-span']} style={ { maxHeight: 'inherit' } }>
-          <Toolbar style={{ flexBasis: '56px' }}>
+        <div className={dialogStyles['big-span']} style={ { height: '100%', display: 'flex', flexDirection: 'column' } }>
+          <Toolbar style={{ flexBasis: '56px', height: '56px', minHeight: '56px' }}>
             <ToolbarGroup firstChild={true}>
               <ToolbarTitle 
                 text={ !!this.state.selectedCustom ? `Configure ${this.state.selectedCustom.name} field` : 'Select a field to begin' }
@@ -92,18 +93,20 @@ class component extends React.Component {
               
             </ToolbarGroup>
           </Toolbar>
-          {!!this.state.selectedCustom ?  
-            (this.state.selectedCustom.type === 'string'
-              ? <CustomStringEdit 
-                  custom={this.state.selectedCustom}
-                  formActions={editFormActions}
-                />
-              : <CustomNumberEdit 
-                  custom={this.state.selectedCustom}
-                  formActions={editFormActions}
-                />
-            ) : 'Select a field'
-          }
+          <div style={{ flexShrink: '1', overflowY: 'scroll' }}>
+            {!!this.state.selectedCustom ?  
+              (this.state.selectedCustom.type === 'string'
+                ? <CustomStringEdit 
+                    custom={this.state.selectedCustom}
+                    formActions={editFormActions}
+                  />
+                : <CustomNumberEdit 
+                    custom={this.state.selectedCustom}
+                    formActions={editFormActions}
+                  />
+              ) : 'Select a field'
+            }
+          </div>          
         </div>
       </div>
     )

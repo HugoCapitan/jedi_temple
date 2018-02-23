@@ -5,6 +5,8 @@ import { connect } from 'react-redux'
 import GeneralSection from './GeneralSection'
 import CustomsSection from './CustomsSection'
 
+import baseStyles from '../styles/base'
+
 const EStoreComponent = ({ section }) => {
   let displaySection = ''
 
@@ -12,7 +14,7 @@ const EStoreComponent = ({ section }) => {
   if (section === 'customs') displaySection = <CustomsSection />
 
   return (
-    <div>
+    <div className={baseStyles['flex-grow']} style={{ position: 'relative' }}>
       { displaySection }
     </div>
   )
