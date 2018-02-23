@@ -57,7 +57,7 @@ class CustomStringEdit extends React.Component {
 
   render() {
     return (
-      <div className={dialogStyles['left-border']} style={ { overflowY: 'scroll' } }>
+      <div style={ { overflowY: 'scroll' } }>
         <List>
           <ListItem disabled={true} primaryText="Field Type: String"/>
           <ListItem 
