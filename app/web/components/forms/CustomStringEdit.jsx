@@ -57,7 +57,7 @@ class CustomStringEdit extends React.Component {
 
   render() {
     return (
-      <div className={dialogStyles['left-border']} style={ { overflowY: 'scroll', marginBottom: '52px' } }>
+      <div className={dialogStyles['left-border']} style={ { overflowY: 'scroll' } }>
         <List>
           <ListItem disabled={true} primaryText="Field Type: String"/>
           <ListItem 
@@ -92,19 +92,17 @@ class CustomStringEdit extends React.Component {
               }
           />
           ))}
+          <ListItem disabled={true} style={{ textAlign: 'right', padding: '16px 10px 5px 16px' }}>
+            {this.props.formActions.map((action, index) => 
+              <FlatButton
+                key={index}
+                label={action.label}
+                onClick={() => { action.onClick(this.state.custom) } }
+                primary={action.primary}
+              />
+            )}
+          </ListItem>
         </List>
-
-        <div className={dialogStyles['bottom-buttons']}>
-          {this.props.formActions.map((action, index) => 
-            <FlatButton
-              key={index}
-              label={action.label}
-              onClick={() => { action.onClick(this.state.custom, this.props.custom) } }
-              primary={action.primary}
-              style={{ float: 'right',  margin: '0 10px 5px 0' }}
-            />
-          )}
-        </div>
 
         <SimpleInputDialog 
           open={this.state.valueDialog.open}
