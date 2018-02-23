@@ -1,13 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { openItemDialog, openSettingsDialog, requestProductRemove } from '../actions'
+import { openItemDialog, changeSection, requestProductRemove } from '../actions'
 
 import CollectionList    from '../components/CollectionList'
 
 import ProductListHeader     from '../components/ProductListHeader'
 import EditProductDialog     from './dialogs/EditProductDialog'
-import CustomsSettingsDialog from './dialogs/CustomsSettingsDialog'
 
 import testStyles from '../styles/test'
 
@@ -19,7 +18,6 @@ const ProductsSectionComponent = ({ products, onAdd, onConfig, onEdit, onDelete 
     </div>
 
     <EditProductDialog />
-    <CustomsSettingsDialog />
   </div>
 )
 
@@ -29,7 +27,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onAdd()    { dispatch(openItemDialog('Product', '')) },
-  onConfig() { dispatch(openSettingsDialog('customs')) },
+  onConfig() { dispatch(changeSection('customs')) },
   onEdit(id) { dispatch(openItemDialog('Product', id)) },
   onDelete(productID) { dispatch(requestProductRemove(productID)) }
 })
