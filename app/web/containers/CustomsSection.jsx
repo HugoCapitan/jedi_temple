@@ -20,7 +20,6 @@ import CustomNumberEdit from '../components/forms/CustomNumberEdit'
 import ListHeader       from '../components/ListHeader'
 
 import {
-  closeSettingsDialog,
   requestCustomAdd,
   requestCustomRemove,
   requestCustomUpdate
@@ -101,7 +100,6 @@ class component extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  open: state.ui.settingsDialog.open && state.ui.settingsDialog.category === 'customs',
   customs: getCustoms(state.customFields.items, state.ui.route)
 })
 
@@ -121,7 +119,6 @@ export default CustomSettingsDialog
 
 
 component.propTypes = {
-  open:           PropTypes.bool.isRequired,
   customs:        PropTypes.array.isRequired,
   onClose:        PropTypes.func.isRequired,
   onUpdateCustom: PropTypes.func.isRequired,

@@ -3,7 +3,7 @@ import axios from 'axios'
 
 import { addCustom, updateCustom, removeCustom } from './customFields'
 import { addProduct, removeProduct, updateProduct } from './products'
-import { failedRequest, finishRequest, startRequest, closeItemDialog, closeSettingsDialog } from './ui'
+import { failedRequest, finishRequest, startRequest, closeItemDialog } from './ui'
 
 export function fetchCollection(collection) {
   return (dispatch, getState) => {
@@ -36,7 +36,6 @@ export function requestCustomAdd(newCustom) {
       response => {
         dispatch(addCustom(response.data))
         dispatch(finishRequest('CustomField Saved'))
-        dispatch(closeSettingsDialog)
       },
       error => dispatch(failedRequest('Error saving CustomField'))
     )
@@ -62,7 +61,6 @@ export function requestCustomUpdate (newCustom) {
         response => {
           dispatch(updateCustom(response.data))
           dispatch(finishRequest('Custom Updated'))
-          dispatch(closeSettingsDialog())
         },
         error => dispatch(failedRequest('Failed CustomField update request'))
       )
