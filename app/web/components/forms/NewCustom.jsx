@@ -3,6 +3,9 @@ import PropTypes from 'prop-types'
 
 import CheckBox from 'material-ui/Checkbox'
 import Divider from 'material-ui/Divider'
+import IconContentAddCircle from 'material-ui/svg-icons/content/add-circle-outline'
+import IconContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle-outline'
+import IconButton from 'material-ui/IconButton'
 import List from 'material-ui/List/List'
 import ListItem from 'material-ui/List/ListItem'
 import MenuItem from 'material-ui/MenuItem'
@@ -17,9 +20,26 @@ class NewCustom extends React.Component {
     this.state = { ...this.props.custom }
   }
 
-  handleChange() {}
+  handleChange(event, value) {
+    console.log(event.target)
+    console.log(value)
+  }
 
   handleCheck() {}
+
+  handleType(value) {
+    let options = {}
+    if (value === 'string') 
+      options = { values: [] }
+    else if (value === 'number') 
+      options = { min: '', max: '', unit: '', unit_place: '' }
+    
+    this.setState({
+      type: value
+    })
+  }
+
+  toggleValueDialog() {}
 
   render() {
     return (
@@ -34,7 +54,7 @@ class NewCustom extends React.Component {
               floatingLabelText="Type"
               fullWidth={true}
               value={this.state.type}
-              onChange={this.handleChange}
+              onChange={ (e, i, v) => { this.handleType.call(this, v) } }
             >
               <MenuItem value={'string'} primaryText="String" />
               <MenuItem value={'number'} primaryText="Number" />
@@ -50,6 +70,35 @@ class NewCustom extends React.Component {
           />
           <Divider />
         </List>
+        { this.state.type === 'string' 
+          ? 
+          <div>
+            <ListItem
+              disabled={true}
+              primaryText="Values:"
+              initiallyOpen={true}
+              rightIconButton={(
+                <IconButton onClick={this.toggleValueDialog.bind(this)}>
+                  <IconContentAddCircle />
+                </IconButton>
+              )}
+            /> 
+            <Divider inset={true} />
+            {/* {this.state.values.map((cValue, index) => (
+              <ListItem 
+                key={index}
+                primaryText={cValue.value}
+                insetChildren={true}
+                rightIconButton={
+                  <IconButton onClick={() => { this.handleRemoveValue.call(this, cValue.value) } }>
+                    <IconContentRemoveCircle />
+                  </IconButton>
+                }
+            />
+            ))} */}
+          </div>
+          : 'hi'
+        }
       </div>
     )
   }
