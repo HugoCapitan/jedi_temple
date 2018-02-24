@@ -3,15 +3,16 @@ import PropTypes from 'prop-types'
 
 import CheckBox from 'material-ui/Checkbox'
 import Divider from 'material-ui/Divider'
+import FlatButton from 'material-ui/FlatButton'
 import IconContentAddCircle from 'material-ui/svg-icons/content/add-circle-outline'
 import IconContentRemoveCircle from 'material-ui/svg-icons/content/remove-circle-outline'
 import IconButton from 'material-ui/IconButton'
 import List from 'material-ui/List/List'
 import ListItem from 'material-ui/List/ListItem'
 import MenuItem from 'material-ui/MenuItem'
-import SelectField from 'material-ui/SelectField'
 import RadioButton from 'material-ui/RadioButton'
 import RadioButtonGroup from 'material-ui/RadioButton/RadioButtonGroup'
+import SelectField from 'material-ui/SelectField'
 import TextField from 'material-ui/TextField'
 
 import SimpleInputDialog from '../SimpleInputDialog'
@@ -192,6 +193,17 @@ class NewCustom extends React.Component {
             </RadioButtonGroup>
           </ListItem>
         }
+
+        <ListItem disabled={true} style={{ textAlign: 'right', padding: '16px 10px 5px 16px' }}>
+            {this.props.formActions.map((action, index) => 
+              <FlatButton
+                key={index}
+                label={action.label}
+                onClick={() => { action.onClick(this.state.custom) } }
+                primary={action.primary}
+              />
+            )}
+          </ListItem>
 
         <SimpleInputDialog 
           open={this.state.valueDialog.open}
