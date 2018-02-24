@@ -123,6 +123,7 @@ class component extends React.Component {
               !!this.state.newCustom 
                 ? <NewCustom 
                     custom={this.state.newCustom}
+                    formActions={editFormActions}
                   />
                 : 'Select something'
               )
