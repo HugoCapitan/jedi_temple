@@ -14,32 +14,62 @@ import RadioButton from 'material-ui/RadioButton'
 import RadioButtonGroup from 'material-ui/RadioButton/RadioButtonGroup'
 import TextField from 'material-ui/TextField'
 
+import SimpleInputDialog from '../SimpleInputDialog'
+
 class NewCustom extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { ...this.props.custom }
+    this.state = { 
+      custom: {
+        ...this.props.custom, values: [], min: '', max: '', unit: '', unit_place: ''
+      }, 
+      valueDialog: { open: false, text: '' } 
+    }
   }
 
-  handleChange(event, value) {
+  handleAddValue(value) {
+    const exists = this.state.custom.values.find(cVal => cVal.value === value)
+
+    if (!exists)
+      this.setState({
+        custom: { ...this.state.custom,
+          values: [ { value }, ...this.state.custom.values ]
+        }
+      })
+
+    this.setState({ valueDialog: { open: false, text: '' } })
+  }
+
+  handleChange(value) {
     console.log(event.target)
     console.log(value)
   }
 
   handleCheck() {}
 
-  handleType(value) {
-    let options = {}
-    if (value === 'string') 
-      options = { values: [] }
-    else if (value === 'number') 
-      options = { min: '', max: '', unit: '', unit_place: '' }
-    
-    this.setState({
-      type: value
+  handleRemoveValue(value) {
+    this.setState({ 
+      custom: { ...this.state.custom,
+        values: this.state.custom.values.filter(cVal => cVal.value != value)
+      } 
     })
   }
 
-  toggleValueDialog() {}
+  handleType(value) {
+    this.setState({
+      custom: {
+        ...this.state.custom,
+        type: value
+      }
+    })
+  }
+
+  toggleValueDialog() {
+    this.setState({ valueDialog: {
+      open: !this.state.valueDialog.open,
+      text: ''
+    } })
+  }
 
   render() {
     return (
@@ -53,7 +83,7 @@ class NewCustom extends React.Component {
             <SelectField
               floatingLabelText="Type"
               fullWidth={true}
-              value={this.state.type}
+              value={this.state.custom.type}
               onChange={ (e, i, v) => { this.handleType.call(this, v) } }
             >
               <MenuItem value={'string'} primaryText="String" />
@@ -62,15 +92,15 @@ class NewCustom extends React.Component {
           </ListItem>
           <ListItem 
             primaryText="Show in site" 
-            leftCheckbox={<CheckBox checked={this.state.show} name="show" onCheck={this.handleCheck.bind(this)} />} 
+            leftCheckbox={<CheckBox checked={this.state.custom.show} name="show" onCheck={this.handleCheck.bind(this)} />} 
           />
           <ListItem 
             primaryText="Allow filter" 
-            leftCheckbox={<CheckBox checked={this.state.filter} name="filter" onCheck={this.handleCheck.bind(this)} />} 
+            leftCheckbox={<CheckBox checked={this.state.custom.filter} name="filter" onCheck={this.handleCheck.bind(this)} />} 
           />
           <Divider />
         </List>
-        { this.state.type === 'string' 
+        { this.state.custom.type === 'string' 
           ? 
           <div>
             <ListItem
@@ -84,7 +114,7 @@ class NewCustom extends React.Component {
               )}
             /> 
             <Divider inset={true} />
-            {/* {this.state.values.map((cValue, index) => (
+            {this.state.custom.values.map((cValue, index) => (
               <ListItem 
                 key={index}
                 primaryText={cValue.value}
@@ -95,10 +125,17 @@ class NewCustom extends React.Component {
                   </IconButton>
                 }
             />
-            ))} */}
+            ))}
           </div>
           : 'hi'
         }
+
+        <SimpleInputDialog 
+          open={this.state.valueDialog.open}
+          title="New Value"
+          onDone={this.handleAddValue.bind(this)}
+          onCancel={this.toggleValueDialog.bind(this)}
+        />
       </div>
     )
   }
