@@ -76,6 +76,12 @@ class component extends React.Component {
       onClick: this.props.onUpdateCustom
     }]
 
+    const addFormActions = [{
+      label: 'Save',
+      primary: true,
+      onClick: this.props.onAddCustom
+    }]
+
     const newCustom = (
       <ListItem 
         onClick={this.handleNewCustom.bind(this)}
@@ -123,7 +129,7 @@ class component extends React.Component {
               !!this.state.newCustom 
                 ? <NewCustom 
                     custom={this.state.newCustom}
-                    formActions={editFormActions}
+                    formActions={addFormActions}
                   />
                 : 'Select something'
               )
