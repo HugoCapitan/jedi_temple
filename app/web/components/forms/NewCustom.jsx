@@ -61,6 +61,15 @@ class NewCustom extends React.Component {
     } })
   }
 
+  handlePlaceChange(event, value) {
+    this.setState({
+      custom: {
+        ...this.state.custom,
+        unit_place: value
+      }
+    })
+  }
+
   handleRemoveValue(value) {
     this.setState({ 
       custom: { ...this.state.custom,
@@ -141,7 +150,47 @@ class NewCustom extends React.Component {
             />
             ))}
           </div>
-          : 'hi'
+          : 
+          <ListItem disabled={true} innerDivStyle={{ paddingTop: '0' }}>
+            <TextField 
+              floatingLabelText="Min Value"
+              fullWidth={true}
+              name="min"
+              value={this.state.custom.min != 'auto' ? this.state.custom.min : ''} 
+              onChange={this.handleChange.bind(this)}
+            />
+            <TextField 
+              floatingLabelText="Max Value" 
+              fullWidth={true}
+              name="max"
+              onChange={this.handleChange.bind(this)}
+              value={this.state.custom.max != 'auto' ? this.state.custom.max : ''} 
+            />
+            <TextField 
+              floatingLabelText="Unit (For display porpouses)" 
+              fullWidth={true}
+              name="unit"
+              onChange={this.handleChange.bind(this)}
+              required={true}
+              value={this.state.custom.unit} 
+            />
+            <p>Unit Position:</p>        
+            <RadioButtonGroup 
+              name="unit_place" 
+              defaultSelected="after"
+              valueSelected={this.state.custom.unit_place}
+              onChange={this.handlePlaceChange.bind(this)}
+            >
+              <RadioButton
+                value="after"
+                label="After Value"
+              />
+              <RadioButton
+                value="before"
+                label="Before Value"
+              />
+            </RadioButtonGroup>
+          </ListItem>
         }
 
         <SimpleInputDialog 
