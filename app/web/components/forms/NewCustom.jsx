@@ -40,12 +40,26 @@ class NewCustom extends React.Component {
     this.setState({ valueDialog: { open: false, text: '' } })
   }
 
-  handleChange(value) {
-    console.log(event.target)
-    console.log(value)
+  handleChange(event) {
+    const name = event.target.name
+    let value = event.target.value
+    if ((name === 'max' || name === 'min') && value != '0' && !+value)
+      value = 'auto'
+
+    this.setState({
+      custom: {
+        ...this.state.custom,
+        [name]: value
+      }
+    })
   }
 
-  handleCheck() {}
+  handleCheck(event, isChecked) {
+    this.setState({ custom: { 
+      ...this.state.custom, 
+      [event.target.name]: isChecked 
+    } })
+  }
 
   handleRemoveValue(value) {
     this.setState({ 
