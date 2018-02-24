@@ -45,7 +45,7 @@ class component extends React.Component {
   handleNewCustom() {
     this.setState({
       selectedCustom: undefined,
-      newCustom: { name: '', type: '',  }
+      newCustom: { name: '', type: 'string',  }
     })
   }
   
