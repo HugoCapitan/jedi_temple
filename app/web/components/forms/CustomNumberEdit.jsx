@@ -76,7 +76,7 @@ class CustomNumberEdit extends React.Component {
           <Divider />
           <ListItem disabled={true} innerDivStyle={{ paddingTop: '0' }}>
             <TextField 
-              floatingLabelText="Min Value (Leave blank for auto)"
+              floatingLabelText="Min Value"
               fullWidth={true}
               name="min"
               value={this.state.custom.min != 'auto' ? this.state.custom.min : ''} 
