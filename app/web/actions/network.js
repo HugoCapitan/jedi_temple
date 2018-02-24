@@ -27,6 +27,8 @@ export function fetchCollection(collection) {
 export function requestCustomAdd(newCustom) {
   return (dispatch, getState) => {
     const token = getState().authToken
+    newCustom.store = getState().ui.route
+    
 
     if (newCustom.type === 'string') {
       delete newCustom.min
