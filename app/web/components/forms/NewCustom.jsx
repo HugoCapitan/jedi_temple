@@ -22,7 +22,7 @@ class NewCustom extends React.Component {
     super(props)
     this.state = { 
       custom: {
-        ...this.props.custom, values: [], min: '', max: '', unit: '', unit_place: ''
+        name: '', type: 'string', show: false, filter: false,  values: [], min: 'auto', max: 'auto', unit: '', unit_place: 'before'
       }, 
       valueDialog: { open: false, text: '' } 
     }
@@ -103,6 +103,9 @@ class NewCustom extends React.Component {
             <TextField 
               floatingLabelText="Name"
               fullWidth={true}
+              name="name"
+              value={this.state.custom.name}
+              onChange={this.handleChange.bind(this)}
             />
             <SelectField
               floatingLabelText="Type"
@@ -183,12 +186,12 @@ class NewCustom extends React.Component {
               onChange={this.handlePlaceChange.bind(this)}
             >
               <RadioButton
-                value="after"
-                label="After Value"
-              />
-              <RadioButton
                 value="before"
                 label="Before Value"
+              />
+              <RadioButton
+                value="after"
+                label="After Value"
               />
             </RadioButtonGroup>
           </ListItem>
