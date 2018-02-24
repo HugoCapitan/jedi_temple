@@ -42,9 +42,20 @@ export function requestCustomAdd(newCustom) {
   }
 }
 
-export function requestCustomRemove(){
+export function requestCustomRemove(customID){
   return (dispatch, getState) => {
-
+    const token = getState().authToken
+  
+    dispatch(startRequest())
+    return axios.delete(`/api/custom_fields/${customID}`, { 
+      headers: {'Authorization': 'Bearer ' + token } 
+    })
+    .then(
+      removed => {
+        dispatch(removeCustom(customID))
+        dispatch(finishRequest('Custom Removed'))
+      }
+    )
   }
 }
 
