@@ -88,7 +88,7 @@ class component extends React.Component {
       <div style={containerStyle}>
         <div className={dialogStyles['small-span']} style={ { maxHeight: 'inherit' } }>
           <ListHeader title="Fields" leftIcon={CloseButton} />
-          <CollectionList items={this.props.customs} addItem={newCustom} onDelete={this.props.onDelete} onEdit={this.selectCustom.bind(this)} />
+          <CollectionList items={this.props.customs} addItem={newCustom} onDelete={this.props.onRemoveCustom} onEdit={this.selectCustom.bind(this)} />
         </div>
         <div className={`${dialogStyles['big-span']} ${dialogStyles['left-border']}`} style={ { height: '100%', display: 'flex', flexDirection: 'column' } }>
           <Toolbar style={{ flexBasis: '56px', height: '56px', minHeight: '56px' }}>
