@@ -27,6 +27,14 @@ export function fetchCollection(collection) {
 export function requestCustomAdd(newCustom) {
   return (dispatch, getState) => {
     const token = getState().authToken
+
+    if (newCustom.type === 'string') {
+      delete newCustom.min
+      delete newCustom.max
+      delete newCustom.unit
+      delete newCustom.unit_place
+    } else if (newCustom.type === 'number')
+      delete newCustom.values
   
     dispatch(startRequest())
     return axios.post('/api/custom_fields/', newCustom, {
