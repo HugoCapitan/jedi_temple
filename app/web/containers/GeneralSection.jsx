@@ -8,11 +8,16 @@ import CollectionList    from '../components/CollectionList'
 import ProductListHeader     from '../components/ProductListHeader'
 import EditProductDialog     from './dialogs/EditProductDialog'
 
-import testStyles from '../styles/test'
+import sectionStyles from '../styles/section'
 
 const ProductsSectionComponent = ({ products, onAdd, onConfig, onEdit, onDelete }) => (
-  <div className="content">
-    <div className={testStyles['product-list']}>
+  <div>
+    <div className={sectionStyles['left-list']}>
+      <ProductListHeader title="Products" onAdd={onAdd} onConfig={onConfig} />
+      <CollectionList items={products} onEdit={onEdit} onDelete={onDelete} />
+    </div>
+
+    <div className={sectionStyles['right-list']}>
       <ProductListHeader title="Products" onAdd={onAdd} onConfig={onConfig} />
       <CollectionList items={products} onEdit={onEdit} onDelete={onDelete} />
     </div>
