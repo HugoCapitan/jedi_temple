@@ -4,9 +4,9 @@ import { connect } from 'react-redux'
 import { openItemDialog, changeSection, requestProductRemove } from '../actions'
 
 import CollectionList    from '../components/CollectionList'
-
-import ProductListHeader     from '../components/ProductListHeader'
-import EditProductDialog     from './dialogs/EditProductDialog'
+import ListHeader        from '../components/ListHeader'
+import ProductListHeader from '../components/ProductListHeader'
+import EditProductDialog from './dialogs/EditProductDialog'
 
 import sectionStyles from '../styles/section'
 
@@ -18,8 +18,8 @@ const ProductsSectionComponent = ({ products, onAdd, onConfig, onEdit, onDelete 
     </div>
 
     <div className={sectionStyles['right-list']}>
-      <ProductListHeader title="Products" onAdd={onAdd} onConfig={onConfig} />
-      <CollectionList items={products} onEdit={onEdit} onDelete={onDelete} />
+      <ListHeader title="Orders" />
+      {/* <CollectionList items={products} onEdit={onEdit} onDelete={onDelete} /> */}
     </div>
 
     <EditProductDialog />
