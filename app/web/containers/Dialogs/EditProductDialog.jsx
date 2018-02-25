@@ -26,9 +26,8 @@ const component = ({ open, title, product, customs, onSave, onUpdate, onCancel }
 
   return (
     <Dialog
-      autoDetectWindowHeight={false}
-      bodyStyle={{ maxHeight: '95%' }}
       contentStyle={customContentStyle}
+      autoScrollBodyContent={true}
       modal={true}
       open={open}
       title={title}
