@@ -23,6 +23,12 @@ class CustomNumberEdit extends React.Component {
     this.state = { custom: this.props.custom }
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      custom: nextProps.custom
+    })
+  }
+
   handleChange(event) {
     const name = event.target.name
     let value = event.target.value

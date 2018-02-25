@@ -20,6 +20,12 @@ class CustomStringEdit extends React.Component {
     this.state = { custom: this.props.custom, valueDialog: { open: false, text: '' } }
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      custom: nextProps.custom
+    })
+  }
+
   handleAddValue(value) {
     const exists = this.state.custom.values.find(cVal => cVal.value === value)
 
