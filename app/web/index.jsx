@@ -40,4 +40,5 @@ initData()
 function initData () {
   store.dispatch(fetchCollection('products'))
   store.dispatch(fetchCollection('customFields'))
+  store.dispatch(fetchCollection('orders'))
 }
