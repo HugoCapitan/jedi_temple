@@ -27,7 +27,7 @@ const ProductsSectionComponent = ({ products, orders, onAdd, onConfig, onEdit, o
 )
 
 const mapStateToProps = state => ({
-  products: filterProducts(state.products.items, state.ui.route)
+  products: filterProducts(state.products.items, state.ui.route),
   orders: filterOrders(state.orders.items, state.ui.route)
 })
 
