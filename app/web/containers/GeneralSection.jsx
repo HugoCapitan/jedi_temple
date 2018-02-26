@@ -10,7 +10,7 @@ import EditProductDialog from './dialogs/EditProductDialog'
 
 import sectionStyles from '../styles/section'
 
-const ProductsSectionComponent = ({ products, onAdd, onConfig, onEdit, onDelete }) => (
+const ProductsSectionComponent = ({ products, orders, onAdd, onConfig, onEdit, onDelete }) => (
   <div>
     <div className={sectionStyles['left-list']}>
       <ProductListHeader title="Products" onAdd={onAdd} onConfig={onConfig} />
@@ -28,6 +28,7 @@ const ProductsSectionComponent = ({ products, onAdd, onConfig, onEdit, onDelete 
 
 const mapStateToProps = state => ({
   products: filterProducts(state.products.items, state.ui.route)
+  orders: filterOrders(state.orders.items, state.ui.route)
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -47,11 +48,16 @@ export default ProductsSection
 
 function filterProducts (allProducts, route) {
   return Object.values(allProducts)
-    .filter((product, acc) => product.store == route)
+    .filter(product => product.store == route)
     .map(product => ({
       ...product, 
       primaryText: product.name, 
       secondaryText: <p>US ${product.price}<br />Stock: {product.stock}</p>,
       // avatar: product.images[0].url
     })) 
+}
+
+function filterOrders (allOrders, route) {
+  return Object.values(allOrders)
+    .filter(order => order.store == route)
 }
