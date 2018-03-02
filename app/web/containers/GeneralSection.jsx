@@ -1,6 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+import Paper from 'material-ui/Paper'
+
 import { openItemDialog, changeSection, requestProductRemove } from '../actions'
 
 import CollectionList    from '../components/CollectionList'
@@ -12,15 +14,15 @@ import sectionStyles from '../styles/section'
 
 const ProductsSectionComponent = ({ products, orders, onAdd, onConfig, onEdit, onDelete }) => (
   <div>
-    <div className={sectionStyles['left-list']}>
+    <Paper className={[sectionStyles['half-list'], sectionStyles['left-list']].join(' ')}>
       <ProductListHeader title="Products" onAdd={onAdd} onConfig={onConfig} />
       <CollectionList items={products} onEdit={onEdit} onDelete={onDelete} />
-    </div>
+    </Paper>
 
-    <div className={sectionStyles['right-list']}>
+    <Paper className={[sectionStyles['half-list'], sectionStyles['right-list']].join(' ')}>
       <ListHeader title="Orders" />
       {/* <CollectionList items={products} onEdit={onEdit} onDelete={onDelete} /> */}
-    </div>
+    </Paper>
 
     <EditProductDialog />
   </div>
