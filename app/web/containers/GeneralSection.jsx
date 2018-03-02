@@ -14,13 +14,23 @@ import sectionStyles from '../styles/section'
 
 const ProductsSectionComponent = ({ products, orders, onAdd, onConfig, onEdit, onDelete }) => (
   <div>
+    <Paper className={[sectionStyles['big-list'], sectionStyles['left-list']].join(' ')}>
+      <ListHeader title="Orders" />
+      {/* <CollectionList items={products} onEdit={onEdit} onDelete={onDelete} /> */}
+    </Paper>
+
+    <Paper className={[sectionStyles['small-list'], sectionStyles['right-list']].join(' ')}>
+      <ListHeader title="Messages"/>
+      {/* <CollectionList items={products} onEdit={onEdit} onDelete={onDelete} /> */}
+    </Paper>
+
     <Paper className={[sectionStyles['half-list'], sectionStyles['left-list']].join(' ')}>
       <ProductListHeader title="Products" onAdd={onAdd} onConfig={onConfig} />
       <CollectionList items={products} onEdit={onEdit} onDelete={onDelete} />
     </Paper>
 
     <Paper className={[sectionStyles['half-list'], sectionStyles['right-list']].join(' ')}>
-      <ListHeader title="Orders" />
+      <ListHeader title="Top Tips"/>
       {/* <CollectionList items={products} onEdit={onEdit} onDelete={onDelete} /> */}
     </Paper>
 
