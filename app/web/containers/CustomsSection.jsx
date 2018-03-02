@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React       from 'react'
 import PropTypes   from 'prop-types'
 import { connect } from 'react-redux'
@@ -38,8 +39,16 @@ class component extends React.Component {
     this.state = { selectedCustom: undefined, newCustom: undefined }
   }
 
-  componentWillReceiveProps() {
-    this.setState({ selectedCustom: undefined })
+  componentWillReceiveProps(nextProps) {
+    const isNew = _.differenceWith(nextProps.customs, this.props.customs, _.isEqual)
+    const isOld = _.differenceWith(this.props.customs, nextProps.customs, _.isEqual)
+    if (isNew.length)
+      this.setState({
+        newCustom: undefined,
+        selectedCustom: isNew[0]
+      })
+    else if (isOld.length && _.isEqual(isOld[0], this.state.selectedCustom))
+      this.setState({ selectedCustom: undefined })
   }
 
   handleNewCustom() {
@@ -69,18 +78,6 @@ class component extends React.Component {
         <IconNavigationBack />
       </IconButton>
     )
-
-    const editFormActions = [{
-      label: 'Save',
-      primary: true,
-      onClick: this.props.onUpdateCustom
-    }]
-
-    const addFormActions = [{
-      label: 'Save',
-      primary: true,
-      onClick: this.props.onAddCustom
-    }]
 
     const newCustom = (
       <ListItem 
@@ -119,17 +116,17 @@ class component extends React.Component {
               (this.state.selectedCustom.type === 'string'
                 ? <CustomStringEdit 
                     custom={this.state.selectedCustom}
-                    formActions={editFormActions}
+                    onSave={this.props.onUpdateCustom}
                   />
                 : <CustomNumberEdit 
                     custom={this.state.selectedCustom}
-                    formActions={editFormActions}
+                    onSave={this.props.onUpdateCustom}
                   />
               ):(
               !!this.state.newCustom 
                 ? <NewCustom 
                     custom={this.state.newCustom}
-                    formActions={addFormActions}
+                    onSave={this.props.onAddCustom}
                   />
                 : 'Select something'
               )
