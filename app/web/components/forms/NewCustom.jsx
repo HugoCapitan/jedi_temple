@@ -198,15 +198,12 @@ class NewCustom extends React.Component {
         }
 
         <ListItem disabled={true} style={{ textAlign: 'right', padding: '16px 10px 5px 16px' }}>
-            {this.props.formActions.map((action, index) => 
-              <FlatButton
-                key={index}
-                label={action.label}
-                onClick={() => { action.onClick(this.state.custom) } }
-                primary={action.primary}
-              />
-            )}
-          </ListItem>
+          <FlatButton
+            label="Save"
+            onClick={() => { this.props.onSave(this.state.custom) } }
+            primary={true}
+          />
+        </ListItem>
 
         <SimpleInputDialog 
           open={this.state.valueDialog.open}
