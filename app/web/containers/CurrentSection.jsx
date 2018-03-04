@@ -3,17 +3,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
+import CustomFieldsSection from './CustomFieldsSection'
+import StoreGeneralSection from './StoreGeneralSection'
+
 const Component = ({ section }) => {
   let displaySection = ''
 
-  if (section === 'general') displaySection = <GeneralSection />
-  if (section === 'customs') displaySection = <CustomsSection />
+  if (section === 'general') displaySection = <StoreGeneralSection />
+  if (section === 'customs') displaySection = <CustomFieldsSection />
 
-  return (
-    <div className={baseStyles['flex-grow']} style={{ position: 'relative' }}>
-      { displaySection }
-    </div>
-  )
+  return displaySection
 }
 
 Component.propTypes = {
@@ -24,8 +23,8 @@ const mapStateToProps = state => ({
   section: state.ui.section
 })
 
-const Store = connect(
+const CurrentSection = connect(
   mapStateToProps
 )(Component)
 
-export default Store
+export default CurrentSection
