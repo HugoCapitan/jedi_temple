@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import AppBar from 'material-ui/AppBar'
@@ -9,7 +10,7 @@ import CurrentSection from '../containers/CurrentSection'
 
 import { toggleDrawer } from '../actions'
 
-const Component = ({ store, error, toggleDrawer }) => (
+const AppComponent = ({ store, error, toggleDrawer }) => (
   <div>
     <AppBar 
       title={store != 'general' ? _.capitalize(store) : 'Heberto Sites Admin' }
@@ -18,6 +19,12 @@ const Component = ({ store, error, toggleDrawer }) => (
     <CurrentSection />
   </div>
 )
+
+AppComponent.propTypes = {
+  store: PropTypes.any.isRequired,
+  error: PropTypes.any.isRequired,
+  toggleDrawer: PropTypes.func.isRequired
+}
 
 const mapStateToProps = state => ({
   store: state.ui.route,
@@ -31,6 +38,6 @@ const mapDispatchToProps = dispatch => ({
 const App = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Component)
+)(AppComponent)
 
 export default App
