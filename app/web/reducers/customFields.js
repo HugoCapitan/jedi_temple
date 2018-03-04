@@ -3,12 +3,14 @@ import {
   ADD_CUSTOM, 
   RECEIVE_CUSTOMFIELDS, 
   REMOVE_CUSTOM, 
-  REQUEST_CUSTOMFIELDS, 
+  REQUEST_CUSTOMFIELDS,
+  SELECT_CUSTOM,
   UPDATE_CUSTOM 
 } from '../constants'
 
 const initialState = {
   isFetching: false,
+  selected: undefined,
   items: {}
 }
 
@@ -33,6 +35,8 @@ function customFields (state = initialState, action) {
       }
     case REQUEST_CUSTOMFIELDS:
       return {...state, isFetching: true}
+    case SELECT_CUSTOM:
+      return {...state, selected: action.selected}
     case UPDATE_CUSTOM:
       return { ...state, items: {
         ...state.items,
