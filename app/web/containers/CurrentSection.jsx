@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import CustomFieldsSection from './CustomFieldsSection'
 import StoreGeneralSection from './StoreGeneralSection'
 
-const Component = ({ section }) => {
+const CurrentSectionComponent = ({ section }) => {
   let displaySection = ''
 
   if (section === 'general') displaySection = <StoreGeneralSection />
@@ -15,7 +15,7 @@ const Component = ({ section }) => {
   return displaySection
 }
 
-Component.propTypes = {
+CurrentSectionComponent.propTypes = {
   section: PropTypes.string.isRequired
 }
 
@@ -25,6 +25,6 @@ const mapStateToProps = state => ({
 
 const CurrentSection = connect(
   mapStateToProps
-)(Component)
+)(CurrentSectionComponent)
 
 export default CurrentSection
