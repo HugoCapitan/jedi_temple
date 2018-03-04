@@ -21,8 +21,8 @@ const AppComponent = ({ store, error, toggleDrawer }) => (
 )
 
 AppComponent.propTypes = {
-  store: PropTypes.any.isRequired,
-  error: PropTypes.any.isRequired,
+  store: PropTypes.any,
+  error: PropTypes.any,
   toggleDrawer: PropTypes.func.isRequired
 }
 
