@@ -23,7 +23,7 @@ StoreGeneralSectionComponent.propTypes = {
   products: PropTypes.array.isRequired,
   productsActions: PropTypes.object.isRequired,
   tops: PropTypes.array.isRequired,
-  topsActions: PropTypes.array.isRequired
+  topsActions: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
