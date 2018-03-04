@@ -8,9 +8,28 @@ import Tile from '../components/Tile'
 const StoreGeneralSectionComponent = ({ messages, messagesActions, orders, ordersActions, products, productsActions, tops, topsActions }) => (
   <div>
     <Tile 
-      title="Orders"
-      items={orders}
       actions={ordersActions}
+      items={orders}
+      size="big"
+      title="Orders"
+    />
+    <Tile 
+      actions={messagesActions}
+      items={messages}
+      size="small"
+      title="Messages"
+    />
+    <Tile 
+      actions={productsActions}
+      items={products}
+      size="half"
+      title="Products"
+    />
+    <Tile 
+      actions={topsActions}
+      items={tops}
+      size="half"
+      title="tops"
     />
   </div>
 )
