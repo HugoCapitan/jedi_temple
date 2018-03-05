@@ -61,6 +61,7 @@ const mapDispatchToProps = dispatch => ({
   },
   productsActions: {
     add() {},
+    config() {},
     remove() {},
     select() {}
   },
