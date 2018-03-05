@@ -4,11 +4,11 @@ import PropTypes from 'prop-types'
 import IconButton from 'material-ui/IconButton'
 import IconNavigationBack from 'material-ui/svg-icons/navigation/arrow-back'
 import IconContentAdd from 'material-ui/svg-icons/content/add-circle-outline'
-import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar/Toolbar'
+import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 
 const TileHeader = ({ title, addAction, backAction }) => (
   <Toolbar>
-    <ToolbarGroup firstChild={!!backAction} >
+    <ToolbarGroup firstChild={!!backAction}>
       { !!backAction ? 
         <IconButton onClick={backAction}>
           <IconNavigationBack />
@@ -18,7 +18,7 @@ const TileHeader = ({ title, addAction, backAction }) => (
       <ToolbarTitle text={title} />
     </ToolbarGroup>
     <ToolbarGroup lastChild={true}>
-      { !!backAction ? 
+      { !!addAction ? 
         <IconButton onClick={addAction}>
           <IconContentAdd />
         </IconButton>
