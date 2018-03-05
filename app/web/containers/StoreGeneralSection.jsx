@@ -29,7 +29,7 @@ const StoreGeneralSectionComponent = ({ messages, messagesActions, orders, order
       actions={topsActions}
       items={tops}
       size="half"
-      title="tops"
+      title="Tops"
     />
   </div>
 )
@@ -54,20 +54,20 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   messagesActions: {
-    select: ''
+    select() {}
   },
   ordersActions: {
-    select: ''
+    select() {}
   },
   productsActions: {
-    add: '',
-    remove: '',
-    select: ''
+    add() {},
+    remove() {},
+    select() {}
   },
   topsActions: {
-    add: '',
-    remove: '',
-    select: ''
+    add() {}, 
+    remove() {},
+    select() {}
   }
 })
 
