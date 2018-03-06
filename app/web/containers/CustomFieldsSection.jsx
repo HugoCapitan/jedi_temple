@@ -3,18 +3,33 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import Avatar from 'material-ui/Avatar'
-import CollectionList from '../components/CollectionList'
-import TileHeader from '../components/TileHeader'
+import IconContentAddCircle from 'material-ui/svg-icons/content/add-circle-outline'
+import ListItem from 'material-ui/List/ListItem'
 import {
   blue500,
   orange500
 } from 'material-ui/styles/colors'
 
+import CollectionList from '../components/CollectionList'
+import TileHeader from '../components/TileHeader'
+
 import gridStyles from '../styles/grid'
 
-const CustomFieldsSectionComponent = ({  }) => (
+const CustomFieldsSectionComponent = ({ customs, onAdd, onBack, onRemove, onSelect }) => (
   <div className={gridStyles['container']}>
     <div className={gridStyles['small-span']}>
+      <TileHeader 
+        backAction={onBack}
+        title="Fields"
+      />
+      <ListItem 
+        onClick={onAdd}
+        primaryText="Add a Field"
+        leftIcon={<IconContentAddCircle />}
+      />
+      <CollectionList 
+        items={customs}
+      />
     </div>
     <div className={gridStyles['big-span']}>
     </div>
@@ -30,7 +45,7 @@ CustomFieldsSectionComponent.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  customs: filterItems(state.customFields.items).map()
+  customs: filterItems(state.customFields.items, state.ui.route).map(mapCustom)
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -40,7 +55,10 @@ const mapDispatchToProps = dispatch => ({
   onSelect() {}
 })
 
-const CustomFieldsSection = connect()(CustomFieldsSectionComponent)
+const CustomFieldsSection = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CustomFieldsSectionComponent)
 
 export default CustomFieldsSection
 
