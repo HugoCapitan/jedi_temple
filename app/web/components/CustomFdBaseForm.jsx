@@ -30,7 +30,7 @@ const CustomFdBaseForm = ({ isTypeEditable, name, type, show, filter, reportChan
       </SelectField> :
       <ListItem 
         disabled={true}
-        primaryText={type}
+        primaryText={`Type: ${type}`}
       />
     }
     <Checkbox
