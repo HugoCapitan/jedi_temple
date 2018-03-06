@@ -21,11 +21,11 @@ import gridStyles from '../styles/grid'
 
 const CustomFieldsSectionComponent = ({ customs, selected, onAdd, onBack, onRemove, onSelect }) => (
   <div className={gridStyles['container']}>
+    <TileHeader 
+      backAction={onBack}
+      title="Fields"
+    />
     <div className={gridStyles['small-span']}>
-      <TileHeader 
-        backAction={onBack}
-        title="Fields"
-      />
       <ListItem 
         onClick={onAdd}
         primaryText="Add a Field"
