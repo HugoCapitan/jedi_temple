@@ -11,13 +11,15 @@ import {
 } from 'material-ui/styles/colors'
 
 import CollectionList from '../components/CollectionList'
+import CustomFdNumberForm from '../components/CustomFdNumberForm'
+import CustomFdStringForm from '../components/CustomFdStringForm'
 import TileHeader from '../components/TileHeader'
 
 import { selectCustom } from '../actions'
 
 import gridStyles from '../styles/grid'
 
-const CustomFieldsSectionComponent = ({ customs, onAdd, onBack, onRemove, onSelect }) => (
+const CustomFieldsSectionComponent = ({ customs, selected, onAdd, onBack, onRemove, onSelect }) => (
   <div className={gridStyles['container']}>
     <div className={gridStyles['small-span']}>
       <TileHeader 
@@ -35,12 +37,14 @@ const CustomFieldsSectionComponent = ({ customs, onAdd, onBack, onRemove, onSele
       />
     </div>
     <div className={gridStyles['big-span']}>
+    { selected }
     </div>
   </div>
 )
 
 CustomFieldsSectionComponent.propTypes = {
   customs: PropTypes.array.isRequired,
+  selected: PropTypes.object,
   onAdd: PropTypes.array.isRequired,
   onBack: PropTypes.func.isRequired,
   onRemove: PropTypes.func.isRequired,
@@ -48,7 +52,8 @@ CustomFieldsSectionComponent.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  customs: filterItems(state.customFields.items, state.ui.route).map(mapCustom)
+  customs: filterItems(state.customFields.items, state.ui.route).map(mapCustom),
+  selected: getSelectedCustomForm(state.customFields.selected)
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -84,4 +89,12 @@ function getAvatar(type) {
   return type === 'string' 
   ? <Avatar backgroundColor={orange500}>S</Avatar> 
   : <Avatar backgroundColor={blue500}>N</Avatar>
+}
+
+function getSelectedCustomForm(selected) {
+  if (!selected) return ''
+
+  return selected.type === 'string' 
+  ? <CustomFdStringForm custom={selected} />
+  : <CustomFdSNumberForm custom={selected} />    
 }
