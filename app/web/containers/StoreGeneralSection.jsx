@@ -5,30 +5,32 @@ import { connect } from 'react-redux'
 // import ProductsTile from '../components/ProductsTile'
 import Tile from '../components/Tile'
 
+import gridStyles from '../styles/grid'
+
 const StoreGeneralSectionComponent = ({ messages, messagesActions, orders, ordersActions, products, productsActions, tops, topsActions }) => (
-  <div>
-    <Tile 
+  <div className={gridStyles['container']}>
+    <Tile
       actions={ordersActions}
+      classes={ [gridStyles['big-tile'], gridStyles['left-tile']].join(' ') }
       items={orders}
-      size="big"
       title="Orders"
     />
     <Tile 
       actions={messagesActions}
+      classes={ [gridStyles['small-tile'], gridStyles['right-tile']].join(' ') }
       items={messages}
-      size="small"
       title="Messages"
     />
     <Tile 
       actions={productsActions}
+      classes={ [gridStyles['half-tile'], gridStyles['left-tile']].join(' ') }
       items={products}
-      size="half"
       title="Products"
     />
     <Tile 
       actions={topsActions}
+      classes={ [gridStyles['half-tile'], gridStyles['right-tile']].join(' ') }
       items={tops}
-      size="half"
       title="Tops"
     />
   </div>
