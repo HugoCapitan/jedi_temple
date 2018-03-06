@@ -13,6 +13,8 @@ import {
 import CollectionList from '../components/CollectionList'
 import TileHeader from '../components/TileHeader'
 
+import { selectCustom } from '../actions'
+
 import gridStyles from '../styles/grid'
 
 const CustomFieldsSectionComponent = ({ customs, onAdd, onBack, onRemove, onSelect }) => (
@@ -29,6 +31,7 @@ const CustomFieldsSectionComponent = ({ customs, onAdd, onBack, onRemove, onSele
       />
       <CollectionList 
         items={customs}
+        onSelect={onSelect}
       />
     </div>
     <div className={gridStyles['big-span']}>
@@ -52,7 +55,7 @@ const mapDispatchToProps = dispatch => ({
   onAdd() {},
   onBack() {},
   onRemove() {},
-  onSelect() {}
+  onSelect(cid) { dispatch(selectCustom(cid)) }
 })
 
 const CustomFieldsSection = connect(
