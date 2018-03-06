@@ -22,7 +22,7 @@ const CustomFdBaseForm = ({ isTypeEditable, name, type, show, filter, reportChan
       <SelectField
         floatingLabelText="Type"
         fullWidth={true}
-        value={this.state.custom.type}
+        value={type}
         onChange={(e, i, v) => { reportChange('type', v) }}
       >
         <MenuItem value={'string'} primaryText="String" />
