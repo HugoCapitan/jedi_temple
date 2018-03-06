@@ -2,7 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-// import ProductsTile from '../components/ProductsTile'
+import Avatar from 'material-ui/Avatar'
+
 import Tile from '../components/Tile'
 
 import gridStyles from '../styles/grid'
@@ -50,7 +51,7 @@ StoreGeneralSectionComponent.propTypes = {
 const mapStateToProps = state => ({
   messages: [],
   orders: [],
-  products: [],
+  products: filterItems(state.products.items, state.ui.route).map(mapProduct),
   tops: []
 })
 
@@ -80,3 +81,16 @@ const StoreGeneralSection = connect(
 )(StoreGeneralSectionComponent)
 
 export default StoreGeneralSection
+
+function filterItems(items, route) {
+  return Object.values(items).filter(i => i.store === route)
+}
+
+function mapProduct(p) {
+  return ({
+    ...p,
+    primaryText: p.name, 
+    secondaryText: <p>US ${p.price}<br />Stock: {p.stock}</p>,
+    avatar: <Avatar src={p.images[0].url} />
+  })
+}

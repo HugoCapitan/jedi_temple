@@ -22,7 +22,7 @@ const CollectionList = ({ items, onSelect, onRemove }) => {
           secondaryText={item.secondaryText}
           secondaryTextLines={item.secondaryTextLines}
           leftAvatar={item.avatar}
-          rightIconButton={ deleteButton(item._id) }
+          rightIconButton={ removeButton(item._id) }
           onClick={ () => onSelect(item._id) }
         />
       ))}
