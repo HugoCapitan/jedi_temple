@@ -1,4 +1,4 @@
-import { ADD_CUSTOM, UPDATE_CUSTOM, REMOVE_CUSTOM } from '../constants'
+import { ADD_CUSTOM, UPDATE_CUSTOM, REMOVE_CUSTOM, SELECT_CUSTOM } from '../constants'
 
 export const addCustom = custom => ({
   type: ADD_CUSTOM,
@@ -7,6 +7,11 @@ export const addCustom = custom => ({
 
 export const removeCustom = customID => ({
   type: REMOVE_CUSTOM,
+  customID
+})
+
+export const selectCustom = customID => ({
+  type: SELECT_CUSTOM,
   customID
 })
 

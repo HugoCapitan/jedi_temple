@@ -8,6 +8,7 @@ export const SET_AUTH_TOKEN = 'SET_AUTH_TOKEN'
  *****************/
 export const ADD_CUSTOM    = 'ADD_CUSTOM'
 export const REMOVE_CUSTOM = 'REMOVE_CUSTOM'
+export const SELECT_CUSTOM = 'SELECT_CUSTOM'
 export const UPDATE_CUSTOM = 'UPDATE_CUSTOM'
 
 /************

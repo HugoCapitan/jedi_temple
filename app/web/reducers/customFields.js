@@ -36,7 +36,9 @@ function customFields (state = initialState, action) {
     case REQUEST_CUSTOMFIELDS:
       return {...state, isFetching: true}
     case SELECT_CUSTOM:
-      return {...state, selected: action.selected}
+      return {...state, 
+        selected: state.items[action.customID]
+      }
     case UPDATE_CUSTOM:
       return { ...state, items: {
         ...state.items,
