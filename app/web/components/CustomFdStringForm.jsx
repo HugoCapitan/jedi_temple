@@ -21,7 +21,7 @@ class CustomFdStringForm extends React.Component {
     this.addValue = this.addValue.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleInputKeyPress = this.handleInputKeyPress.bind(this)
-    this.removeValue = this.handleChange.bind(this)
+    this.removeValue = this.removeValue.bind(this)
     this.toggleInput = this.toggleInput.bind(this)
   }
 
@@ -48,10 +48,13 @@ class CustomFdStringForm extends React.Component {
   }
 
   handleInputKeyPress(ev) {
-    if(ev.key == 'Enter') this.addValue()
+    if (ev.key === 'Enter') this.addValue()
   }
 
-  removeValue() {}  
+  removeValue(value) {
+    const newVals = this.props.values.filter(cVal => cVal.value != value)
+    this.props.reportChange('values', newVals)
+  }
 
   toggleInput() {
     this.setState({
@@ -67,7 +70,7 @@ class CustomFdStringForm extends React.Component {
         { this.state.openInput ?
           <div className={formStyles['inline-input__container']}>
             <TextField
-              floatingLabelText="New Value"
+              // floatingLabelText="New Value"
               className={formStyles['inline-input__input']}
               name={'newvalue'}
               autoFocus={true}
@@ -85,8 +88,9 @@ class CustomFdStringForm extends React.Component {
           :
           <ListItem
             primaryText="Add New Value"
+            // insetChildren={true}
             onClick={this.toggleInput}
-            rightIcon={ <IconContentAddCircle /> }
+            leftIcon={ <IconContentAddCircle /> }
           />
         }
         {this.props.values.map((value, index) => 
@@ -95,7 +99,7 @@ class CustomFdStringForm extends React.Component {
             primaryText={value.value}
             insetChildren={true}
             rightIconButton={
-              <IconButton onClick={() => { this.removeValue.call(this, value.value) } }>
+              <IconButton onClick={() => { this.removeValue(value.value) } }>
                 <IconContentRemoveCircle />
               </IconButton>
             }
