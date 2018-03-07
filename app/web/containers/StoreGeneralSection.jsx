@@ -68,7 +68,7 @@ const mapDispatchToProps = dispatch => ({
     add() {},
     config() { dispatch(changeSection('customs')) },
     remove() {},
-    select() {}
+    select() { dispatch(changeSection('productEdit')) }
   },
   topsActions: {
     add() {}, 
