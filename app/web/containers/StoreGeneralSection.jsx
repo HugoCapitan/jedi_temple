@@ -6,7 +6,7 @@ import Avatar from 'material-ui/Avatar'
 
 import Tile from '../components/Tile'
 
-import { changeSection } from '../actions'
+import { changeSection, selectProduct, selectNewProduct } from '../actions'
 
 import gridStyles from '../styles/grid'
 
@@ -65,10 +65,16 @@ const mapDispatchToProps = dispatch => ({
     select() {}
   },
   productsActions: {
-    add() {},
+    add() { 
+      dispatch(selectNewProduct()) 
+      dispatch(changeSection('productEdit')) 
+    },
     config() { dispatch(changeSection('customs')) },
     remove() {},
-    select() { dispatch(changeSection('productEdit')) }
+    select(id) { 
+      dispatch(selectProduct(id)) 
+      dispatch(changeSection('productEdit')) 
+    }
   },
   topsActions: {
     add() {}, 
