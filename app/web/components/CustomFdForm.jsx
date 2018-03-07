@@ -9,10 +9,14 @@ class CustomFdForm extends React.Component {
   constructor(props) {
     super(props)
     this.state = { ...props.custom }
+
+    this.handleChange = this.handleChange.bind(this)
   }
 
   handleChange(propKey, propVal) {
-
+    this.setState({
+      [propKey]: propVal
+    })
   }
 
   render() {
