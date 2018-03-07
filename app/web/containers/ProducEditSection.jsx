@@ -21,7 +21,9 @@ const ProductEditSectionComponent = ({customs, product, newProduct, goBack, save
   return (
     <div className={gridStyles['container']}>
       <TileHeader title={ product ? "Edit Product" : "New Product" } backAction={goBack} />
-      { form }
+      <div className={gridStyles['container-padded']}>
+        { form }
+      </div>
     </div>
   )
 }
