@@ -19,7 +19,7 @@ const initialState = {
   },
   requestError: null,
   route: 'kampamocha',
-  section: 'customs'
+  section: 'general'
 }
 
 const ui = (state = initialState, action) => {
