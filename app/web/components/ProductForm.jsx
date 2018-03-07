@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 
 import TextField from 'material-ui/TextField'
 
+import gridStyles from '../styles/grid'
+
 class ProductForm extends React.Component {
   constructor(props) {
     super(props)
@@ -19,8 +21,8 @@ class ProductForm extends React.Component {
 
   render() {
     return (
-      <div>
-        <div>
+      <div className={gridStyles['container']}>
+        <div className={gridStyles['half-column']}>
           <TextField
             floatingLabelText="Name"
             fullWidth={true}
