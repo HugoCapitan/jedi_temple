@@ -6,6 +6,8 @@ import Avatar from 'material-ui/Avatar'
 
 import Tile from '../components/Tile'
 
+import { changeSection } from '../actions'
+
 import gridStyles from '../styles/grid'
 
 const StoreGeneralSectionComponent = ({ messages, messagesActions, orders, ordersActions, products, productsActions, tops, topsActions }) => (
@@ -64,7 +66,7 @@ const mapDispatchToProps = dispatch => ({
   },
   productsActions: {
     add() {},
-    config() {},
+    config() { dispatch(changeSection('customs')) },
     remove() {},
     select() {}
   },

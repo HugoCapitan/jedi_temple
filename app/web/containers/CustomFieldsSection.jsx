@@ -14,7 +14,7 @@ import CollectionList from '../components/CollectionList'
 import CustomFdForm from '../components/CustomFdForm'
 import TileHeader from '../components/TileHeader'
 
-import { selectCustom, selectNewCustom } from '../actions'
+import { selectCustom, selectNewCustom, changeSection } from '../actions'
 
 import gridStyles from '../styles/grid'
 
@@ -60,7 +60,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onAdd() { dispatch(selectNewCustom()) },
-  onBack() {},
+  onBack() { dispatch(changeSection('general')) },
   onRemove() {},
   onSelect(cid) { dispatch(selectCustom(cid)) }
 })
