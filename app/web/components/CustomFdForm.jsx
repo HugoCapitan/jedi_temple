@@ -5,12 +5,35 @@ import CustomFdBaseForm from './CustomFdBaseForm'
 import CustomFdNumberForm from './CustomFdNumberForm'
 import CustomFdStringForm from './CustomFdStringForm'
 
+const newCustomBlueprint = { 
+  name: '', 
+  type: 'string', 
+  show: false, 
+  filter: false, 
+  values: [],
+  min: 'auto',
+  max: 'auto',
+  unit: '',
+  unit_place: 'before'
+}
+
 class CustomFdForm extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { ...props.custom }
+    
+    if (props.isNew)
+      this.state = { ...newCustomBlueprint }
+    else
+      this.state = { ...props.custom }
 
     this.handleChange = this.handleChange.bind(this)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isNew)
+      this.setState({ ...newCustomBlueprint })
+    else
+      this.setState({ ...nextProps.custom })
   }
 
   handleChange(propKey, propVal) {
@@ -26,6 +49,7 @@ class CustomFdForm extends React.Component {
     return (
       <div>
         <CustomFdBaseForm 
+          isTypeEditable={this.props.isNew}
           name={this.state.name}
           type={this.state.type}
           show={this.state.show}
@@ -49,7 +73,7 @@ class CustomFdForm extends React.Component {
 }
 
 CustomFdForm.propTypes = {
-  custom: PropTypes.object.isRequired,
+  custom: PropTypes.object,
   isNew: PropTypes.bool
 }
 

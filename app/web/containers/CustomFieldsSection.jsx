@@ -14,11 +14,11 @@ import CollectionList from '../components/CollectionList'
 import CustomFdForm from '../components/CustomFdForm'
 import TileHeader from '../components/TileHeader'
 
-import { selectCustom } from '../actions'
+import { selectCustom, selectNewCustom } from '../actions'
 
 import gridStyles from '../styles/grid'
 
-const CustomFieldsSectionComponent = ({ customs, selected, onAdd, onBack, onRemove, onSelect }) => (
+const CustomFieldsSectionComponent = ({ customs, selected, newSelected, onAdd, onBack, onRemove, onSelect }) => (
   <div className={gridStyles['container']}>
     <TileHeader 
       backAction={onBack}
@@ -37,6 +37,7 @@ const CustomFieldsSectionComponent = ({ customs, selected, onAdd, onBack, onRemo
     </div>
     <div className={gridStyles['big-span']}>
     { selected }
+    { newSelected }
     </div>
   </div>
 )
@@ -52,11 +53,12 @@ CustomFieldsSectionComponent.propTypes = {
 
 const mapStateToProps = state => ({
   customs: filterItems(state.customFields.items, state.ui.route).map(mapCustom),
-  selected: state.customFields.selected ? <CustomFdForm custom={state.customFields.selected} /> : ''
+  selected: state.customFields.selected ? <CustomFdForm custom={state.customFields.selected} /> : '',
+  newSelected: state.customFields.newSelected ? <CustomFdForm isNew={true} /> : ''
 })
 
 const mapDispatchToProps = dispatch => ({
-  onAdd() {},
+  onAdd() { dispatch(selectNewCustom()) },
   onBack() {},
   onRemove() {},
   onSelect(cid) { dispatch(selectCustom(cid)) }
