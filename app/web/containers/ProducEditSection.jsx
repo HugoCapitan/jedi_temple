@@ -5,35 +5,44 @@ import { connect } from 'react-redux'
 import ProductForm from '../components/ProductForm'
 import TileHeader from '../components/TileHeader'
 
-import ProductForm from '../components/ProductForm'
-
 import { changeSection } from '../actions'
 
 import gridStyles from '../styles/grid'
 
-const ProductEditSectionComponent = ({customs, product, newProduct, goBack}) => (
-  <div>
+const newProductBlueprint = { name: '', stock: '', price: '', description: '', customs: [] }
 
-  </div>
-)
+const ProductEditSectionComponent = ({customs, product, newProduct, goBack, save}) => {
+  let form
+  if (product) 
+    form = <ProductForm product={product} save={save} />
+  else if (newProduct)
+    form = <ProductForm product={newProductBlueprint} />
+
+  return (
+    <div className={gridStyles['container']}>
+      <TileHeader title={ product ? "Edit Product" : "New Product" } backAction={goBack} />
+      { form }
+    </div>
+  )
+}
 
 ProductEditSectionComponent.propTypes = {
   customs: PropTypes.array.isRequired,
   product: PropTypes.object,
-  newProduct: PropTypes.object,
-  goBack: PropTypes.func.isRequired
+  newProduct: PropTypes.bool,
+  goBack: PropTypes.func.isRequired,
+  save: PropTypes.func.isRequired
 }
 
-const newProductBlueprint = { name: '', stock: '', price: '', description: '', customs: [] }
-
 const mapStateToProps = state => ({
-  customs: filterItems(state.customFields.items),
-  product: state.products.selected ? <ProductForm product={state.products.selected} /> : undefined,
-  newProduct: state.products.newSelected ? <ProductForm product={newProductBlueprint} /> : undefined
+  customs: filterItems(state.customFields.items, state.ui.route),
+  product: state.products.selected,
+  newProduct: state.products.newSelected
 })
 
 const mapDispatchToProps = dispatch => ({
-  goBack() {}
+  goBack() { dispatch(changeSection('general')) },
+  save() {}
 })
 
 const ProductEditSection = connect(
@@ -44,3 +53,7 @@ const ProductEditSection = connect(
 export default ProductEditSection
 
 
+
+function filterItems(items, route) {
+  return Object.values(items).filter(i => i.store === route)
+}
