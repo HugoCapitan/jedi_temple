@@ -5,12 +5,14 @@ import {
   REMOVE_CUSTOM, 
   REQUEST_CUSTOMFIELDS,
   SELECT_CUSTOM,
+  SELECT_NEW_CUSTOM,
   UPDATE_CUSTOM 
 } from '../constants'
 
 const initialState = {
   isFetching: false,
   selected: undefined,
+  newSelected: false,
   items: {}
 }
 
@@ -36,8 +38,14 @@ function customFields (state = initialState, action) {
     case REQUEST_CUSTOMFIELDS:
       return {...state, isFetching: true}
     case SELECT_CUSTOM:
-      return {...state, 
+      return {...state,
+        newSelected: false,
         selected: state.items[action.customID]
+      }
+    case SELECT_NEW_CUSTOM:
+      return {...state,
+        newSelected: true,
+        selected: undefined
       }
     case UPDATE_CUSTOM:
       return { ...state, items: {
