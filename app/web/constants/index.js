@@ -17,6 +17,8 @@ export const UPDATE_CUSTOM = 'UPDATE_CUSTOM'
  ************/
 export const ADD_PRODUCT    = 'ADD_PRODUCT'
 export const REMOVE_PRODUCT = 'REMOVE_PRODUCT'
+export const SELECT_PRODUCT = 'SELECT_PRODUCT'
+export const SELECT_NEW_PRODUCT = 'SELECT_NEW_PRODUCT'
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
 
 /**************
