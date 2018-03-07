@@ -14,6 +14,9 @@ class CustomFdForm extends React.Component {
   }
 
   handleChange(propKey, propVal) {
+    if ((propKey === 'max' || propKey === 'min') && propVal != '0' && !+propVal) 
+      propVal = 'auto'
+
     this.setState({
       [propKey]: propVal
     })

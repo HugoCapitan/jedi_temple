@@ -5,6 +5,7 @@ import RadioButton from 'material-ui/RadioButton'
 import RadioButtonGroup from 'material-ui/RadioButton/RadioButtonGroup'
 import TextField from 'material-ui/TextField'
 
+import formStyles from '../styles/form'
 import gridStyles from '../styles/grid'
 
 const CustomFdNumberForm = ({ min, max, unit, unit_place, reportChange }) => (
@@ -13,14 +14,14 @@ const CustomFdNumberForm = ({ min, max, unit, unit_place, reportChange }) => (
       floatingLabelText="Min Value"
       fullWidth={true}
       name="min"
-      value={min}
+      value={ min != 'auto' ? min : '' }
       onChange={ev => { reportChange('min', ev.target.value) }}
     />
     <TextField 
       floatingLabelText="Max Value"
       fullWidth={true}
       name="max"
-      value={max}
+      value={ max != 'auto' ? max : '' }
       onChange={ev => { reportChange('max', ev.target.value) }}
     />
     <TextField 
@@ -38,10 +39,12 @@ const CustomFdNumberForm = ({ min, max, unit, unit_place, reportChange }) => (
       onChange={(e, v) => { reportChange('unit_place', v) }}
     >
       <RadioButton
+        className={formStyles['switch']}
         value="after"
         label="After Value"
       />
       <RadioButton
+        className={formStyles['switch']}
         value="before"
         label="Before Value"
       />
