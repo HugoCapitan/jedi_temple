@@ -45,7 +45,8 @@ const CustomFieldsSectionComponent = ({ customs, selected, newSelected, onAdd, o
 CustomFieldsSectionComponent.propTypes = {
   customs: PropTypes.array.isRequired,
   selected: PropTypes.object,
-  onAdd: PropTypes.array.isRequired,
+  newSelected: PropTypes.object,
+  onAdd: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
   onRemove: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired
@@ -53,8 +54,8 @@ CustomFieldsSectionComponent.propTypes = {
 
 const mapStateToProps = state => ({
   customs: filterItems(state.customFields.items, state.ui.route).map(mapCustom),
-  selected: state.customFields.selected ? <CustomFdForm custom={state.customFields.selected} /> : '',
-  newSelected: state.customFields.newSelected ? <CustomFdForm isNew={true} /> : ''
+  selected: state.customFields.selected ? <CustomFdForm custom={state.customFields.selected} /> : undefined,
+  newSelected: state.customFields.newSelected ? <CustomFdForm isNew={true} /> : undefined
 })
 
 const mapDispatchToProps = dispatch => ({
