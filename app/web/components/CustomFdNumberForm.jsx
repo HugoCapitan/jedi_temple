@@ -30,6 +30,7 @@ const CustomFdNumberForm = ({ min, max, unit, unit_place, reportChange }) => (
       value={unit}
       onChange={ev => { reportChange('unit', ev.target.value) }}
     />
+    <p>Unit Placement</p>
     <RadioButtonGroup 
       name="unit_place" 
       defaultSelected="after"
@@ -49,8 +50,8 @@ const CustomFdNumberForm = ({ min, max, unit, unit_place, reportChange }) => (
 )
 
 CustomFdNumberForm.propTypes = {
-  min: PropTypes.number.isRequired,
-  max: PropTypes.number.isRequired,
+  min: PropTypes.string.isRequired,
+  max: PropTypes.string.isRequired,
   unit: PropTypes.string.isRequired,
   unit_place: PropTypes.string.isRequired,
   reportChange: PropTypes.func.isRequired

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import CheckBox from 'material-ui/Checkbox'
+import Checkbox from 'material-ui/Checkbox'
 import ListItem from 'material-ui/List/ListItem'
 import MenuItem from 'material-ui/MenuItem'
 import SelectField from 'material-ui/SelectField'
@@ -28,10 +28,7 @@ const CustomFdBaseForm = ({ isTypeEditable, name, type, show, filter, reportChan
         <MenuItem value={'string'} primaryText="String" />
         <MenuItem value={'number'} primaryText="Number" />
       </SelectField> :
-      <ListItem 
-        disabled={true}
-        primaryText={`Type: ${type}`}
-      />
+      <p>Type: {type}</p>
     }
     <Checkbox
       label="Show In Site"
