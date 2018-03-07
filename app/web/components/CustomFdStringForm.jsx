@@ -15,6 +15,18 @@ class CustomFdStringForm extends React.Component {
     this.state = { openInput: false, inputVal: '' }
   }
 
+  openInput() {
+
+  }
+
+  handleChange() {
+
+  }
+
+  addValue() {}
+
+  removeValue() {}
+
   render() {
     return (
       <div>
@@ -40,7 +52,7 @@ class CustomFdStringForm extends React.Component {
             key={index}
             primaryText={value.value}
             rightIconButton={
-              <IconButton onClick={() => { this.handleRemoveValue.call(this, value.value) } }>
+              <IconButton onClick={() => { this.removeValue.call(this, value.value) } }>
                 <IconContentRemoveCircle />
               </IconButton>
             }
