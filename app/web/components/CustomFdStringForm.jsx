@@ -30,16 +30,17 @@ class CustomFdStringForm extends React.Component {
   render() {
     return (
       <div>
+        <p>Values:</p>
+        <Divider inset={true} />
         <ListItem
-          primaryText="values"
+          primaryText="Add New Value"
           rightIconButton={
             <IconButton onClick={() => { this.openInput() } }>
               <IconContentAddCircle />
             </IconButton>
           }
         />
-        <Divider inset={true} />
-        { openInput ? 
+        { this.state.openInput ? 
           <TextField 
             name={'newvalue'}
             value={this.state.inputVal}
@@ -51,6 +52,7 @@ class CustomFdStringForm extends React.Component {
           <ListItem
             key={index}
             primaryText={value.value}
+            insetChildren={true}
             rightIconButton={
               <IconButton onClick={() => { this.removeValue.call(this, value.value) } }>
                 <IconContentRemoveCircle />
