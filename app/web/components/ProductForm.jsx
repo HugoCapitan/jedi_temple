@@ -6,7 +6,7 @@ import TextField from 'material-ui/TextField'
 class ProductForm extends React.Component {
   constructor(props) {
     super(props)
-    this.sate = { ...props.product }
+    this.state = { ...props.product }
 
     this.handleChange = this.handleChange.bind(this)
   }
