@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -7,6 +8,7 @@ import MenuItem from 'material-ui/MenuItem'
 import SelectField from 'material-ui/SelectField'
 import TextField from 'material-ui/TextField'
 
+import formStyles from '../styles/form'
 import gridStyles from '../styles/grid'
 
 const CustomFdBaseForm = ({ isTypeEditable, name, type, show, filter, reportChange }) => (
@@ -28,9 +30,10 @@ const CustomFdBaseForm = ({ isTypeEditable, name, type, show, filter, reportChan
         <MenuItem value={'string'} primaryText="String" />
         <MenuItem value={'number'} primaryText="Number" />
       </SelectField> :
-      <p>Type: {type}</p>
+      <p>Field Type: {_.capitalize(type)}</p>
     }
     <Checkbox
+      className={formStyles['switch']}
       label="Show In Site"
       checked={show}
       onCheck={() => { reportChange('show', !show) }}
