@@ -1,9 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import FlatButton from 'material-ui/FlatButton'
+
 import CustomFdBaseForm from './CustomFdBaseForm'
 import CustomFdNumberForm from './CustomFdNumberForm'
 import CustomFdStringForm from './CustomFdStringForm'
+
+import formStyles from '../styles/form'
 
 const newCustomBlueprint = { 
   name: '', 
@@ -67,6 +71,9 @@ class CustomFdForm extends React.Component {
             reportChange={this.handleChange}
           /> 
         }
+        <div className={formStyles['bottom-actions']}>
+          <FlatButton label="Save" primary={true} />
+        </div>
       </div>
     )
   }
