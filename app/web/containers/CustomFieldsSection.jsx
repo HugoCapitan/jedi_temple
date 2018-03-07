@@ -11,8 +11,7 @@ import {
 } from 'material-ui/styles/colors'
 
 import CollectionList from '../components/CollectionList'
-import CustomFdNumberForm from '../components/CustomFdNumberForm'
-import CustomFdStringForm from '../components/CustomFdStringForm'
+import CustomFdForm from '../components/CustomFdForm'
 import TileHeader from '../components/TileHeader'
 
 import { selectCustom } from '../actions'
@@ -53,7 +52,7 @@ CustomFieldsSectionComponent.propTypes = {
 
 const mapStateToProps = state => ({
   customs: filterItems(state.customFields.items, state.ui.route).map(mapCustom),
-  selected: getSelectedCustomForm(state.customFields.selected)
+  selected: state.customFields.selected ? <CustomFdForm custom={state.customFields.selected} /> : ''
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -89,12 +88,4 @@ function getAvatar(type) {
   return type === 'string' 
   ? <Avatar backgroundColor={orange500}>S</Avatar> 
   : <Avatar backgroundColor={blue500}>N</Avatar>
-}
-
-function getSelectedCustomForm(selected) {
-  if (!selected) return ''
-
-  return selected.type === 'string' 
-  ? <CustomFdStringForm custom={selected} />
-  : <CustomFdSNumberForm custom={selected} />    
 }
