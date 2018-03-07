@@ -70,7 +70,6 @@ class CustomFdStringForm extends React.Component {
         { this.state.openInput ?
           <div className={formStyles['inline-input__container']}>
             <TextField
-              // floatingLabelText="New Value"
               className={formStyles['inline-input__input']}
               name={'newvalue'}
               autoFocus={true}
@@ -88,7 +87,6 @@ class CustomFdStringForm extends React.Component {
           :
           <ListItem
             primaryText="Add New Value"
-            // insetChildren={true}
             onClick={this.toggleInput}
             leftIcon={ <IconContentAddCircle /> }
           />
