@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 
 import TextField from 'material-ui/TextField'
 
+import ProductCustomsForm from './ProductCustomsForm'
+
 import gridStyles from '../styles/grid'
 
 class ProductForm extends React.Component {
@@ -11,11 +13,18 @@ class ProductForm extends React.Component {
     this.state = { ...props.product }
 
     this.handleChange = this.handleChange.bind(this)
+    this.handleCustomsChange = this.handleCustomsChange.bind(this)
   }
 
   handleChange(event) {
     this.setState({
       [event.target.name]: event.target.value
+    })
+  }
+
+  handleCustomsChange(newCustoms) {
+    this.setState({
+      customs: newCustoms
     })
   }
 
@@ -56,6 +65,13 @@ class ProductForm extends React.Component {
             value={this.state.description}
           />
         </div>
+        <div className={gridStyles['half-column']}>
+          <ProductCustomsForm 
+            customs={this.props.customs}
+            prodCustoms={this.state.customs}
+            reportChange={this.handleCustomsChange}
+          />
+        </div>
       </div>
     )
   }
@@ -63,6 +79,7 @@ class ProductForm extends React.Component {
 
 ProductForm.propTypes = {
   product: PropTypes.object.isRequired,
+  customs: PropTypes.array.isRequired,
   save: PropTypes.func.isRequired
 }
 
