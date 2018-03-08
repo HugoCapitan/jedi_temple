@@ -14,9 +14,9 @@ const newProductBlueprint = { name: '', stock: '', price: '', description: '', c
 const ProductEditSectionComponent = ({customs, product, newProduct, goBack, save}) => {
   let form
   if (product) 
-    form = <ProductForm product={product} save={save} />
+    form = <ProductForm product={product} customs={customs} save={save} />
   else if (newProduct)
-    form = <ProductForm product={newProductBlueprint} />
+    form = <ProductForm product={newProductBlueprint} customs={customs} save={save} />
 
   return (
     <div className={gridStyles['container']}>
