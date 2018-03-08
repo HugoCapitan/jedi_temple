@@ -28,7 +28,7 @@ Tile.propTypes = {
     back: PropTypes.func,
     config: PropTypes.func,
     select: PropTypes.func,
-    remove: PropTypes.func,
+    remove: PropTypes.func
   }).isRequired,
   classes: PropTypes.string.isRequired,
   items: PropTypes.array.isRequired,
