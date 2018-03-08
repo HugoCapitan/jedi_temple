@@ -4,17 +4,28 @@ import { connect } from 'react-redux'
 
 import Avatar from 'material-ui/Avatar'
 
+import TableTile from '../components/TableTile'
 import Tile from '../components/Tile'
 
 import { changeSection, selectProduct, selectNewProduct } from '../actions'
 
 import gridStyles from '../styles/grid'
 
+const orderTableColumns = [
+  {display: 'Date', field: 'created_at'}, 
+  {display: 'Status', field: 'status'}, 
+  {display: 'Email', field: 'email'}, 
+  {display: 'Total', field: 'total'}, 
+  {display: 'Order Code', field: 'order_code'},
+  {display: 'Tracking #', field: 'tracking_code'}
+]
+
 const StoreGeneralSectionComponent = ({ messages, messagesActions, orders, ordersActions, products, productsActions, tops, topsActions }) => (
   <div className={gridStyles['container']}>
-    <Tile
+    <TableTile
       actions={ordersActions}
       classes={ [gridStyles['big-tile'], gridStyles['left-tile']].join(' ') }
+      columns={orderTableColumns}
       items={orders}
       title="Orders"
     />
