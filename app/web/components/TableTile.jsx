@@ -13,6 +13,8 @@ import {
 
 import TileHeader from './TileHeader'
 
+import tableStyles from '../styles/table'
+
 const TableTile = ({ actions, classes, columns, items, title }) => (
   <Paper className={classes}>
     <TileHeader 
@@ -21,7 +23,7 @@ const TableTile = ({ actions, classes, columns, items, title }) => (
       configAction={actions.config}
       title={title}
     />
-    <Table>
+    <Table className={tableStyles['tile-table']} >
       <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
         <TableRow>
         {columns.map((col, ind) => 
