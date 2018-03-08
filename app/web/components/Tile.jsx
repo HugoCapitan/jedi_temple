@@ -6,11 +6,11 @@ import Paper from 'material-ui/Paper'
 import CollectionList from './CollectionList'
 import TileHeader from './TileHeader'
 
-const Tile = ({ actions, classes, goBack, items, title }) => (
+const Tile = ({ actions, classes, items, title }) => (
   <Paper className={classes} >
     <TileHeader
       addAction={actions.add}
-      backAction={goBack}
+      backAction={actions.back}
       configAction={actions.config}
       title={title}
     />
@@ -25,14 +25,14 @@ const Tile = ({ actions, classes, goBack, items, title }) => (
 Tile.propTypes = {
   actions: PropTypes.shape({
     add: PropTypes.func,
+    back: PropTypes.func,
     config: PropTypes.func,
     select: PropTypes.func,
-    remove: PropTypes.func
+    remove: PropTypes.func,
   }).isRequired,
   classes: PropTypes.string.isRequired,
   items: PropTypes.array.isRequired,
-  title: PropTypes.string.isRequired,
-  goBack: PropTypes.func  
+  title: PropTypes.string.isRequired
 }
 
 export default Tile
