@@ -36,8 +36,10 @@ const CustomFieldsSectionComponent = ({ customs, selected, newSelected, onAdd, o
       />
     </div>
     <div className={gridStyles['big-span']}>
-    { selected }
-    { newSelected }
+      <div className={gridStyles['container-padded']}>
+        { selected }
+        { newSelected }
+      </div>
     </div>
   </div>
 )
