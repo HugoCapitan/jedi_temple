@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
@@ -12,10 +13,9 @@ import { changeSection, selectProduct, selectNewProduct } from '../actions'
 import gridStyles from '../styles/grid'
 
 const orderTableColumns = [
-  {display: 'Date', field: 'created_at'}, 
+  {display: 'Date', field: 'display_date'}, 
   {display: 'Status', field: 'status'}, 
-  {display: 'Email', field: 'email'}, 
-  {display: 'Total', field: 'total'}, 
+  {display: 'Client Email', field: 'email'}, 
   {display: 'Order Code', field: 'order_code'},
   {display: 'Tracking #', field: 'tracking_code'}
 ]
@@ -63,7 +63,7 @@ StoreGeneralSectionComponent.propTypes = {
 
 const mapStateToProps = state => ({
   messages: [],
-  orders: filterItems(state.orders.items, state.ui.route),
+  orders: filterItems(state.orders.items, state.ui.route).map(mapOrder),
   products: filterItems(state.products.items, state.ui.route).map(mapProduct),
   tops: []
 })
@@ -103,6 +103,13 @@ export default StoreGeneralSection
 
 function filterItems(items, route) {
   return Object.values(items).filter(i => i.store === route)
+}
+
+function mapOrder(o) {
+  return ({
+    ...o,
+    display_date: moment(o.created_at).format('MMMM do, YYYY')
+  })
 }
 
 function mapProduct(p) {
