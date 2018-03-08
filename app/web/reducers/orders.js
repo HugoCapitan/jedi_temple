@@ -7,15 +7,15 @@ const initialState = {
 
 function orders (state = initialState, action) {
   switch (action.type) {
-    case RECEIVE_ORDERS:
+    case REQUEST_ORDERS:
       return {
         ...state,
         isFetching: true
       }
-    case REQUEST_ORDERS:
+    case RECEIVE_ORDERS:
       return {
         ...state,
-        items: action.orders.reduce((acc, order) => ({...acc, [order._id]: order }), {})
+        items: action.items.reduce((acc, order) => ({...acc, [order._id]: order }), {})
       }
     default:
       return state
