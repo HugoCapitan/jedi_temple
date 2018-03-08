@@ -29,6 +29,19 @@ const TableTile = ({ actions, classes, columns, items, title }) => (
         )}
         </TableRow>        
       </TableHeader>
+      <TableBody
+        displayRowCheckbox={false}
+        showRowHover={true}
+        stripedRows={false}
+      >
+      {items.map((item, ind) => 
+        <TableRow key={ind}>
+        {columns.map((col, ind) => 
+          <TableRowColumn key={ind}>{item[col.field]}</TableRowColumn>          
+        )}
+        </TableRow>
+      )}
+      </TableBody>
     </Table>
   </Paper>
 )
