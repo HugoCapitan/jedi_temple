@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import CustomFieldsSection from './CustomFieldsSection'
+import OrderDetailSection from './OrderDetailSection'
 import ProductEditSection from './ProducEditSection'
 import StoreGeneralSection from './StoreGeneralSection'
 
@@ -11,6 +12,7 @@ const CurrentSectionComponent = ({ section }) => {
   let displaySection = ''
 
   if (section === 'customs') displaySection = <CustomFieldsSection />
+  if (section === 'orderDetail') displaySection = <OrderDetailSection />
   if (section === 'productEdit') displaySection = <ProductEditSection />
   if (section === 'general') displaySection = <StoreGeneralSection />
 
