@@ -73,7 +73,7 @@ const mapDispatchToProps = dispatch => ({
     select() {}
   },
   ordersActions: {
-    select() {}
+    select() { dispatch(changeSection('orderDetail')) }
   },
   productsActions: {
     add() { 
