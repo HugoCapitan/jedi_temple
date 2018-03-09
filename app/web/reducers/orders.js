@@ -1,8 +1,9 @@
-import { REQUEST_ORDERS, RECEIVE_ORDERS } from '../constants'
+import { REQUEST_ORDERS, RECEIVE_ORDERS, SELECT_ORDER } from '../constants'
 
 const initialState = {
   isFetching: false,
-  items: []
+  items: [],
+  selected: undefined
 }
 
 function orders (state = initialState, action) {
@@ -16,6 +17,11 @@ function orders (state = initialState, action) {
       return {
         ...state,
         items: action.items.reduce((acc, order) => ({...acc, [order._id]: order }), {})
+      }
+    case SELECT_ORDER:
+      return {
+        ...state,
+        selected: state.items[action.orderID]
       }
     default:
       return state

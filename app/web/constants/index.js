@@ -12,6 +12,11 @@ export const SELECT_CUSTOM = 'SELECT_CUSTOM'
 export const SELECT_NEW_CUSTOM = 'SELECT_NEW_CUSTOM'
 export const UPDATE_CUSTOM = 'UPDATE_CUSTOM'
 
+/**********
+ * ORDERS *
+ **********/
+export const SELECT_ORDER = 'SELECT_ORDER'
+
 /************
  * PRODUCTS *
  ************/
