@@ -8,7 +8,7 @@ import Avatar from 'material-ui/Avatar'
 import TableTile from '../components/TableTile'
 import Tile from '../components/Tile'
 
-import { changeSection, selectProduct, selectNewProduct } from '../actions'
+import { changeSection, selectProduct, selectNewProduct, selectOrder } from '../actions'
 
 import gridStyles from '../styles/grid'
 
@@ -73,7 +73,10 @@ const mapDispatchToProps = dispatch => ({
     select() {}
   },
   ordersActions: {
-    select() { dispatch(changeSection('orderDetail')) }
+    select(id) { 
+      dispatch(selectOrder(id))
+      dispatch(changeSection('orderDetail')) 
+    }
   },
   productsActions: {
     add() { 
