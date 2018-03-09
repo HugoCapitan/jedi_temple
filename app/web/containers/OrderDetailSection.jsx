@@ -5,8 +5,11 @@ import { connect } from 'react-redux'
 import TileHeader from '../components/TileHeader'
 import OrderDetail from '../components/OrderDetail'
 
-const OrderDetailSectionComponent = ({ selectedOrder, onSave }) => (
+import { changeSection } from '../actions'
+
+const OrderDetailSectionComponent = ({ selectedOrder, onBack, onSave }) => (
   <div>
+    <TileHeader title="Order Detail" backAction={onBack} />
     <OrderDetail order={selectedOrder} onSave={onSave} />
   </div>
 )
@@ -21,6 +24,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
+  onBack() { dispatch(changeSection('general')) },
   onSave() { }
 })
 
