@@ -34,21 +34,35 @@ class OrderDetail extends React.Component {
   render() {
     return (
       <div className={gridStyles['container-padded__full']}> 
-        <div className={formStyles['const-field']}>
-          <small>Email:</small>
-          <p>{this.props.order.email}</p>
+        <div className={gridStyles['half-container']}>
+          <div className={formStyles['const-field']}>
+            <small>Email:</small>
+            <p>{this.props.order.email}</p>
+          </div>
+          <div className={formStyles['const-field']}>
+            <small>Order Code:</small>
+            <p>{this.props.order.order_code}</p>
+          </div>
+          <TextField
+            floatingLabelText="Tracking Number"
+            fullWidth={true}
+            name="tracking_number"
+            onChange={this.handleTrackingChange}
+            value={this.state.tracking_number}
+          />
+          <div className={formStyles['const-field']}>
+            <small>Order Code:</small>
+            <p>{this.props.order.order_code}</p>
+          </div>
+          <div className={formStyles['const-field']}>
+            <small>Order Code:</small>
+            <p>{this.props.order.order_code}</p>
+          </div>
         </div>
-        <div className={formStyles['const-field']}>
-          <small>Order Code:</small>
-          <p>{this.props.order.order_code}</p>
+        <div className={gridStyles['half-container']}>
+          
         </div>
-        <TextField
-          floatingLabelText="Tracking Number"
-          fullWidth={true}
-          name="tracking_number"
-          onChange={this.handleTrackingChange}
-          value={this.state.tracking_number}
-        />
+        
         <SelectField
             floatingLabelText="Status"
             fullWidth={true}
