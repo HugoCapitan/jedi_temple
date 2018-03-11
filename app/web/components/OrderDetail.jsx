@@ -24,17 +24,21 @@ class OrderDetail extends React.Component {
   }
 
   handleTrackingChange(event) {
-
+    this.setState({
+      tracking_code: event.target.name
+    })
   }
 
-  handleStatusChange() {
-
+  handleStatusChange(value) {
+    this.setState({
+      status: value
+    })
   }
 
   render() {
     return (
       <div className={gridStyles['container-padded__full']}> 
-        <div className={gridStyles['half-container']}>
+        <div className={gridStyles['half-column']}>
           <div className={formStyles['const-field']}>
             <small>Email:</small>
             <p>{this.props.order.email}</p>
@@ -59,11 +63,8 @@ class OrderDetail extends React.Component {
             <p>{this.props.order.order_code}</p>
           </div>
         </div>
-        <div className={gridStyles['half-container']}>
-          
-        </div>
-        
-        <SelectField
+        <div className={gridStyles['half-column']}>
+          <SelectField
             floatingLabelText="Status"
             fullWidth={true}
             name="status"
@@ -74,6 +75,7 @@ class OrderDetail extends React.Component {
               <MenuItem key={index} value={status} primaryText={status} />
             ))}
           </SelectField>
+        </div>
       </div>
     )
   }
