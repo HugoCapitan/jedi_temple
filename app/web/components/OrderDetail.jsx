@@ -40,11 +40,11 @@ class OrderDetail extends React.Component {
       <div className={gridStyles['container-padded__full']}> 
         <div className={gridStyles['half-column']}>
           <div className={formStyles['const-field']}>
-            <small>Email:</small>
+            <small>Email</small>
             <p>{this.props.order.email}</p>
           </div>
           <div className={formStyles['const-field']}>
-            <small>Order Code:</small>
+            <small>Order Code</small>
             <p>{this.props.order.order_code}</p>
           </div>
           <TextField
@@ -54,16 +54,6 @@ class OrderDetail extends React.Component {
             onChange={this.handleTrackingChange}
             value={this.state.tracking_number}
           />
-          <div className={formStyles['const-field']}>
-            <small>Order Code:</small>
-            <p>{this.props.order.order_code}</p>
-          </div>
-          <div className={formStyles['const-field']}>
-            <small>Order Code:</small>
-            <p>{this.props.order.order_code}</p>
-          </div>
-        </div>
-        <div className={gridStyles['half-column']}>
           <SelectField
             floatingLabelText="Status"
             fullWidth={true}
@@ -75,6 +65,20 @@ class OrderDetail extends React.Component {
               <MenuItem key={index} value={status} primaryText={status} />
             ))}
           </SelectField>
+          <div className={formStyles['const-field']}>
+            <small>Payment Method</small>
+            <p>{this.props.order.payment_method}</p>
+          </div>
+          <div className={formStyles['const-field']}>
+            <small>Payment Id</small>
+            <p>{this.props.order.payment_id}</p>
+          </div>
+          <div className={formStyles['const-field']}>
+            <small>Shipping</small>
+            <p>{this.props.order.shipping}</p>
+          </div>
+        </div>
+        <div className={gridStyles['half-column']}>
         </div>
       </div>
     )
