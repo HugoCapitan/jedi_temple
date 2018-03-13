@@ -17,25 +17,25 @@ const OrderDetailGeneral = ({ order, reportChange }) => (
   <div>
     <div className={formStyles['const-field']}>
       <small>Email</small>
-      <p>{this.props.order.email}</p>
+      <p>{order.email}</p>
     </div>
     <div className={formStyles['const-field']}>
       <small>Order Code</small>
-      <p>{this.props.order.order_code}</p>
+      <p>{order.order_code}</p>
     </div>
     <TextField
       floatingLabelText="Tracking Number"
       fullWidth={true}
       name="tracking_number"
       onChange={(e) => { reportChange('tracking_number', e.target.value) }}
-      value={this.state.tracking_number}
+      value={order.tracking_number}
     />
     <SelectField
       floatingLabelText="Status"
       fullWidth={true}
       name="status"
       onChange={(e, i, v) => { reportChange('status', v) }}
-      value={this.state.status}
+      value={order.status}
     >
       {statuses.map((status, index) => (
         <MenuItem key={index} value={status} primaryText={status} />
@@ -43,15 +43,15 @@ const OrderDetailGeneral = ({ order, reportChange }) => (
     </SelectField>
     <div className={formStyles['const-field']}>
       <small>Payment Method</small>
-      <p>{this.props.order.payment_method}</p>
+      <p>{order.payment_method}</p>
     </div>
     <div className={formStyles['const-field']}>
       <small>Payment Id</small>
-      <p>{this.props.order.payment_id}</p>
+      <p>{order.payment_id}</p>
     </div>
     <div className={formStyles['const-field']}>
       <small>Shipping</small>
-      <p>{this.props.order.shipping}</p>
+      <p>{order.shipping}</p>
     </div>
   </div>
 )
