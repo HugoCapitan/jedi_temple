@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types' 
 
-import MenuItem from 'material-ui/MenuItem'
-import SelectField from 'material-ui/SelectField'
-import TextField from 'material-ui/TextField'
+import IconButton from 'material-ui/IconButton'
+import IconEditorModeEdit from 'material-ui/svg-icons/editor/mode-edit'
 import {
   Table,
   TableBody,
@@ -39,7 +38,12 @@ const OrderDetailGeneral = ({ order, openEditDialog }) => (
       </TableRow>
       <TableRow className={tableStyles['black-first-column']}>
         <TableRowColumn> Status </TableRowColumn>
-        <TableRowColumn> {order.status} </TableRowColumn>
+        <TableRowColumn> 
+          {order.status}  
+          <IconButton style={{width: '32px', height: '32px', padding: '4px'}} iconStyle={{width: '16px', height: '16px'}}>
+            <IconEditorModeEdit />
+          </IconButton>
+        </TableRowColumn>
       </TableRow>
       <TableRow className={tableStyles['black-first-column']}>
         <TableRowColumn> Tracking Number </TableRowColumn>
