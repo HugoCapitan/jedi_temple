@@ -38,7 +38,7 @@ class OrderDetail extends React.Component {
             </Tab>
             <Tab label="Ordered Products" value="products">
               <div className={gridStyles['container-padded']}>
-                Products
+                <OrderDetailProducts products={this.state.order.products} />
               </div>
             </Tab>
           </Tabs>
