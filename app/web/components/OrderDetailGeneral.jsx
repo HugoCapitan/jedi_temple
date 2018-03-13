@@ -4,8 +4,18 @@ import PropTypes from 'prop-types'
 import MenuItem from 'material-ui/MenuItem'
 import SelectField from 'material-ui/SelectField'
 import TextField from 'material-ui/TextField'
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn
+} from 'material-ui/Table'
+
 
 import formStyles from '../styles/form'
+import tableStyles from '../styles/table'
 
 const statuses = [
   'Pending', 'Awaiting Payment', 'Awaiting Fulfillment', 'Awaiting Shipment', 'Awaiting Pickup',
@@ -13,47 +23,46 @@ const statuses = [
   'Verification Required', 'Partially Refunded'
 ]
 
-const OrderDetailGeneral = ({ order, reportChange }) => (
-  <div>
-    <div className={formStyles['const-field']}>
-      <small>Email</small>
-      <p>{order.email}</p>
-    </div>
-    <div className={formStyles['const-field']}>
-      <small>Order Code</small>
-      <p>{order.order_code}</p>
-    </div>
-    <TextField
-      floatingLabelText="Tracking Number"
-      fullWidth={true}
-      name="tracking_number"
-      onChange={(e) => { reportChange('tracking_number', e.target.value) }}
-      value={order.tracking_number}
-    />
-    <SelectField
-      floatingLabelText="Status"
-      fullWidth={true}
-      name="status"
-      onChange={(e, i, v) => { reportChange('status', v) }}
-      value={order.status}
+const OrderDetailGeneral = ({ order, openEditDialog }) => (
+  <Table>
+    <TableBody
+      displayRowCheckbox={false}
+      showRowHover={false}
     >
-      {statuses.map((status, index) => (
-        <MenuItem key={index} value={status} primaryText={status} />
-      ))}
-    </SelectField>
-    <div className={formStyles['const-field']}>
-      <small>Payment Method</small>
-      <p>{order.payment_method}</p>
-    </div>
-    <div className={formStyles['const-field']}>
-      <small>Payment Id</small>
-      <p>{order.payment_id}</p>
-    </div>
-    <div className={formStyles['const-field']}>
-      <small>Shipping</small>
-      <p>{order.shipping}</p>
-    </div>
-  </div>
+      <TableRow className={tableStyles['black-first-column']}>
+        <TableRowColumn> Email </TableRowColumn>
+        <TableRowColumn> {order.email} </TableRowColumn>
+      </TableRow>
+      <TableRow className={tableStyles['black-first-column']}>
+        <TableRowColumn> Order Code </TableRowColumn>
+        <TableRowColumn> {order.order_code} </TableRowColumn>
+      </TableRow>
+      <TableRow className={tableStyles['black-first-column']}>
+        <TableRowColumn> Status </TableRowColumn>
+        <TableRowColumn> {order.status} </TableRowColumn>
+      </TableRow>
+      <TableRow className={tableStyles['black-first-column']}>
+        <TableRowColumn> Tracking Number </TableRowColumn>
+        <TableRowColumn> {order.tracking_number} </TableRowColumn>
+      </TableRow>
+      <TableRow className={tableStyles['black-first-column']}>
+        <TableRowColumn> Shipping Cost </TableRowColumn>
+        <TableRowColumn> US$ {order.shipping} </TableRowColumn>
+      </TableRow>
+      <TableRow className={tableStyles['black-first-column']}>
+        <TableRowColumn> Total </TableRowColumn>
+        <TableRowColumn> US$ {order.total} </TableRowColumn>
+      </TableRow>
+      <TableRow className={tableStyles['black-first-column']}>
+        <TableRowColumn> Payment Method </TableRowColumn>
+        <TableRowColumn> {order.payment_method} </TableRowColumn>
+      </TableRow>
+      <TableRow className={tableStyles['black-first-column']}>
+        <TableRowColumn> Payment ID </TableRowColumn>
+        <TableRowColumn> {order.payment_id} </TableRowColumn>
+      </TableRow>
+    </TableBody>
+  </Table>
 )
 
 OrderDetailGeneral.propTypes = {
