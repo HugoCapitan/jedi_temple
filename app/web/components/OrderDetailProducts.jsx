@@ -11,6 +11,7 @@ import {
 } from 'material-ui/Table'
 
 import gridStyles from '../styles/grid'
+import tableStyles from '../styles/table'
 
 class OrderDetailProducts extends React.Component { 
   constructor(props) {
@@ -20,8 +21,9 @@ class OrderDetailProducts extends React.Component {
     this.handleSelection = this.handleSelection.bind(this)
   }
 
-  handleSelection(row) {
-    console.log(row)
+  handleSelection(rows) {
+    const selectedRow = rows[0]
+    this.setState({ selected: this.props.products[selectedRow] })
   }
   
   render() {
@@ -51,8 +53,45 @@ class OrderDetailProducts extends React.Component {
             </TableBody>
           </Table>
         </div>
-        <div className={gridStyles['flex-col__half']}> 
-        </div>
+        { this.state.selected ? 
+          <div className={gridStyles['flex-col__half']}> 
+            <Table
+              onRowSelection={this.handleSelection}
+            >
+              <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                <TableRow>
+                  <TableHeaderColumn>Product Details: {this.state.selected.name} </TableHeaderColumn>
+                </TableRow>
+              </TableHeader>
+              <TableBody
+                displayRowCheckbox={false}
+              >
+                <TableRow className={tableStyles['black-first-column']}>
+                  <TableRowColumn> Name </TableRowColumn>
+                  <TableRowColumn> {this.state.selected.name} </TableRowColumn>
+                </TableRow>
+                <TableRow className={tableStyles['black-first-column']}>
+                  <TableRowColumn> Code </TableRowColumn>
+                  <TableRowColumn> {this.state.selected.code} </TableRowColumn>
+                </TableRow>
+                <TableRow className={tableStyles['black-first-column']}>
+                  <TableRowColumn> Price </TableRowColumn>
+                  <TableRowColumn> {this.state.selected.price} </TableRowColumn>
+                </TableRow>
+                <TableRow className={tableStyles['black-first-column']}>
+                  <TableRowColumn> Quantity </TableRowColumn>
+                  <TableRowColumn> {this.state.selected.quantity} </TableRowColumn>
+                </TableRow>
+                <TableRow className={tableStyles['black-first-column']}>
+                  <TableRowColumn> Customs </TableRowColumn>
+                  <TableRowColumn> </TableRowColumn>
+                </TableRow>
+             </TableBody>
+            </Table>           
+          </div>
+          :
+          ''
+        }
       </div>
     )
   }
