@@ -39,46 +39,11 @@ class OrderDetail extends React.Component {
     return (
       <div className={gridStyles['container-padded__full']}> 
         <div className={gridStyles['half-column']}>
-          <div className={formStyles['const-field']}>
-            <small>Email</small>
-            <p>{this.props.order.email}</p>
-          </div>
-          <div className={formStyles['const-field']}>
-            <small>Order Code</small>
-            <p>{this.props.order.order_code}</p>
-          </div>
-          <TextField
-            floatingLabelText="Tracking Number"
-            fullWidth={true}
-            name="tracking_number"
-            onChange={this.handleTrackingChange}
-            value={this.state.tracking_number}
-          />
-          <SelectField
-            floatingLabelText="Status"
-            fullWidth={true}
-            name="status"
-            onChange={(e, i, v) => { this.handleStatusChange(v) }}
-            value={this.state.status}
-          >
-            {statuses.map((status, index) => (
-              <MenuItem key={index} value={status} primaryText={status} />
-            ))}
-          </SelectField>
-          <div className={formStyles['const-field']}>
-            <small>Payment Method</small>
-            <p>{this.props.order.payment_method}</p>
-          </div>
-          <div className={formStyles['const-field']}>
-            <small>Payment Id</small>
-            <p>{this.props.order.payment_id}</p>
-          </div>
-          <div className={formStyles['const-field']}>
-            <small>Shipping</small>
-            <p>{this.props.order.shipping}</p>
-          </div>
         </div>
         <div className={gridStyles['half-column']}>
+          <div>
+            <h2> Products </h2>
+          </div>
         </div>
       </div>
     )
