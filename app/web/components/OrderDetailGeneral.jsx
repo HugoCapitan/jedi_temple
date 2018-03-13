@@ -71,7 +71,7 @@ const OrderDetailGeneral = ({ order, openEditDialog }) => (
 
 OrderDetailGeneral.propTypes = {
   order: PropTypes.object.isRequired,
-  reportChange: PropTypes.func.isRequired
+  openEditDialog: PropTypes.func.isRequired
 }
 
 export default OrderDetailGeneral
