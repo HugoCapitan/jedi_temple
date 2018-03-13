@@ -1,49 +1,64 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import MenuItem from 'material-ui/MenuItem'
-import SelectField from 'material-ui/SelectField'
-import TextField from 'material-ui/TextField'
+import { Tabs, Tab } from 'material-ui/Tabs'
+
+import OrderDetailAddress from './OrderDetailAddress'
+import OrderDetailGeneral from './OrderDetailGeneral'
+import OrderDetailProducts from './OrderDetailProducts'
 
 import gridStyles from '../styles/grid'
-import formStyles from '../styles/form'
-
-const statuses = [
-  'Pending', 'Awaiting Payment', 'Awaiting Fulfillment', 'Awaiting Shipment', 'Awaiting Pickup',
-  'Partially Shipped', 'Completed', 'Shipped', 'Cancelled', 'Declined', 'Refunded', 'Disputed',
-  'Verification Required', 'Partially Refunded'
-]
 
 class OrderDetail extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { ...props.order }
+    this.state = { first_tab: 'general', second_tab: 'shipping', order: props.order }
 
-    this.handleTrackingChange = this.handleTrackingChange.bind(this)
-    this.handleStatusChange   = this.handleStatusChange.bind(this)
+    this.handleTabChange = this.handleTabChange.bind(this)
   }
 
-  handleTrackingChange(event) {
+  handleTabChange(tab, value) {
     this.setState({
-      tracking_code: event.target.name
-    })
-  }
-
-  handleStatusChange(value) {
-    this.setState({
-      status: value
+      [tab]: value
     })
   }
 
   render() {
     return (
-      <div className={gridStyles['container-padded__full']}> 
-        <div className={gridStyles['half-column']}>
+      <div className={gridStyles['container']}> 
+        <div className={gridStyles['half-span']}>
+          <Tabs
+            value={this.state.first_tab}
+            onChange={(val) => { this.handleTabChange('first_tab', val) }}
+          >
+            <Tab label="General Info" value="general">
+              <div className={gridStyles['container-padded']}>
+                <OrderDetailGeneral order={this.state.order} />
+              </div>
+            </Tab>
+            <Tab label="Ordered Products" value="products">
+              <div className={gridStyles['container-padded']}>
+                Products
+              </div>
+            </Tab>
+          </Tabs>
         </div>
-        <div className={gridStyles['half-column']}>
-          <div>
-            <h2> Products </h2>
-          </div>
+        <div className={gridStyles['half-span']}>
+          <Tabs
+            value={this.state.second_tab}
+            onChange={(val) => { this.handleTabChange('second_tab', val) }}
+          >
+            <Tab label="Shipping Address" value="shipping">
+              <div className={gridStyles['container-padded']}>
+                Shipping Address
+              </div>
+            </Tab>
+            <Tab label="Billing Address" value="billing">
+              <div className={gridStyles['container-padded']}>
+                Billing Address
+              </div>
+            </Tab>
+          </Tabs>
         </div>
       </div>
     )
