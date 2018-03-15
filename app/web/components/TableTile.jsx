@@ -23,7 +23,7 @@ const TableTile = ({ actions, classes, columns, items, title }) => (
       configAction={actions.config}
       title={title}
     />
-    <Table className={tableStyles['tile-table']} onCellClick={(rown) => { actions.select(items[rown]._id) }}>
+    <Table className={tableStyles['pointer-table']} onCellClick={(rown) => { actions.select(items[rown]._id) }}>
       <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
         <TableRow>
         {columns.map((col, ind) => 
