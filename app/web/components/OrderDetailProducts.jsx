@@ -23,7 +23,10 @@ class OrderDetailProducts extends React.Component {
 
   handleSelection(rows) {
     const selectedRow = rows[0]
-    this.setState({ selected: this.props.products[selectedRow] })
+    if (this.state.selected && this.state.selected.name === this.props.products[selectedRow].name)
+      this.setState({ selected: undefined })
+    else 
+      this.setState({ selected: this.props.products[selectedRow] })
   }
   
   render() {
@@ -32,6 +35,7 @@ class OrderDetailProducts extends React.Component {
         <div className={gridStyles['flex-col__half']}> 
           <Table
             onRowSelection={this.handleSelection}
+            className={tableStyles['pointer-table']}
           >
             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
               <TableRow>
@@ -42,9 +46,10 @@ class OrderDetailProducts extends React.Component {
             </TableHeader>
             <TableBody
               displayRowCheckbox={false}
+              showRowHover={true}
             >
               {this.props.products.map((prod, index) =>  
-                <TableRow>
+                <TableRow selected={this.state.selected && this.state.selected.name === prod.name}>
                   <TableRowColumn> {prod.name} </TableRowColumn>
                   <TableRowColumn> {prod.quantity} </TableRowColumn>
                   <TableRowColumn> US$ {prod.price} </TableRowColumn>
