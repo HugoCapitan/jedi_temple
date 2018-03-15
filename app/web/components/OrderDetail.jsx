@@ -50,12 +50,12 @@ class OrderDetail extends React.Component {
           >
             <Tab label="Shipping Address" value="shipping">
               <div className={gridStyles['container-padded']}>
-                Shipping Address
+                <OrderDetailAddress address={this.state.order.shipping_address} />
               </div>
             </Tab>
             <Tab label="Billing Address" value="billing">
               <div className={gridStyles['container-padded']}>
-                Billing Address
+                <OrderDetailAddress address={this.state.order.billing_address} />
               </div>
             </Tab>
           </Tabs>
