@@ -49,7 +49,7 @@ class OrderDetailProducts extends React.Component {
               showRowHover={true}
             >
               {this.props.products.map((prod, index) =>  
-                <TableRow selected={this.state.selected && this.state.selected.name === prod.name}>
+                <TableRow key={index} selected={this.state.selected && this.state.selected.name === prod.name}>
                   <TableRowColumn> {prod.name} </TableRowColumn>
                   <TableRowColumn> {prod.quantity} </TableRowColumn>
                   <TableRowColumn> US$ {prod.price} </TableRowColumn>
@@ -88,11 +88,27 @@ class OrderDetailProducts extends React.Component {
                   <TableRowColumn> {this.state.selected.quantity} </TableRowColumn>
                 </TableRow>
                 <TableRow className={tableStyles['black-first-column']}>
-                  <TableRowColumn> Customs </TableRowColumn>
+                  <TableRowColumn> Custom Fields </TableRowColumn>
                   <TableRowColumn> </TableRowColumn>
-                </TableRow>
+                </TableRow> 
              </TableBody>
             </Table>           
+            <Table className={tableStyles['indented-table']}>
+              <TableBody
+                displayRowCheckbox={false}
+              >
+              {this.state.selected.customs.map((custom, cindex) => 
+                <TableRow key={cindex}>
+                  <TableRowColumn>
+                    {custom.key}
+                  </TableRowColumn>
+                  <TableRowColumn>
+                    {custom.value}
+                  </TableRowColumn>
+                </TableRow>
+              )}
+              </TableBody>
+            </Table>
           </div>
           :
           ''
