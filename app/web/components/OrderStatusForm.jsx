@@ -3,6 +3,9 @@ import PropTypes from 'prop-types'
 
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
+import MenuItem from 'material-ui/MenuItem'
+import SelectField from 'material-ui/SelectField'
+import TextField from 'material-ui/TextField'
 
 const statuses = [
   'Pending', 'Awaiting Payment', 'Awaiting Fulfillment', 'Awaiting Shipment', 'Awaiting Pickup',
@@ -10,46 +13,47 @@ const statuses = [
   'Verification Required', 'Partially Refunded'
 ]
 
-class OrderStatusFormDialog extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = { status: this.props.status, tracking_number: this.props.tracking_number || '' }
-  }
+const OrderStatusFormDialog = ({onCancel, onSave, open, reportChange, status, trackingNumber}) =>  {
+  const actions = [
+    <FlatButton
+      label="Cancel"
+      primary={false}
+      onClick={onCancel}
+    />,
+    <FlatButton
+      label="Save"
+      primary={true}
+      onClick={onSave}
+    />
+  ]
 
-  handleChange
-
-  render() {
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={false}
-        onClick={this.props.onCancel}
-      />,
-      <FlatButton
-        label="Save"
-        primary={true}
-        onClick={() => { this.props.onSave(this.state.status, this.state.tracking_number) }}
-      />
-    ]
-
-    return (
-      <Dialog
-        title="Order Status"
-        actions={actions}
-        modal={true}
-        open={this.props.open}
+  return (
+    <Dialog
+      title="Order Status"
+      actions={actions}
+      modal={false}
+      open={open}
+    >
+      <SelectField 
+        floatingLabelText="Status"
+        value={status}
+        onChange={(e, i, v) => { reportChange('status', v) }}
       >
-        The dialog
-      </Dialog>
-    )
-  }
+      {statuses.map((st, i) => 
+        <MenuItem key={i} value={st} primaryText={st} />
+      )}
+      </SelectField>
+    </Dialog>
+  )
 }
 
 OrderStatusForm.propTypes = {
-  tracking_number: PropTypes.string,
-  status: PropTypes.string.isRequired,
+  onCancel: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired
+  open: PropTypes.bool.isRequired,
+  reportChange: PropTypes.func.isRequired,
+  status: PropTypes.string.isRequired,
+  trackingNumber: PropTypes.string.isRequired
 }
 
 export default OrderStatusForm
