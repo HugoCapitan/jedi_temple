@@ -22,8 +22,8 @@ module.exports = router => {
 
   const guard = (req, res, next) => {
     const generalPerms = {
-      'GET':    ['clients', 'paypal', 'pictures', 'stores', 'texts'],
-      'POST':   ['clients', 'paypal'],
+      'GET':    ['clients', 'paypal', 'pictures', 'stores', 'texts', 'messages', 'tops'],
+      'POST':   ['clients', 'paypal', 'messages'],
       'PUT':    ['clients'],
       'DELETE': ['clients']
     }
