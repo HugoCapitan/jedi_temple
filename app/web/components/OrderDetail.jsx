@@ -52,7 +52,7 @@ class OrderDetail extends React.Component {
           >
             <Tab label="General Info" value="general">
               <div className={gridStyles['container-padded']}>
-                <OrderDetailGeneral order={this.state.order} />
+                <OrderDetailGeneral order={this.state.order} onEditStatus={this.handleOpen} />
               </div>
             </Tab>
             <Tab label="Ordered Products" value="products">
@@ -81,11 +81,12 @@ class OrderDetail extends React.Component {
         </div>
         { this.state.status_dialog 
         ? <OrderStatusForm 
-            tracking_number={this.state.order.tracking_number} 
-            status={this.state.order.status}
-            onSave={(s, t) => { this.props.onSave(s, t); this.handleClose() }}
             onCancel={this.handleClose}
+            onSave={() => { this.props.onSave(this.state.status, this.state.tracking_number); this.handleClose() }}
+            open={true}
             reportChange={this.handleChange}
+            status={this.state.order.status}
+            trackingNumber={this.state.order.tracking_number}
           />
         : ''
         }
