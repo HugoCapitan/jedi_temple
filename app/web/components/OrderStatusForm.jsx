@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -11,6 +12,10 @@ const statuses = [
   'Pending', 'Awaiting Payment', 'Awaiting Fulfillment', 'Awaiting Shipment', 'Awaiting Pickup',
   'Partially Shipped', 'Completed', 'Shipped', 'Cancelled', 'Declined', 'Refunded', 'Disputed',
   'Verification Required', 'Partially Refunded'
+]
+
+const trackableStatuses = [
+  'Partially Shipped', 'Shipped', 'Awaiting Pickup'
 ]
 
 const OrderStatusFormDialog = ({onCancel, onSave, open, reportChange, status, trackingNumber}) =>  {
@@ -43,6 +48,15 @@ const OrderStatusFormDialog = ({onCancel, onSave, open, reportChange, status, tr
         <MenuItem key={i} value={st} primaryText={st} />
       )}
       </SelectField>
+      { _.includes(trackableStatuses, status) 
+      ? <TextField 
+          floatingLabelText="Tracking Number"
+          autoFocus={true}
+          value={trackingNumber}
+          onChange={(e) => { reportChange('tracking_number', e.target.value) }}
+        />
+      : '' 
+      }
     </Dialog>
   )
 }
