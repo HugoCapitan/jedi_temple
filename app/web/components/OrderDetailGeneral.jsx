@@ -16,12 +16,6 @@ import {
 import formStyles from '../styles/form'
 import tableStyles from '../styles/table'
 
-const statuses = [
-  'Pending', 'Awaiting Payment', 'Awaiting Fulfillment', 'Awaiting Shipment', 'Awaiting Pickup',
-  'Partially Shipped', 'Completed', 'Shipped', 'Cancelled', 'Declined', 'Refunded', 'Disputed',
-  'Verification Required', 'Partially Refunded'
-]
-
 const OrderDetailGeneral = ({ order, openEditDialog }) => (
   <Table>
     <TableBody
@@ -40,7 +34,7 @@ const OrderDetailGeneral = ({ order, openEditDialog }) => (
         <TableRowColumn> Status </TableRowColumn>
         <TableRowColumn> 
           {order.status}  
-          <IconButton style={{width: '32px', height: '32px', padding: '4px'}} iconStyle={{width: '16px', height: '16px'}}>
+          <IconButton onClick={openEditDialog} style={{width: '32px', height: '32px', padding: '4px'}} iconStyle={{width: '16px', height: '16px'}}>
             <IconEditorModeEdit />
           </IconButton>
         </TableRowColumn>
