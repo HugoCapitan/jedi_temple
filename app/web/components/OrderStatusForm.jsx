@@ -18,54 +18,78 @@ const trackableStatuses = [
   'Partially Shipped', 'Shipped', 'Awaiting Pickup'
 ]
 
-const OrderStatusFormDialog = ({onCancel, onSave, open, reportChange, status, trackingNumber}) =>  {
-  const actions = [
-    <FlatButton
-      label="Cancel"
-      primary={false}
-      onClick={onCancel}
-    />,
-    <FlatButton
-      label="Save"
-      primary={true}
-      onClick={onSave}
-    />
-  ]
+class OrderStatusForm extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { status: this.props.status, tracking: this.props.tracking }
 
-  return (
-    <Dialog
-      title="Order Status"
-      actions={actions}
-      modal={false}
-      open={open}
-    >
-      <SelectField 
-        floatingLabelText="Status"
-        value={status}
-        onChange={(e, i, v) => { reportChange('status', v) }}
+    this.handleStatusChange = this.handleStatusChange.bind(this)
+    this.handleTrackingChange = this.handleTrackingChange.bind(this)
+  }
+
+  handleStatusChange(e, i, v) {
+    this.setState({
+      status: v
+    })
+  }
+
+  handleTrackingChange(e) {
+    this.setState({
+      tracking: e.target.value
+    })
+  }
+
+  render() {
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary={false}
+        onClick={this.props.onCancel}
+      />,
+      <FlatButton
+        label="Save"
+        primary={true}
+        onClick={() => { this.props.onSave(this.state.status, this.state.tracking) }}
+      />
+    ]
+
+    return (
+      <Dialog
+        title="Edit Order"
+        actions={actions}
+        modal={false}
+        open={this.props.open}
+        contentStyle={{width: '400px'}}
       >
-      {statuses.map((st, i) => 
-        <MenuItem key={i} value={st} primaryText={st} />
-      )}
-      </SelectField>
-      { _.includes(trackableStatuses, status) 
-      ? <TextField 
-          floatingLabelText="Tracking Number"
-          autoFocus={true}
-          value={trackingNumber}
-          onChange={(e) => { reportChange('tracking_number', e.target.value) }}
-        />
-      : '' 
-      }
-    </Dialog>
-  )
-}
+        <SelectField 
+          floatingLabelText="Status"
+          fullWidth={true}
+          value={this.state.status}
+          onChange={this.handleStatusChange}
+        >
+        {statuses.map((st, i) => 
+          <MenuItem key={i} value={st} primaryText={st} />
+        )}
+        </SelectField>
+        { _.includes(trackableStatuses, this.state.status) 
+        ? <TextField 
+            floatingLabelText="Tracking Number"
+            fullWidth={true}
+            autoFocus={true}
+            value={this.state.trackingNumber}
+            onChange={this.handleTrackingChange}
+          />
+        : '' 
+        }
+      </Dialog>
+    )
+  }
+} 
 
 OrderStatusForm.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  reportChange: PropTypes.func.isRequired,
   status: PropTypes.string.isRequired,
   trackingNumber: PropTypes.string.isRequired
 }
