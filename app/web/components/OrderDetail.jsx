@@ -15,24 +15,20 @@ class OrderDetail extends React.Component {
     super(props)
     this.state = { first_tab: 'general', second_tab: 'shipping', order: props.order, status_dialog: false }
 
+    this.handleClose = this.handleClose.bind(this)
+    this.handleOpen = this.handleOpen.bind(this)
     this.handleTabChange = this.handleTabChange.bind(this)
-  }
-
-  handleChange(key, value) {
-    this.setState({
-      [key]: value
-    })
   }
 
   handleClose() {
     this.setState({
-      status_dialog: true
+      status_dialog: false
     })
   }
 
   handleOpen() {
     this.setState({
-      status_dialog: false
+      status_dialog: true
     })
   }
 
@@ -52,7 +48,7 @@ class OrderDetail extends React.Component {
           >
             <Tab label="General Info" value="general">
               <div className={gridStyles['container-padded']}>
-                <OrderDetailGeneral order={this.state.order} onEditStatus={this.handleOpen} />
+                <OrderDetailGeneral order={this.state.order} openEditDialog={this.handleOpen} />
               </div>
             </Tab>
             <Tab label="Ordered Products" value="products">
@@ -82,7 +78,7 @@ class OrderDetail extends React.Component {
         { this.state.status_dialog 
         ? <OrderStatusForm 
             onCancel={this.handleClose}
-            onSave={() => { this.props.onSave(this.state.status, this.state.tracking_number); this.handleClose() }}
+            onSave={(st, tn) => { this.props.onSave(this.props.order._id, st, tn); this.handleClose() }}
             open={true}
             reportChange={this.handleChange}
             status={this.state.order.status}
@@ -98,7 +94,6 @@ class OrderDetail extends React.Component {
 OrderDetail.propTypes = {
   order: PropTypes.object.isRequired,
   onSave: PropTypes.func.isRequired,
-  onEditStatus: PropTypes.func.isRequired
 }
 
 export default OrderDetail
