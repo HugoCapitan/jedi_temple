@@ -31,6 +31,11 @@ export const SELECT_PRODUCT = 'SELECT_PRODUCT'
 export const SELECT_NEW_PRODUCT = 'SELECT_NEW_PRODUCT'
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
 
+/********
+ * TOPS *
+ ********/
+export const SELECT_TOP = 'SELECT_TOP'
+
 /**************
  * UI ACTIONS *
  **************/
@@ -61,6 +66,8 @@ export const REQUEST_STORES       = 'REQUEST_STORES'
 export const RECEIVE_STORES       = 'RECEIVE_STORES'
 export const REQUEST_TEXTS        = 'REQUEST_TEXTS'
 export const RECEIVE_TEXTS        = 'RECEIVE_TEXTS'
+export const REQUEST_TOPS         = 'REQUEST_TOPS'
+export const RECEIVE_TOPS         = 'RECEIVE_TOPS'
 
 export const FAILED_REQUEST   = 'FAILED_REQUEST'
 export const FINISH_REQUEST   = 'FINISH_REQUEST'

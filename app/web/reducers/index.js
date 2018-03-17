@@ -10,6 +10,7 @@ import products     from './products'
 import reservations from './reservations'
 import stores       from './stores'
 import texts        from './texts'
+import tops         from './tops'
 import ui           from './ui'
 
 const adminApp = combineReducers({
@@ -23,6 +24,7 @@ const adminApp = combineReducers({
   reservations,
   stores,
   texts,
+  tops,
   ui
 })
 
