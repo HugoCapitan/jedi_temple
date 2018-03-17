@@ -22,12 +22,15 @@ class MessagesTile extends React.Component {
 
   render() {
     return (
-      <paper></paper>
+      <Paper></Paper>
     )
   }
 }
 
 MessagesTile.propTypes = {
+  messages: PropTypes.array.isRequired,
+  onSelect: PropTypes.arrat.onSelect,
+  classes: PropTypes.string.isRequired,
 }
 
 export default MesssagesTile
