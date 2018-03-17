@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -19,6 +20,24 @@ import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 class MessagesTile extends React.Component {
   constructor(props) {
     super(props)
+
+    this.state = { selected:  [] }
+
+    this.handleCellClick = this.handleCellClick.bind(this)
+    this.handleRowSelection = this.handleRowSelection.bind(this)
+  }
+
+  handleCellClick(rn, cid) {
+    if (cid != -1)
+      console.log(rn, cid)
+  }
+
+  handleRowSelection(selected) {
+    this.setState({ 
+      selected: selected === 'all' 
+        ? this.props.messages.map((m, i) => i)
+        : selected
+    })
   }
 
   render() {
@@ -43,6 +62,8 @@ class MessagesTile extends React.Component {
         </Toolbar>
         <Table
           multiSelectable={true}
+          onCellClick={this.handleCellClick}
+          onRowSelection={this.handleRowSelection}
         >
           <TableHeader>
             <TableRow>
@@ -56,7 +77,7 @@ class MessagesTile extends React.Component {
           </TableHeader>
           <TableBody>
           {this.props.messages.map((mess, i) => 
-            <TableRow key={i}>
+            <TableRow key={i} selected={_.includes(this.state.selected, i)}>
               <TableRowColumn>
                 { mess.email }
               </TableRowColumn>
