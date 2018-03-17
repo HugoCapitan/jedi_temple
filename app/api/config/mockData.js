@@ -6,10 +6,12 @@ const Admin       = require('../models/Admin')
 const Client      = require('../models/Client')
 const CustomField = require('../models/CustomField')
 const HMProduct   = require('../models/HMProduct')
+const Message     = require('../models/Message')
 const Order       = require('../models/Order')
 const Product     = require('../models/Product')
 const Reservation = require('../models/Reservation')
 const Store       = require('../models/Store')
+const Top         = require('../models/Top')
 
 module.exports = async () => {
   try {
@@ -21,6 +23,9 @@ module.exports = async () => {
     ))
     const handmades = JSON.parse(fs.readFileSync(
       path.resolve(__dirname, 'mocked_data/handmades.json'), { encoding: 'utf-8' }
+    ))
+    const messages = JSON.parse(fs.readFileSync(
+      path.resolve(__dirname, 'mocked_data/messages.json'), { encoding: 'utf-8' }
     ))
     const orders = JSON.parse(fs.readFileSync(
       path.resolve(__dirname, 'mocked_data/orders.json'), { encoding: 'utf-8' }
@@ -34,7 +39,9 @@ module.exports = async () => {
     const stores = JSON.parse(fs.readFileSync(
       path.resolve(__dirname, 'mocked_data/stores.json'), { encoding: 'utf-8' }
     ))
-
+    const tops = JSON.parse(fs.readFileSync(
+      path.resolve(__dirname, 'mocked_data/tops.json'), { encoding: 'utf-8' }
+    ))
 
     const instancedCustoms = customs.map(custom => new CustomField(custom))
     for (const product of products) {
@@ -75,9 +82,11 @@ module.exports = async () => {
     const saves = []
     for (const client of clients)            { saves.push(new Client(client).save()) }
     for (const handmade of handmades)        { saves.push(new HMProduct(handmade).save()) }
+    for (const message of messages)          { saves.push(new Message(message).save()) }
     for (const order of orders)              { saves.push(new Order(order).save()) }
     for (const reservation of reservations)  { saves.push(new Reservation(reservation).save()) }
     for (const store of stores)              { saves.push(new Store(store).save()) }
+    for (const top of tops)                  { saves.push(new Top(top).save()) }
 
     saves.push( new Admin({ email: 'admin@unahil.com', password: 'theadminpassword' }).save() )
 
