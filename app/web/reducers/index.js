@@ -3,6 +3,7 @@ import { combineReducers } from 'redux'
 import authToken    from './authToken'
 import customFields from './customFields'
 import hmProducts   from './hmProducts'
+import messages     from './messages'
 import orders       from './orders' 
 import pictures     from './pictures'
 import products     from './products'
@@ -15,6 +16,7 @@ const adminApp = combineReducers({
   authToken,
   customFields,
   hmProducts,
+  messages,
   orders,
   pictures,
   products,
