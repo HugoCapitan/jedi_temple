@@ -38,7 +38,7 @@ MessageSchema._middlewareFuncs = {
     next()
   },
   preUpdate(next) {
-    this.updated_at = new Date()
+    this._update.updated_at = new Date()
 
     next()
   }
