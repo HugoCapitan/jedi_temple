@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 
 import Avatar from 'material-ui/Avatar'
 
+import MessagesTile from '../components/MessagesTile'
 import TableTile from '../components/TableTile'
 import Tile from '../components/Tile'
 
@@ -29,11 +30,9 @@ const StoreGeneralSectionComponent = ({ messages, messagesActions, orders, order
       items={orders}
       title="Orders"
     />
-    <Tile 
-      actions={messagesActions}
-      classes={ [gridStyles['small-tile'], gridStyles['right-tile']].join(' ') }
-      items={messages}
-      title="Messages"
+    <MessagesTile 
+      classes={ [gridStyles['small-tile'], gridStyles['right-tile']].join(' ') }  
+      messages={messages}
     />
     <Tile 
       actions={productsActions}
