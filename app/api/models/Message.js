@@ -26,7 +26,7 @@ const MessageSchema = new Schema({
   updated_at: Date
 })
 
-const Message = new mongoose.model('Message', MessageSchema)
+const Message = mongoose.model('Message', MessageSchema)
 
 module.exports = Message
-)
+
