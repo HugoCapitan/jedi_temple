@@ -6,7 +6,7 @@ const initialState = {
   selected: undefined
 }
 
-function orders (state = initialState, action) {
+function messages (state = initialState, action) {
   switch (action.type) {
     case REQUEST_MESSAGES:
       return {
@@ -28,4 +28,4 @@ function orders (state = initialState, action) {
   }
 }
 
-export default message
+export default messages
