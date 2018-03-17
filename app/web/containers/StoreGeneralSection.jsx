@@ -62,7 +62,7 @@ StoreGeneralSectionComponent.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  messages: [],
+  messages: filterItems(state.messages.items, state.ui.route),
   orders: filterItems(state.orders.items, state.ui.route).map(mapOrder),
   products: filterItems(state.products.items, state.ui.route).map(mapProduct),
   tops: []
