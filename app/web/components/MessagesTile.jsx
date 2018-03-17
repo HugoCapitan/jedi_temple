@@ -24,9 +24,7 @@ class MessagesTile extends React.Component {
   render() {
     return (
       <Paper className={this.props.classes}>
-        <Toolbar 
-        
-        > 
+        <Toolbar>
           <ToolbarGroup>
             <ToolbarTitle text="Messages" />
           </ToolbarGroup>
