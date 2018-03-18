@@ -2,9 +2,11 @@ import _ from 'lodash'
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import FlatButton from 'material-ui/FlatButton'
 import IconButton from 'material-ui/IconButton'
 import IconMenu from 'material-ui/IconMenu'
 import IconNavigationMoreVert from 'material-ui/svg-icons/navigation/more-vert'
+import IconContentFilterList from 'material-ui/svg-icons/content/filter-list'
 import MenuItem from 'material-ui/MenuItem'
 import Paper from 'material-ui/Paper'
 import {
@@ -15,28 +17,35 @@ import {
   TableRow,
   TableRowColumn
 } from 'material-ui/Table'
-import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
+import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar'
+
+import MessageDetailsDialog from './MessageDetailsDialog'
 
 class MessagesTile extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = { selected:  [] }
+    this.state = { selected:  [], details: undefined }
 
     this.handleCellClick = this.handleCellClick.bind(this)
     this.handleReadUnread = this.handleReadUnread.bind(this)
     this.handleRowSelection = this.handleRowSelection.bind(this)
+    this.handleCloseDialog = this.handleCloseDialog.bind(this)
   }
 
   handleCellClick(rn, cid) {
     if (cid != -1)
-      console.log(rn, cid)
+      this.setState({ details: rn, selected: [rn] })
     else 
       this.setState({
         selected: _.includes(this.state.selected, rn) 
           ? this.state.selected.filter(item => item != rn)
           : [ ...this.state.selected, rn ]
       })
+  }
+
+  handleCloseDialog() {
+    this.setState({ details: undefined, selected: [] })
   }
 
   handleReadUnread(e, c) {
@@ -61,6 +70,16 @@ class MessagesTile extends React.Component {
             <ToolbarTitle text="Messages" />
           </ToolbarGroup>
           <ToolbarGroup lastChild={true}>
+            <IconMenu
+              iconButtonElement={
+                <IconButton>
+                  <IconContentFilterList />
+                </IconButton>
+              }
+            >
+              <MenuItem value="read" primaryText="Show Read" />
+              <MenuItem value="unread" primaryText="Show Unread" />
+            </IconMenu>
             <IconMenu 
               iconButtonElement={
                 <IconButton>
@@ -70,7 +89,9 @@ class MessagesTile extends React.Component {
               onItemClick={this.handleReadUnread}
             >
               <MenuItem value="read" primaryText="Mark Selected As Read" />
+              <MenuItem value="readall" primaryText="Mark All As Read" />
               <MenuItem value="unread" primaryText="Mark Selected As Unread" />
+              <MenuItem value="unreadAll" primaryText="Mark All As Unread" />
             </IconMenu>
           </ToolbarGroup>
         </Toolbar>
@@ -80,7 +101,9 @@ class MessagesTile extends React.Component {
           onRowSelection={this.handleRowSelection}
           allRowsSelected={false}
         >
-          <TableHeader>
+          <TableHeader
+            displaySelectAll={false}
+          >
             <TableRow>
               <TableHeaderColumn>
                 Email
@@ -105,6 +128,10 @@ class MessagesTile extends React.Component {
           )}
           </TableBody>
         </Table>
+        { this.state.details != undefined ?
+          <MessageDetailsDialog message={this.props.messages[this.state.details]} open={true} onDone={this.handleCloseDialog}/> :
+          ''
+        }
       </Paper>
     )
   }
