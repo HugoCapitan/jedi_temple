@@ -15,7 +15,8 @@ class TopFormDialog extends React.Component {
     this.handleChange = this.handleChange.bind(this)
   }
 
-  handleChange() {
+  handleChange(event) {
+
   }
 
   render() {
@@ -39,17 +40,23 @@ class TopFormDialog extends React.Component {
       >
         <TextField
           floatingLabelText="Text"
+          fullWidth={true}
+          name="Text"
           value={this.state.text}
           onChange={this.handleChange}
         />
         <TextField
+          className={formStyles['half-input']}
           floatingLabelText="Time"
+          name="Text"
           value={this.state.time}
           onChange={this.handleChange}
         />
         <TextField
+          className={formStyles['half-input']}
           floatingLabelText="Priority"
           value={this.state.priority}
+          name="Text"
           onChange={this.handleChange}
         />
       </Dialog>
