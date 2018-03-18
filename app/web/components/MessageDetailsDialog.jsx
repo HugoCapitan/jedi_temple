@@ -2,13 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/Dialog'
+import FlatButton from 'material-ui/FlatButton'
 
 const MessageDetailsDialog = ({ message, onDone, open }) => {
   const actions = [
     <FlatButton
-      onClick={onDone}
       label="Done"
+      onClick={onDone}
       primary={true}
     />
   ]
@@ -16,13 +16,14 @@ const MessageDetailsDialog = ({ message, onDone, open }) => {
   return (
     <Dialog 
       actions={actions}
-      title={`message from ${message.name}`}
+      title={`Message from: ${message.name}`}
       modal={false}
       open={open}
       onRequestClose={onDone}
     >
-      <h4>From: {message.email}, with name: {message.name} </h4>
-      <h5>Message:</h5>
+      <h5>From</h5>
+      <h4>{message.name} ({message.email})</h4>
+      <h5>Message</h5>
       <p>{message.message}</p>
     </Dialog>
   )
