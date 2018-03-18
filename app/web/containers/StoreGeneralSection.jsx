@@ -49,7 +49,7 @@ const StoreGeneralSectionComponent = ({ dialog, messages, messagesActions, order
       title="Tops"
     />
     { dialog.dialog === 'topForm' ?
-      <TopFormDialog top={dialog.object} />
+      <TopFormDialog top={dialog.object} open={true} />
       : ''
     }
   </div>

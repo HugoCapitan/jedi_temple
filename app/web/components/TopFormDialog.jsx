@@ -42,8 +42,9 @@ class TopFormDialog extends React.Component {
 
     return (
       <Dialog
-        title={this.props.top.name.length ? 'Edit Top' : 'New Top'}
+        title={this.props.top.text.length ? 'Edit Top' : 'New Top'}
         actions={actions}
+        open={this.props.open}
         modal={true}
       >
         <TextField
