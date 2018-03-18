@@ -1,6 +1,7 @@
 import { 
   CHANGE_DRAWER_OPEN,
   CHANGE_SECTION,
+  CLOSE_DIALOG,
   FAILED_REQUEST,
   FINISH_REQUEST,
   OPEN_DIALOG,
@@ -23,6 +24,8 @@ const ui = (state = initialState, action) => {
       return { ...state, drawerOpen: action.open }
     case CHANGE_SECTION:
       return { ...state, section: action.section }
+    case CLOSE_DIALOG:
+      return { ...state, dialog: undefined }
     case FAILED_REQUEST: 
       return { ...state, isRequestOngoing: false, requestError: action.message }
     case FINISH_REQUEST:

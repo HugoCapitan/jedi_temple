@@ -1,4 +1,4 @@
-import { REQUEST_TOPS, RECEIVE_TOPS, SELECT_TOP, SELECT_NEW_TOP } from '../constants'
+import { DESELECT_ALL_TOPS, REQUEST_TOPS, RECEIVE_TOPS, SELECT_TOP, SELECT_NEW_TOP } from '../constants'
 
 const initialState = {
   isFetching: false,
@@ -9,6 +9,12 @@ const initialState = {
 
 function tops (state = initialState, action) {
   switch (action.type) {
+    case DESELECT_ALL_TOPS:
+      return {
+        ...state,
+        selected: undefined,
+        newSelected: false
+    }
     case REQUEST_TOPS:
       return {
         ...state,
