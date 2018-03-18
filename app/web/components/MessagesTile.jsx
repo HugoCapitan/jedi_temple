@@ -21,6 +21,8 @@ import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-
 
 import MessageDetailsDialog from './MessageDetailsDialog'
 
+import tableStyles from '../styles/table'
+
 class MessagesTile extends React.Component {
   constructor(props) {
     super(props)
@@ -102,6 +104,7 @@ class MessagesTile extends React.Component {
           </ToolbarGroup>
         </Toolbar>
         <Table
+          className={tableStyles['pointer-table']}
           multiSelectable={true}
           onCellClick={this.handleCellClick}
           onRowSelection={this.handleRowSelection}
