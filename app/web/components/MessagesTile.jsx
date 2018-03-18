@@ -24,20 +24,33 @@ class MessagesTile extends React.Component {
     this.state = { selected:  [] }
 
     this.handleCellClick = this.handleCellClick.bind(this)
+    this.handleReadUnread = this.handleReadUnread.bind(this)
     this.handleRowSelection = this.handleRowSelection.bind(this)
   }
 
   handleCellClick(rn, cid) {
     if (cid != -1)
       console.log(rn, cid)
+    else 
+      this.setState({
+        selected: _.includes(this.state.selected, rn) 
+          ? this.state.selected.filter(item => item != rn)
+          : [ ...this.state.selected, rn ]
+      })
+  }
+
+  handleReadUnread(e, c) {
+    console.log(c.props.value)
+    console.log(this.state.selected)
   }
 
   handleRowSelection(selected) {
-    this.setState({ 
-      selected: selected === 'all' 
-        ? this.props.messages.map((m, i) => i)
-        : selected
-    })
+    if (selected === 'all' || selected === 'none')
+      this.setState({
+        selected: selected === 'all'
+          ? this.props.messages.map((m, i) => i)
+          : []
+      })
   }
 
   render() {
@@ -54,6 +67,7 @@ class MessagesTile extends React.Component {
                   <IconNavigationMoreVert />
                 </IconButton>
               }
+              onItemClick={this.handleReadUnread}
             >
               <MenuItem value="read" primaryText="Mark Selected As Read" />
               <MenuItem value="unread" primaryText="Mark Selected As Unread" />
@@ -64,6 +78,7 @@ class MessagesTile extends React.Component {
           multiSelectable={true}
           onCellClick={this.handleCellClick}
           onRowSelection={this.handleRowSelection}
+          allRowsSelected={false}
         >
           <TableHeader>
             <TableRow>
@@ -75,9 +90,11 @@ class MessagesTile extends React.Component {
               </TableHeaderColumn>
             </TableRow>
           </TableHeader>
-          <TableBody>
-          {this.props.messages.map((mess, i) => 
-            <TableRow key={i} selected={_.includes(this.state.selected, i)}>
+          <TableBody
+            deselectOnClickaway={false}
+          >
+          {this.props.messages.map((mess, ind) => 
+            <TableRow key={ind} selected={_.includes(this.state.selected, ind)} > 
               <TableRowColumn>
                 { mess.email }
               </TableRowColumn>
