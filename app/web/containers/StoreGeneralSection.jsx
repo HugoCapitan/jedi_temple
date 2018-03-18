@@ -48,15 +48,15 @@ const StoreGeneralSectionComponent = ({ dialog, messages, messagesActions, order
       items={tops}
       title="Tops"
     />
-    { dialog === 'topForm' ?
-
+    { dialog.dialog === 'topForm' ?
+      <TopFormDialog top={dialog.object} />
       : ''
     }
   </div>
 )
 
 StoreGeneralSectionComponent.propTypes = {
-  dialog: PropTypes.string,
+  dialog: PropTypes.object.isRequired,
   messages: PropTypes.array.isRequired,
   messagesActions: PropTypes.object.isRequired,
   orders: PropTypes.array.isRequired,
@@ -68,6 +68,7 @@ StoreGeneralSectionComponent.propTypes = {
 }
 
 const mapStateToProps = state => ({
+  dialog: getDialog(state),
   messages: filterItems(state.messages.items, state.ui.route),
   orders: filterItems(state.orders.items, state.ui.route).map(mapOrder),
   products: filterItems(state.products.items, state.ui.route).map(mapProduct),
@@ -104,7 +105,7 @@ const mapDispatchToProps = dispatch => ({
     remove() {},
     select(id) {
       dispatch(selectTop(id))
-      dispatch(openDialog('topForm')
+      dispatch(openDialog('topForm'))
     }
   }
 })
@@ -118,6 +119,12 @@ export default StoreGeneralSection
 
 function filterItems(items, route) {
   return Object.values(items).filter(i => i.store === route)
+}
+
+function getDialog(state) {
+  return state.ui.dialog === 'topForm' 
+  ? { dialog: 'topForm', object: state.tops.selected || { text: '' } }
+  : { dialog: 'none' }
 }
 
 function mapOrder(o) {
