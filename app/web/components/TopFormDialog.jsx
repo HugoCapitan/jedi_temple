@@ -19,6 +19,8 @@ class TopFormDialog extends React.Component {
     const key = event.target.name
     let value = event.target.value
 
+    console.log(key)
+
     if (key === 'time' && value != 0 && !+value)
       value = undefined
 
@@ -50,23 +52,25 @@ class TopFormDialog extends React.Component {
         <TextField
           floatingLabelText="Text"
           fullWidth={true}
-          name="Text"
+          name="text"
           value={this.state.text}
           onChange={this.handleChange}
         />
         <TextField
           className={formStyles['half-input']}
-          floatingLabelText="Time"
-          name="Text"
-          value={this.state.time}
+          floatingLabelText="Time in seconds"
+          name="time"
+          value={this.state.time || ''}
+          type="number"
           onChange={this.handleChange}
         />
         <TextField
           className={formStyles['half-input']}
           floatingLabelText="Priority"
-          value={this.state.priority}
-          name="Text"
+          value={this.state.priority || ''}
+          name="priority"
           onChange={this.handleChange}
+          type="number"
         />
       </Dialog>
     )
