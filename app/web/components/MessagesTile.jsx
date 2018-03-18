@@ -25,12 +25,13 @@ class MessagesTile extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = { selected:  [], details: undefined }
+    this.state = { selected: [], details: undefined, show: 'unread' }
 
     this.handleCellClick = this.handleCellClick.bind(this)
     this.handleReadUnread = this.handleReadUnread.bind(this)
     this.handleRowSelection = this.handleRowSelection.bind(this)
     this.handleCloseDialog = this.handleCloseDialog.bind(this)
+    this.handleShow = this.handleShow.bind(this)
   }
 
   handleCellClick(rn, cid) {
@@ -61,6 +62,10 @@ class MessagesTile extends React.Component {
           : []
       })
   }
+  
+  handleShow(show) {
+    this.setState({ show })
+  }
 
   render() {
     return (
@@ -76,6 +81,7 @@ class MessagesTile extends React.Component {
                   <IconContentFilterList />
                 </IconButton>
               }
+              onItemClick={(e, c) => {this.handleShow(c.props.value)}}
             >
               <MenuItem value="read" primaryText="Show Read" />
               <MenuItem value="unread" primaryText="Show Unread" />
@@ -116,7 +122,9 @@ class MessagesTile extends React.Component {
           <TableBody
             deselectOnClickaway={false}
           >
-          {this.props.messages.map((mess, ind) => 
+          {this.props.messages
+            .filter((mess) => this.state.show === 'read' ? mess.read : !mess.read )
+            .map((mess, ind) => 
             <TableRow key={ind} selected={_.includes(this.state.selected, ind)} > 
               <TableRowColumn>
                 { mess.email }
