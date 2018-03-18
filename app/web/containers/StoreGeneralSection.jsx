@@ -64,7 +64,7 @@ const mapStateToProps = state => ({
   messages: filterItems(state.messages.items, state.ui.route),
   orders: filterItems(state.orders.items, state.ui.route).map(mapOrder),
   products: filterItems(state.products.items, state.ui.route).map(mapProduct),
-  tops: []
+  tops: filterItems(state.tops.items, state.ui.route).map(mapTop)
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -122,3 +122,12 @@ function mapProduct(p) {
     avatar: <Avatar src={p.images[0].url} />
   })
 }
+
+function mapTop(t) {
+  return ({
+    ...t,
+    primaryText: t.text,
+    secondaryText: `${t.time || 'Not Timed'} | Priority: ${t.priority || 'No priority'}`
+  })
+}
+
