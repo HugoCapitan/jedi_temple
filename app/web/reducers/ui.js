@@ -3,6 +3,7 @@ import {
   CHANGE_SECTION,
   FAILED_REQUEST,
   FINISH_REQUEST,
+  OPEN_DIALOG,
   START_REQUEST,
   TOGGLE_DRAWER
 } from '../constants'
@@ -10,11 +11,7 @@ import {
 const initialState = {
   drawerOpen: false,
   isRequestOngoing: false,
-  itemDialog: {
-    open: false,
-    itemClass: '',
-    itemID: ''
-  },
+  dialog: undefined,
   requestError: null,
   route: 'kampamocha',
   section: 'general'
@@ -30,6 +27,8 @@ const ui = (state = initialState, action) => {
       return { ...state, isRequestOngoing: false, requestError: action.message }
     case FINISH_REQUEST:
       return { ...state, isRequestOngoing: false }
+    case OPEN_DIALOG:
+      return { ...state, dialog: action.dialog }
     case START_REQUEST: 
       return { ...state, isRequestOngoing: true }
     case TOGGLE_DRAWER: 
@@ -41,3 +40,4 @@ const ui = (state = initialState, action) => {
 }
 
 export default ui
+
