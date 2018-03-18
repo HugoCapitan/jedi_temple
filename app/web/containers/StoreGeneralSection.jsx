@@ -9,7 +9,17 @@ import MessagesTile from '../components/MessagesTile'
 import TableTile from '../components/TableTile'
 import Tile from '../components/Tile'
 
-import { changeSection, selectProduct, selectNewProduct, selectOrder, selectTop, selectNewTop, openDialog } from '../actions'
+import { 
+  changeSection, 
+  selectProduct, 
+  selectNewProduct, 
+  selectOrder, 
+  selectTop, 
+  selectNewTop, 
+  deselectAllTops,
+  openDialog,
+  closeDialog
+} from '../actions'
 
 import TopFormDialog from '../components/TopFormDialog'
 
@@ -49,7 +59,7 @@ const StoreGeneralSectionComponent = ({ dialog, messages, messagesActions, order
       title="Tops"
     />
     { dialog.dialog === 'topForm' ?
-      <TopFormDialog top={dialog.object} open={true} />
+      <TopFormDialog top={dialog.object} open={true} onCancel={topsActions.cancelEdits} onSave={topsActions.save} />
       : ''
     }
   </div>
@@ -106,7 +116,12 @@ const mapDispatchToProps = dispatch => ({
     select(id) {
       dispatch(selectTop(id))
       dispatch(openDialog('topForm'))
-    }
+    },
+    cancelEdits() {
+      dispatch(deselectAllTops())
+      dispatch(closeDialog())
+    },
+    save() {}
   }
 })
 
