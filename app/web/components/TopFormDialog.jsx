@@ -35,6 +35,7 @@ class TopFormDialog extends React.Component {
         actions={actions}
         modal={true}
       >
+        Hello
       </Dialog>
     )
   }
