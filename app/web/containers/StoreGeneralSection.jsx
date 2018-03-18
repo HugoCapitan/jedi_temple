@@ -11,6 +11,8 @@ import Tile from '../components/Tile'
 
 import { changeSection, selectProduct, selectNewProduct, selectOrder } from '../actions'
 
+import TopFormDialog from '../components/TopFormDialog'
+
 import gridStyles from '../styles/grid'
 
 const orderTableColumns = [
