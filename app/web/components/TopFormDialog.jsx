@@ -5,6 +5,8 @@ import FlatButton from 'material-ui/FlatButton'
 import Dialog from 'material-ui/Dialog'
 import TextField from 'material-ui/TextField'
 
+import formStyles from '../styles/form'
+
 class TopFormDialog extends React.Component {
   constructor(props) {
     super(props)
