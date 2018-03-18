@@ -1,10 +1,9 @@
 import { 
   CHANGE_DRAWER_OPEN,
   CHANGE_SECTION,
-  CLOSE_ITEM_DIALOG,
   FAILED_REQUEST,
   FINISH_REQUEST,
-  OPEN_ITEM_DIALOG,
+  OPEN_DIALOG,
   START_REQUEST,
   TOGGLE_DRAWER
 } from '../constants'
@@ -20,10 +19,6 @@ export const changeSection = section =>({
   section
 })
 
-export const closeItemDialog = () => ({
-  type: CLOSE_ITEM_DIALOG
-})
-
 export const failedRequest = message => ({
   type: FAILED_REQUEST,
   message
@@ -34,10 +29,9 @@ export const finishRequest = message => ({
   message
 })
 
-export const openItemDialog = (itemClass, itemID) => ({
-  type: OPEN_ITEM_DIALOG,
-  itemClass,
-  itemID
+export const openDialog = dialog => ({  
+  type: OPEN_DIALOG,
+  dialog
 })
 
 export const startRequest = () => ({

@@ -35,14 +35,14 @@ export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
  * TOPS *
  ********/
 export const SELECT_TOP = 'SELECT_TOP'
+export const SELECT_NEW_TOP = 'SELECT_NEW_TOP'
 
 /**************
  * UI ACTIONS *
  **************/
 export const CHANGE_DRAWER_OPEN    = 'CHANGE_DRAWER_OPEN'
 export const CHANGE_SECTION        = 'CHANGE_SECTION'
-export const CLOSE_ITEM_DIALOG     = 'CLOSE_ITEM_DIALOG'
-export const OPEN_ITEM_DIALOG      = 'OPEN_ITEM_DIALOG'
+export const OPEN_DIALOG           = 'OPEN_DIALOG'
 export const TOGGLE_DRAWER         = 'TOGGLE_DRAWER'
 
 /***********
