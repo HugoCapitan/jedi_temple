@@ -1,4 +1,4 @@
-import { SELECT_TOP, SELECT_NEW_TOP } from '../actions'
+import { SELECT_TOP, SELECT_NEW_TOP } from '../constants'
 
 export const selectTop = topID => ({
   type: SELECT_TOP,

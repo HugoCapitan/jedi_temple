@@ -3,7 +3,7 @@ import axios from 'axios'
 
 import { addCustom, updateCustom, removeCustom } from './customFields'
 import { addProduct, removeProduct, updateProduct } from './products'
-import { failedRequest, finishRequest, startRequest, closeItemDialog } from './ui'
+import { failedRequest, finishRequest, startRequest } from './ui'
 
 export function fetchCollection(collection) {
   return (dispatch, getState) => {
@@ -100,7 +100,6 @@ export function requestProductAdd(newProduct) {
       response => {
         dispatch(addProduct(response.data))
         dispatch(finishRequest('Product Saved'))
-        dispatch(closeItemDialog())
       },
       error => dispatch(failedRequest('Error adding product'))
     )
@@ -136,7 +135,6 @@ export function requestProductUpdate(newProduct) {
         response => {
           dispatch(updateProduct(response.data))
           dispatch(finishRequest('Product Updated'))
-          dispatch(closeItemDialog())
         },
         error => dispatch(failedRequest('Product Update Failed'))
       )
