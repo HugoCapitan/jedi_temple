@@ -9,11 +9,32 @@ class TopFormDialog extends React.Component {
   constructor(props) {
     super(props)
     this.state = { ...props.top }
+
+    this.handleChange = this.handleChange.bind(this)
+  }
+
+  handleChange() {
   }
 
   render() {
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        onClick={this.props.onCancel}
+      />,
+      <FlatButton 
+        label="Save"
+        primary={true}
+        onClick={this.props.onSave}
+      />
+    ]
+
     return (
-      <Dialog>
+      <Dialog
+        title={this.props.top.name.length ? 'Edit Top' : 'New Top'}
+        actions={actions}
+        modal={true}
+      >
       </Dialog>
     )
   }
