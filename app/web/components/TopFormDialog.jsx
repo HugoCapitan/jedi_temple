@@ -16,7 +16,15 @@ class TopFormDialog extends React.Component {
   }
 
   handleChange(event) {
+    const key = event.target.name
+    let value = event.target.value
 
+    if (key === 'time' && value != 0 && !+value)
+      value = undefined
+
+    this.setState({
+      [key]: value
+    })
   }
 
   render() {
