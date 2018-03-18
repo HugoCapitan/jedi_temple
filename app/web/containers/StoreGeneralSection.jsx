@@ -9,7 +9,7 @@ import MessagesTile from '../components/MessagesTile'
 import TableTile from '../components/TableTile'
 import Tile from '../components/Tile'
 
-import { changeSection, selectProduct, selectNewProduct, selectOrder } from '../actions'
+import { changeSection, selectProduct, selectNewProduct, selectOrder, selectTop, selectNewTop, openDialog } from '../actions'
 
 import TopFormDialog from '../components/TopFormDialog'
 
@@ -23,7 +23,7 @@ const orderTableColumns = [
   {display: 'Tracking #', field: 'tracking_code'}
 ]
 
-const StoreGeneralSectionComponent = ({ messages, messagesActions, orders, ordersActions, products, productsActions, tops, topsActions }) => (
+const StoreGeneralSectionComponent = ({ dialog, messages, messagesActions, orders, ordersActions, products, productsActions, tops, topsActions }) => (
   <div className={gridStyles['container']}>
     <TableTile
       actions={ordersActions}
@@ -48,10 +48,15 @@ const StoreGeneralSectionComponent = ({ messages, messagesActions, orders, order
       items={tops}
       title="Tops"
     />
+    { dialog === 'topForm' ?
+
+      : ''
+    }
   </div>
 )
 
 StoreGeneralSectionComponent.propTypes = {
+  dialog: PropTypes.string,
   messages: PropTypes.array.isRequired,
   messagesActions: PropTypes.object.isRequired,
   orders: PropTypes.array.isRequired,
@@ -92,9 +97,15 @@ const mapDispatchToProps = dispatch => ({
     }
   },
   topsActions: {
-    add() {}, 
+    add() {
+      dispatch(selectNewTop())
+      dispatch(openDialog('topForm'))
+    }, 
     remove() {},
-    select() {}
+    select(id) {
+      dispatch(selectTop(id))
+      dispatch(openDialog('topForm')
+    }
   }
 })
 
