@@ -1,9 +1,10 @@
-import { REQUEST_TOPS, RECEIVE_TOPS, SELECT_TOP } from '../constants'
+import { REQUEST_TOPS, RECEIVE_TOPS, SELECT_TOP, SELECT_NEW_TOP } from '../constants'
 
 const initialState = {
   isFetching: false,
   items: [],
-  selected: undefined
+  selected: undefined,
+  newSelected: false
 }
 
 function tops (state = initialState, action) {
@@ -22,6 +23,12 @@ function tops (state = initialState, action) {
       return {
         ...state,
         selected: state.items[action.topID]
+      }
+    case SELECT_NEW_TOP:
+      return {
+        ...state,
+        newSelected: true,
+        selected: undefined
       }
     default:
       return state
