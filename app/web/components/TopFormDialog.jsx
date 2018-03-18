@@ -35,7 +35,21 @@ class TopFormDialog extends React.Component {
         actions={actions}
         modal={true}
       >
-        Hello
+        <TextField
+          floatingLabelText="Text"
+          value={this.state.text}
+          onChange={this.handleChange}
+        />
+        <TextField
+          floatingLabelText="Time"
+          value={this.state.time}
+          onChange={this.handleChange}
+        />
+        <TextField
+          floatingLabelText="Priority"
+          value={this.state.priority}
+          onChange={this.handleChange}
+        />
       </Dialog>
     )
   }
