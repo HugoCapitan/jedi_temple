@@ -2,11 +2,9 @@ const moment = require('moment')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const Store = require('./Store')
-
 const AddressSchema = require('./schemas/AddressSchema')
-
-const validate = require('../utils/validators')
+const Store         = require('./Store')
+const validate      = require('../utils/validators')
 
 const ReservationSchema = new Schema({
   email: {
@@ -43,41 +41,27 @@ const ReservationSchema = new Schema({
   created_at: Date,
   updated_at: Date
 })
+
 ReservationSchema._middlewareFuncs = {
   preSave(next) {
     const self = this
 
-    if (!self.isNew && self.isModified('store')) {
-      const err = new Error('Store is not updatable')
-      err.name = 'ValidationError'
-      return next(err)
-    }
+    preSaveValidation(self)
+    .then(() => registerDatesInStore(self._id, self.arrive_date, self.departure_date, self.store))
+    .then(() => {
+      const currentDate = new Date()
+      self.updated_at = currentDate
+      if (!self.created_at) self.created_at = currentDate
 
-    const currentDate = new Date()
-    self.updated_at = currentDate
-    if (!self.created_at) self.created_at = currentDate
+      self.total = moment(self.departure_date).diff(self.arrive_date, 'days') * self.night_price
 
-    self.total = moment(self.departure_date).diff(self.arrive_date, 'days') * self.night_price
-
-    return next()
+      return next()
+    })
+    .catch(err => next(err))
   },
   preUpdate(next) {
     const self = this
 
-    if (self._update.hasOwnProperty('store')) {
-      const err = new Error('Store is not updatable')
-      err.name = 'ValidationError'
-      return next(err)
-    }
-
-    if ((self._update.hasOwnProperty('arrive_date') || self._update.hasOwnProperty('departure_date') || 
-         self._update.hasOwnProperty('night_price')) && (!self._update.hasOwnProperty('arrive_date') ||
-        !self._update.hasOwnProperty('departure_date') || !self._update.hasOwnProperty('night_price'))
-    ) {
-      const err = new Error('arrive_date, departure_date and night_price should be together in case of update of any')
-      err.name = 'ValidationError'
-      return next(err)
-    }
 
     if (self._update.hasOwnProperty('arrive_date'))
       self._update.total = moment(self._update.departure_date).diff(self._update.arrive_date, 'days') * self._update.night_price
@@ -95,3 +79,87 @@ ReservationSchema.pre('findOneAndUpdate', ReservationSchema._middlewareFuncs.pre
 const Reservation = mongoose.model('Reservation', ReservationSchema)
 
 module.exports = Reservation
+
+function preSaveValidation(self) {
+  return new Promise((resolve, reject) => {
+    if (!self.isNew && self.isModified('store')) {
+      const err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+    
+    checkDatesInStore(self.arrive_date, self.departure_date, self.store)
+    .then(resolve)
+    .catch(reject)
+  })
+}
+
+function preUpdateValidation(self) {
+  return new Promise((resolve, reject) => {
+    if (self._update.hasOwnProperty('store')) {
+      const err = new Error('Store is not updatable')
+      err.name = 'ValidationError'
+      reject(err)
+    }
+
+    if ((self._update.hasOwnProperty('arrive_date') || self._update.hasOwnProperty('departure_date') || 
+         self._update.hasOwnProperty('night_price')) && (!self._update.hasOwnProperty('arrive_date') ||
+        !self._update.hasOwnProperty('departure_date') || !self._update.hasOwnProperty('night_price'))
+    ) {
+      const err = new Error('arrive_date, departure_date and night_price should be together in case of update of any')
+      err.name = 'ValidationError'
+      reject(err)
+    }   
+
+    checkDatesInStore(self._update.arrive_date, self._update.departure_date, 'unahil')
+    .then(resolve)
+    .catch(reject)
+  })
+}
+
+function checkDatesInStore(start, end, store) {
+  return new Promise((resolve, reject) => {
+    const theStore = Store.findOne({ slug: store }).exec()
+
+    if (!theStore.blocked_dates)
+      resolve()
+
+    const alreadyBooked = theStore.blocked_dates.find((dates) => {
+      const booked_start = moment(dates.start)
+      const booked_end   = moment(dates.start)
+      const this_start   = moment(start)
+      const this_end     = moment(end)
+      
+      if ( this_start.isSameOrAfter(booked_start) && this_start.isSameOrBefore(booked_end)
+        || this_end.isSameOrAfter(booked_start) && this_end.isSameOrBefore(booked_end)) 
+        return true 
+      else
+        return false
+    })
+ 
+    if (alreadyBooked)
+      reject('This date is already booked')
+    else
+      resolve()
+  })
+
+}
+
+function registerDatesInStore(_id, start, end, store) {
+  return new Promise((resolve, reject) => {
+    Store.findOneAndUpdate({ slug: store }, { 
+      $push: { 
+        blocked_dates: { 
+          start_date: start, 
+          end_date: end, 
+          motive: 'already_reserved', 
+          reservation_id: _id 
+        }
+      } 
+    }, { new: true }).exec()
+    .catch(reject)
+
+    resolve()
+  })
+}
+
