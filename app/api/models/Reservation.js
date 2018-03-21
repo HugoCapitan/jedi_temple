@@ -62,13 +62,17 @@ ReservationSchema._middlewareFuncs = {
   preUpdate(next) {
     const self = this
 
+    preUpdateValidation(self)
+    .then(() => updateDatesInStore(self._conditions.id, self._update.arriving_date, self._update.departure_date, 'unahil'))
+    .then(() => {
+      if (self._update.hasOwnProperty('arrive_date'))
+        self._update.total = moment(self._update.departure_date).diff(self._update.arrive_date, 'days') * self._update.night_price
 
-    if (self._update.hasOwnProperty('arrive_date'))
-      self._update.total = moment(self._update.departure_date).diff(self._update.arrive_date, 'days') * self._update.night_price
+      self._update.updated_at = new Date()
 
-    self._update.updated_at = new Date()
-
-    return next()
+      return next()
+    })
+    .catch(err => next(err))
   }
 }
 
@@ -88,7 +92,7 @@ function preSaveValidation(self) {
       reject(err)
     }
     
-    checkDatesInStore(self.arrive_date, self.departure_date, self.store)
+    checkDatesInStore(self._id, self.arrive_date, self.departure_date, self.store)
     .then(resolve)
     .catch(reject)
   })
@@ -111,13 +115,13 @@ function preUpdateValidation(self) {
       reject(err)
     }   
 
-    checkDatesInStore(self._update.arrive_date, self._update.departure_date, 'unahil')
+    checkDatesInStore(self._id, self._update.arrive_date, self._update.departure_date, 'unahil')
     .then(resolve)
     .catch(reject)
   })
 }
 
-function checkDatesInStore(start, end, store) {
+function checkDatesInStore(_id, start, end, store) {
   return new Promise((resolve, reject) => {
     const theStore = Store.findOne({ slug: store }).exec()
 
@@ -130,8 +134,9 @@ function checkDatesInStore(start, end, store) {
       const this_start   = moment(start)
       const this_end     = moment(end)
       
-      if ( this_start.isSameOrAfter(booked_start) && this_start.isSameOrBefore(booked_end)
-        || this_end.isSameOrAfter(booked_start) && this_end.isSameOrBefore(booked_end)) 
+      if ( this_start.isBetween(booked_start, booked_end, null, '[]')
+        || booked_start.isBetween(this_start, this_end, null, '[]'
+        && dates.reservation_id != _id ) 
         return true 
       else
         return false
@@ -142,7 +147,6 @@ function checkDatesInStore(start, end, store) {
     else
       resolve()
   })
-
 }
 
 function registerDatesInStore(_id, start, end, store) {
@@ -158,8 +162,19 @@ function registerDatesInStore(_id, start, end, store) {
       } 
     }, { new: true }).exec()
     .catch(reject)
+    .then(resolve)
+  })
+}
 
-    resolve()
+function updateDatesInStore(_id, start, end, store) {
+  return new Promise((resolve, reject) => {
+    if (!self.start) resolve()
+      
+    Store.findOneAndUpdate({ slug: store, 'blocked_dates.reservation_id': _id }, {
+      $set: { 'blocked_dates.$.start_date': start, 'blocked_dates.$.end_date': end }
+    }, { new: true }).exec()
+    .catch(reject)
+    .then(resolve)
   })
 }
 
