@@ -1,6 +1,8 @@
 [{
   "name": "unahil",
   "calendar": {
+    "long_stay_price": 700,
+    "short_stay_price": 950,
     "nearest_available_date": 7,
     "furthest_available_date": 120,
     "maximum_reservation": 45

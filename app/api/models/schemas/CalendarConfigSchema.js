@@ -4,6 +4,14 @@ const Schema = mongoose.Schema
 const { areMinMax } = require('../../utils/validators')
 
 module.exports = new Schema({
+  long_stay_price: {
+    type: Number,
+    required: true
+  },
+  short_stay_price: {
+    type: Number,
+    required: true
+  },
   // Number of days before date available
   nearest_available_date: {
     type: Number,
