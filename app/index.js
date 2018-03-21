@@ -103,20 +103,20 @@ module.exports = async server => {
   webRouter.use(flash())
 
   webRouter.get('/', ensureLoggedIn('/login'), (req, res) => {
-    // const apiAuthData = {
-    //   client_id: apiClientId,
-    //   client_secret: apiClientSecret,
-    //   audience: 'https://ventadmin.unahil.com',
-    //   grant_type: 'client_credentials',      
-    // }
-    // axios.post('https://hookahdev.auth0.com/oauth/token', apiAuthData, { 
-    //   headers: { 'content-type': 'application/json' } 
-    // }).then(axiosResponse => {
-    //   res.render('index', { authorization_token: axiosResponse.data.access_token })
-    // }).catch(err => {
-    //   res.status(500).send('Unable to get auth token')
-    // })
-    res.render('index', { authorization_token: 'caradebola' })
+    const apiAuthData = {
+      client_id: apiClientId,
+      client_secret: apiClientSecret,
+      audience: 'https://ventadmin.unahil.com',
+      grant_type: 'client_credentials',      
+    }
+    axios.post('https://hookahdev.auth0.com/oauth/token', apiAuthData, { 
+      headers: { 'content-type': 'application/json' } 
+    }).then(axiosResponse => {
+      res.render('index', { authorization_token: axiosResponse.data.access_token })
+    }).catch(err => {
+      res.status(500).send('Unable to get auth token')
+    })
+    // res.render('index', { authorization_token: 'caradebola' })
   })
 
   webRouter.post('/login', passport.authenticate('local', {

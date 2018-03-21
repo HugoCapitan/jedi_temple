@@ -53,7 +53,7 @@ module.exports = router => {
      
   }
   
-  // router.use(jwtCheck)
-  // router.use(sendUnauthorized)
-  // router.use(guard)
+  router.use(jwtCheck)
+  router.use(sendUnauthorized)
+  router.use(guard)
 }
