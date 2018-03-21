@@ -61,6 +61,7 @@ module.exports = async () => {
     const firstSaves = []
     for (const custom of instancedCustoms)   { firstSaves.push(custom.save()) }
     for (const product of instancedProducts) { firstSaves.push(product.save()) }
+    for (const store of stores)              { firstSaves.push(new Store(store).save()) }
     
     await Promise.all(firstSaves)
 
@@ -85,7 +86,6 @@ module.exports = async () => {
     for (const message of messages)          { saves.push(new Message(message).save()) }
     for (const order of orders)              { saves.push(new Order(order).save()) }
     for (const reservation of reservations)  { saves.push(new Reservation(reservation).save()) }
-    for (const store of stores)              { saves.push(new Store(store).save()) }
     for (const top of tops)                  { saves.push(new Top(top).save()) }
 
     saves.push( new Admin({ email: 'admin@unahil.com', password: 'theadminpassword' }).save() )
