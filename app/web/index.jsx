@@ -43,4 +43,5 @@ function initData () {
   store.dispatch(fetchCollection('orders'))
   store.dispatch(fetchCollection('tops'))
   store.dispatch(fetchCollection('messages'))
+  store.dispatch(fetchCollection('stores'))
 }
