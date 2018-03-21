@@ -135,7 +135,7 @@ function checkDatesInStore(_id, start, end, store) {
       const this_end     = moment(end)
       
       if ( this_start.isBetween(booked_start, booked_end, null, '[]')
-        || booked_start.isBetween(this_start, this_end, null, '[]'
+        || booked_start.isBetween(this_start, this_end, null, '[]')
         && dates.reservation_id != _id ) 
         return true 
       else
