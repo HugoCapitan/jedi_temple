@@ -30,15 +30,15 @@ module.exports = async server => {
   ? provess.env.NODE_AUTH0_CLIENT_SECRET
   : process.env.NODE_AUTH0_UNAHILVENTURES_CLIENT_SECRET
 
-  /**********************
-   *  GLOBAL MIDDLEWARE *
-   **********************/
+  /*********************
+   * GLOBAL MIDDLEWARE *
+   *********************/
   server.use(bodyParser.json())
   server.use(bodyParser.urlencoded({ extended: false }))
 
-  /*************
-   *  DATABASE *
-   *************/
+  /************
+   * DATABASE *
+   ************/
   mongoose.Promise = global.Promise
   mongoose.connect('mongodb://localhost/test', {
     useMongoClient: true
@@ -49,9 +49,9 @@ module.exports = async server => {
    ***************/
   server.use('/dist/', express.static(path.resolve(__dirname, 'dist')))
 
-  /*******
-   * WEB *
-   *******/
+  /**************
+   * WEB CONFIG *
+   **************/
   const webRouter = express.Router()
   server.set('view engine', 'ejs')
   server.set('views', path.resolve(__dirname, 'public'))
@@ -102,6 +102,9 @@ module.exports = async server => {
   webRouter.use(passport.session())
   webRouter.use(flash())
 
+  /*******
+   * APP *
+   *******/  
   webRouter.get('/', ensureLoggedIn('/login'), (req, res) => {
     const apiAuthData = {
       client_id: apiClientId,
