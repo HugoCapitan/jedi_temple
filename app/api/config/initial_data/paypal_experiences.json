@@ -1,0 +1,53 @@
+{
+  "unahil": {
+    "name": "unahil",
+    "temporary": false,
+    "flow_config": {
+      "landing_page_type": "Billing",
+      "bank_txn_pending_url": "https://unahil.com"
+    },
+    "input_fields": {
+      "allow_note": false,
+      "no_shipping": 1,
+      "address_override": 0
+    },
+    "presentation": {
+      "brand_name": "Unahil",
+      "locale_code": "MX"
+    }
+  },
+  "kampamocha": {
+    "name": "kampamocha",
+    "temporary": false,
+    "flow_config": {
+      "landing_page_type": "Billing",
+      "bank_txn_pending_url": "https://kampamocha.com"
+    },
+    "input_fields": {
+      "allow_note": false,
+      "no_shipping": 0,
+      "address_override": 1
+    },
+    "presentation": {
+      "brand_name": "Kampamocha",
+      "locale_code": "MX"
+    }
+  },
+  "tucha_designs": {
+    "name": "tucha_designs",
+    "temporary": false,
+    "flow_config": {
+      "landing_page_type": "Billing",
+      "bank_txn_pending_url": "https://tuchadesigns.com"
+    },
+    "input_fields": {
+      "allow_note": false,
+      "no_shipping": 0,
+      "address_override": 1
+    },
+    "presentation": {
+      "brand_name": "TuchaDesigns",
+      "locale_code": "MX"
+    }
+  }
+}
