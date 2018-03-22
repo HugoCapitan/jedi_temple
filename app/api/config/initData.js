@@ -1,16 +1,21 @@
 const axios = require('axios')
 
 const CustomField = require('../models/CustomField')
+const paypalCtrl = require('../controllers/paypalCtrl')
+
+const experiences = require('./initial_data/paypal_experiences')
 
 module.exports = async () => {
   try {
-    const PriceCustom   = await CustomField.findOne({ slug: 'price' }).exec()
-    const HMModelCustom = await CustomField.findOne({ slug: 'hmmodel' }).exec()
-    const MaterialCustom = await CustomField.findOne({ slug: 'material' }).exec()
+    const PriceCustom   = await CustomField.findOne({ slug: 'kampamocha__price' }).exec()
+    const HMModelCustom = await CustomField.findOne({ slug: 'kampamocha__hmmodel' }).exec()
+    const MaterialCustom = await CustomField.findOne({ slug: 'kampamocha__material' }).exec()
     
     if (!PriceCustom) await savePriceCustom()
     if (!HMModelCustom) await saveHMModelCustom()
     if (!MaterialCustom) await saveMaterialCustom()
+
+    await cleanExperiences()
     
   } catch (e) {
     console.log('ERROR ON DATA INIT: ', e)
@@ -43,6 +48,7 @@ async function savePriceCustom () {
   const PriceCustom = await new CustomField({
     name: 'Price',
     type: 'number',
+    store: 'kampamocha',
     show: false,
     min: 'auto',
     max: 'auto',
@@ -50,4 +56,18 @@ async function savePriceCustom () {
     unit_place: 'before'    
   }).save()
   .catch(e => { throw e })
+}
+
+async function cleanExperiences() {
+  try {
+    paypalCtrl.removeExperience('unahil')
+    paypalCtrl.removeExperience('kampamocha')
+    paypalCtrl.removeExperience('tucha_designs')
+
+    paypalCtrl.createExperience(experiences.unahil)
+    paypalCtrl.createExperience(experiences.kampamocha)
+    paypalCtrl.createExperience(experiences.tucha_designs)
+  } catch(e) {
+    console.log(e)
+  }
 }
