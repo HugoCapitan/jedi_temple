@@ -8,18 +8,6 @@
   "unit": "grams",
   "unit_place": "after"
 }, {
-  "name": "Material",
-  "show": true, 
-  "store": "kampamocha",
-  "type": "string",
-  "values": [{
-    "value": "Gold"
-    }, {
-    "value": "Silver"
-    },  {
-    "value": "Rose Gold"
-  }]
-}, {
   "name": "Number CustomField",
   "show": true,
   "store": "tuchadesigns",
