@@ -19,7 +19,14 @@ async function makeReservation(req, res) {
     const thisStore = await Store.findOne({slug: 'unahil'}).exec()
     const newReservation = await new Reservation(formatReservation(req.body)).save()
 
-    const formattedPayment = formatPayment(req.body, newReservation)
+    const formattedPayment = await formatPayment(req.body, newReservation)
+
+    if (req.body.payment_method === 'credit_card') {
+      res.status(200).send('hold it bro')
+    } else if (req.body.payment_method === 'paypal') {
+      const newPayment = await paypalCtrl.createPayment(formatPayment)
+      res.status(200).send(newPayment)
+    }
 
   } catch (e) {
     console.log(e)
@@ -79,7 +86,7 @@ async function formatPayment(form, reservation) {
     }
   }
 
-  return basicPayment
+  return JSON.stringify(basicPayment)
 }
 
 function formatReservation(form, store) {
