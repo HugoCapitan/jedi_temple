@@ -41,8 +41,6 @@ module.exports = router => {
     const scope  = req.user.scope
     const method = req.method
     const path   = req.path.split('/')[1]
-
-    console.log('path')
     
     if (scope === 'admin' || generalPerms[method].includes(path) || 
        (scope === 'store' && storePerms[method].includes(path)) ||
@@ -50,9 +48,18 @@ module.exports = router => {
       next()
     else
       res.status(403).send({message: 'Forbidden'})
-     
+  }
+
+  const validateOptions = (req, res, next) => {
+    console.log(req.method)
+
+    if (req.method === 'OPTIONS')
+      res.status(200).send('all good boi')
+
+    next()
   }
   
+  router.use(validateOptions)
   router.use(jwtCheck)
   router.use(sendUnauthorized)
   router.use(guard)
