@@ -51,8 +51,6 @@ module.exports = router => {
   }
 
   const validateOptions = (req, res, next) => {
-    console.log(req.method)
-
     if (req.method === 'OPTIONS')
       res.status(200).send('all good boi')
 
