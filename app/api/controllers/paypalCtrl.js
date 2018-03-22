@@ -68,7 +68,8 @@ async function createPaymentEndpoint(req, res) {
 async function getAuthToken() {
   const clientId = process.env.NODE_PAYPAL_CLIENT_ID
   const clientSecret = process.env.NODE_PAYPAL_CLIENT_SECRET
-  const tokenResponse = await axios.post(tokenUrl, {
+
+  const tokenResponse = await axios.post(tokenUrl, {}, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
@@ -93,7 +94,8 @@ async function getAuthTokenEndpoint(req, res) {
 
 async function getRemoteExperiences() {
   try {
-    const token    = await this.getAuthToken()
+    const token    = await getAuthToken()
+    console.log(token)
     const response = await axios.get(experienceUrl, {
       headers: {
         'Content-Type': 'application/json',
@@ -108,7 +110,7 @@ async function getRemoteExperiences() {
 }
 
 async function getRemoteExperiencesEndpoint(req, res) {
-  const experiences = await this.getRemoteExperiences()
+  const experiences = await getRemoteExperiences()
   .catch(e => res.status(500).send(e))
 
   res.status(200).send(experiences)
