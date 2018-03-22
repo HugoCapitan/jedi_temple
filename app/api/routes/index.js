@@ -10,6 +10,7 @@ const reservationRouter = require('./reservation')
 const storeRouter       = require('./store')
 const textRouter        = require('./text')
 const topRouter         = require('./top')
+const unahilRouter      = require('./unahil')
 
 module.exports = app => {
   clientRouter(app)
@@ -24,4 +25,5 @@ module.exports = app => {
   storeRouter(app)
   textRouter(app)
   topRouter(app)
+  unahilRouter(app)
 }

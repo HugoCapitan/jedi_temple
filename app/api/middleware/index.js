@@ -33,9 +33,9 @@ module.exports = router => {
       'PUT':  ['orders']
     }
     const unahilPerms = {
-      'GET':  ['reservations'],
-      'POST': ['reservations'],
-      'PUT':  ['reservations']
+      'GET':  ['reservations', 'unahil'],
+      'POST': ['reservations', 'unahil'],
+      'PUT':  ['reservations', 'unahil']
     }
 
     const scope  = req.user.scope
