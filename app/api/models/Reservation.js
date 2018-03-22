@@ -16,6 +16,11 @@ const ReservationSchema = new Schema({
     type: Number,
     required: true
   },
+  payment_method: {
+    type: String,
+    required: true
+  },
+  payment_id: String,
   arrive_date: {
     type: Date,
     required: true,
