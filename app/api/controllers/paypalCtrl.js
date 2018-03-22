@@ -12,14 +12,14 @@ module.exports = {
   getAuthToken,
   getAuthTokenEndpoint,
   getRemoteExperiences,
-  getRemoteExperiencesEndpoint
+  getRemoteExperiencesEndpoint,
+  removeExperience
 }
 
-async function createExperience(requestBody) {
+async function createExperience(experienceBody) {
   try {
-    const token = await this.getAuthToken()
-    const experienceResponse = await axios.post(experienceUrl, {
-      data: requestBody,
+    const token = await getAuthToken()
+    const experienceResponse = await axios.post(experienceUrl, experienceBody, {
       headers: {
         'Content-Type': 'application/JSON',
         'Authorization': token
@@ -95,7 +95,6 @@ async function getAuthTokenEndpoint(req, res) {
 async function getRemoteExperiences() {
   try {
     const token    = await getAuthToken()
-    console.log(token)
     const response = await axios.get(experienceUrl, {
       headers: {
         'Content-Type': 'application/json',
@@ -114,6 +113,30 @@ async function getRemoteExperiencesEndpoint(req, res) {
   .catch(e => res.status(500).send(e))
 
   res.status(200).send(experiences)
+}
+
+async function removeExperience(name) {
+  try {
+    const token = await getAuthToken()
+    const experiences = await getRemoteExperiences()
+
+    const expToRemove = experiences.find(exp => exp.name === name)
+
+    if (expToRemove) {
+      const removeRes = await axios.delete(`${experienceUrl}/${idToRemove.id}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      })
+
+      return removeRes.data
+    } else {
+      return 'nothing to remove'
+    }
+  } catch(e) {
+    throw handleAxiosError(e)
+  }
 }
 
 function handleAxiosError(e) {
