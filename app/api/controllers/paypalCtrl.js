@@ -33,17 +33,16 @@ async function createExperience(experienceBody) {
 }
 
 async function createExperienceEndpoint(req, res) {
-  const experience = this.createExperience(req.body)
+  const experience = createExperience(req.body)
   .catch(e => { res.status(500).send(e) })
   
   res.status(200).send(experience)
 }
 
-async function createPayment(requestBody) {
+async function createPayment(paymentBody) {
   try {
-    const token = await this.getAuthToken()
-    const createResponse = await axios.post(paymentUrl, {
-      data: requestBody,
+    const token = await getAuthToken()
+    const createResponse = await axios.post(paymentUrl, paymentBody,{
       headers: {
         'Content-Type': 'application/json',
         'Authorization': token
@@ -57,7 +56,7 @@ async function createPayment(requestBody) {
 }
 
 async function createPaymentEndpoint(req, res) {
-  const payment = await this.createPayment(req.body)
+  const payment = await createPayment(req.body)
   .catch(e => {
     res.status(500).send(e)
   })
@@ -86,7 +85,7 @@ async function getAuthToken() {
 }
 
 async function getAuthTokenEndpoint(req, res) {
-  const token = await this.getAuthToken()
+  const token = await getAuthToken()
   .catch(e => { res.status(500).send(e) })
 
   res.status(200).send(token)
