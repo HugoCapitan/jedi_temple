@@ -143,7 +143,8 @@ module.exports = async server => {
 
   if (environment === 'development') {
     await apiCleanData()
-    await apiMockData() 
+    await apiInitData()
+    await apiMockData()
   }
   
   if (environment === 'production') 
