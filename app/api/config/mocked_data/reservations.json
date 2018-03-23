@@ -1,18 +1,21 @@
 [{
   "email": "some@mail.com",
   "plan": "short",
+  "payment_method": "paypal",
   "status": 1,
   "store": "unahil",
   "night_price": 499.99
 }, {
   "email": "some@mail.com",
   "plan": "short",
+  "payment_method": "paypal",
   "status": 1,
   "store": "unahil",
   "night_price": 499.99
 }, {
   "email": "some@mail.com",
   "plan": "short",
+  "payment_method": "paypal",
   "status": 1,
   "store": "unahil",
   "night_price": 499.99

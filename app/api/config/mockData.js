@@ -15,33 +15,15 @@ const Top         = require('../models/Top')
 
 module.exports = async () => {
   try {
-    const clients = JSON.parse(fs.readFileSync(
-      path.resolve(__dirname, 'mocked_data/clients.json'), { encoding: 'utf-8' }
-    ))
-    const customs = JSON.parse(fs.readFileSync(
-      path.resolve(__dirname, 'mocked_data/customs.json'), { encoding: 'utf-8' }
-    ))
-    const handmades = JSON.parse(fs.readFileSync(
-      path.resolve(__dirname, 'mocked_data/handmades.json'), { encoding: 'utf-8' }
-    ))
-    const messages = JSON.parse(fs.readFileSync(
-      path.resolve(__dirname, 'mocked_data/messages.json'), { encoding: 'utf-8' }
-    ))
-    const orders = JSON.parse(fs.readFileSync(
-      path.resolve(__dirname, 'mocked_data/orders.json'), { encoding: 'utf-8' }
-    ))
-    const products = JSON.parse(fs.readFileSync(
-      path.resolve(__dirname, 'mocked_data/products.json'), { encoding: 'utf-8' }
-    ))
-    const halfReservations = JSON.parse(fs.readFileSync(
-      path.resolve(__dirname, 'mocked_data/reservations.json'), { encoding: 'utf-8' }
-    ))
-    const stores = JSON.parse(fs.readFileSync(
-      path.resolve(__dirname, 'mocked_data/stores.json'), { encoding: 'utf-8' }
-    ))
-    const tops = JSON.parse(fs.readFileSync(
-      path.resolve(__dirname, 'mocked_data/tops.json'), { encoding: 'utf-8' }
-    ))
+    const clients = require('./mocked_data/clients')
+    const customs = require('./mocked_data/customs')
+    const handmades = require('./mocked_data/handmades')
+    const messages = require('./mocked_data/messages')
+    const orders = require('./mocked_data/orders')
+    const products = require('./mocked_data/products')
+    const halfReservations = require('./mocked_data/reservations')
+    const stores = require('./mocked_data/stores')
+    const tops = require('./mocked_data/tops')
 
     const instancedCustoms = customs.map(custom => new CustomField(custom))
     for (const product of products) {
