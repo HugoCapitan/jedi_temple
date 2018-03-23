@@ -53,8 +53,8 @@ module.exports = router => {
   const validateOptions = (req, res, next) => {
     if (req.method === 'OPTIONS')
       res.status(200).send('all good boi')
-
-    next()
+    else
+      next()
   }
   
   router.use(validateOptions)
