@@ -17,19 +17,20 @@ async function makeReservation(req, res) {
   */
   try {
     const thisStore = await Store.findOne({slug: 'unahil'}).exec()
-    const newReservation = await new Reservation(formatReservation(req.body)).save()
+    const newReservation = await new Reservation(formatReservation(req.body, thisStore)).save()
 
     const formattedPayment = await formatPayment(req.body, newReservation)
 
     if (req.body.payment_method === 'credit_card') {
       res.status(200).send('hold it bro')
     } else if (req.body.payment_method === 'paypal') {
-      const newPayment = await paypalCtrl.createPayment(formatPayment)
+      const newPayment = await paypalCtrl.createPayment(formattedPayment)
       res.status(200).send(newPayment)
     }
 
   } catch (e) {
     console.log(e)
+    if (e.response && e.response.data.details) console.log(e.response.data.details)
     res.status(500).send('unexpected error')
   }
 
@@ -53,7 +54,7 @@ async function formatPayment(form, reservation) {
     },
     transactions: [{
       amount: {
-        total,
+        total: reservation.total,
         currency: 'USD',
         details: {
           subtotal: reservation.total
@@ -92,7 +93,7 @@ async function formatPayment(form, reservation) {
 function formatReservation(form, store) {
   return {
     email: form.email,
-    status: 'awaiting for payment',
+    status: 'Awaiting Payment',
     payment_method: form.payment_method,
     arrive_date: form.arrive_date,
     departure_date: form.departure_date,
@@ -103,10 +104,10 @@ function formatReservation(form, store) {
       address_line_2: form.address_line_2,
       city: form.address_city,
       state: form.address_state,
-      country: from.address_country,
+      country: form.address_country,
       zip: form.address_zip
     },
-    night_price: form.nights > 4 
+    night_price: form.nights > 14 
       ? store.calendar.long_stay_price
       : store.calendar.short_stay_price,
     store: 'unahil'
