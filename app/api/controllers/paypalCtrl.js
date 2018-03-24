@@ -42,7 +42,7 @@ async function createExperienceEndpoint(req, res) {
 async function createPayment(paymentBody) {
   try {
     const token = await getAuthToken()
-    const createResponse = await axios.post(paymentUrl, paymentBody,{
+    const createResponse = await axios.post(paymentUrl, paymentBody, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': token
