@@ -6,6 +6,10 @@ const AddressSchema = require('./schemas/AddressSchema')
 const Store         = require('./Store')
 const validate      = require('../utils/validators')
 
+const statuses = [
+  'Pending', 'Awaiting Payment', 'Payed', 'Refunded', 'Verification Required', 'Cancelled', 'Ongoing', 'Finished'
+]
+
 const ReservationSchema = new Schema({
   email: {
     type: String,
@@ -13,7 +17,8 @@ const ReservationSchema = new Schema({
     validate: validate.isEmail
   },
   status: {
-    type: Number,
+    type: String,
+    enum: statuses,
     required: true
   },
   payment_method: {
