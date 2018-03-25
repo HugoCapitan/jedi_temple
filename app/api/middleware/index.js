@@ -51,6 +51,10 @@ module.exports = router => {
   }
 
   const validateOptions = (req, res, next) => {
+    const pathArray = req.path.split('/')
+    if (pathArray.find(pp => pp === 'execute_payment'))
+      req.headers.authorization = 'Bearer ' + pathArray.pop()
+
     if (req.method === 'OPTIONS')
       res.status(200).send('all good boi')
     else
