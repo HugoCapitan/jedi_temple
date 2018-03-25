@@ -20,7 +20,7 @@ async function executePayment(req, res) {
     if (executedPayment.state === 'approved') {
       thisReservation.status = 'Payed'
       thisReservation.save()
-      res.status(200).send({ message: 'All done babe', reservation: thisReservation })
+      res.status(200).redirect('http://localhost:8080/payment_success')
     } else {
       res.status(500).send(executedPayment)
     }
