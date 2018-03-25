@@ -9,6 +9,7 @@ module.exports = {
   createExperienceEndpoint,
   createPayment,
   createPaymentEndpoint,
+  executePayment,
   getAuthToken,
   getAuthTokenEndpoint,
   getRemoteExperiences,
@@ -62,6 +63,26 @@ async function createPaymentEndpoint(req, res) {
   })
 
   res.status(200).send(payment)
+}
+
+async function executePayment(paymentId, payerId) {
+  console.log('payerID', payerId)
+  console.log('paymentId', paymentId)
+  try {
+    const token = await getAuthToken()  
+    const executeResponse = await axios.post(`${paymentUrl}/${paymentId}/execute`, {
+      payer_id: payerId
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token
+      }
+    })
+
+    return executeResponse.data
+  } catch (e) {
+    throw handleAxiosError(e)
+  }
 }
 
 async function getAuthToken() {
