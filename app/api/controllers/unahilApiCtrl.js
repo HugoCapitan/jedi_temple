@@ -3,15 +3,37 @@ const Store = require('../models/Store')
 const paypalCtrl = require('./paypalCtrl')
 
 module.exports = {
-  makeReservation,
-  confirmReservation,
-  cancelReservation
+  cancelPayment,
+  executePayment,
+  makeReservation
+}
+
+async function cancelPayment(req, res) {
+
+}
+
+async function executePayment(req, res) {
+  try {
+    const thisReservation = await Reservation.findOne({ payment_id: req.params.paymentID }).exec()
+    const executedPayment = await paypalCtrl.executePayment(req.query.paymentId, req.query.PayerID)
+
+    if (executedPayment.state === 'approved') {
+      thisReservation.status = 'Payed'
+      thisReservation.save()
+      res.status(200).send({ message: 'All done babe', reservation: thisReservation })
+    } else {
+      res.status(500).send(executedPayment)
+    }
+
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 async function makeReservation(req, res) {
   /* 1. Create a new reservation, without paymentId for now
    * 2. Perform the payment
-   *    a. In case of success add the paymentId to the reservation
+   *    a. For a paypal payment, respond with the redirect url
    *    b. In case of failure delete the reservation just created
    * 3. Return the answer to the browser
   */
@@ -19,13 +41,17 @@ async function makeReservation(req, res) {
     const thisStore = await Store.findOne({slug: 'unahil'}).exec()
     const newReservation = await new Reservation(formatReservation(req.body, thisStore)).save()
 
-    const formattedPayment = await formatPayment(req.body, newReservation)
+    const formattedPayment = await formatPayment(req.body, newReservation, req.headers.authorization)
 
     if (req.body.payment_method === 'credit_card') {
       res.status(200).send('hold it bro')
     } else if (req.body.payment_method === 'paypal') {
       const newPayment = await paypalCtrl.createPayment(formattedPayment)
-      res.status(200).send(newPayment)
+      newReservation.payment_id = newPayment.id
+      newReservation.save()
+
+      const redirection = newPayment.links.find(l => l.rel === 'approval_url' && l.method === 'REDIRECT')
+      res.status(200).send({ redirection: redirection.href })
     }
 
   } catch (e) {
@@ -36,17 +62,17 @@ async function makeReservation(req, res) {
 
 }
 
-async function confirmReservation(req, res) {
-
-}
-
+////////////////////////
 async function cancelReservation(req, res) {
 
 }
 
-////////////////////////
+async function confirmReservation(req, res) {
 
-async function formatPayment(form, reservation) {
+}
+
+async function formatPayment(form, reservation, token) {
+  const environment = process.env.NODE_ENV
   const basicPayment = {
     intent: 'sale',
     payer: {
@@ -60,7 +86,7 @@ async function formatPayment(form, reservation) {
           subtotal: reservation.total
         }
       },
-      description: `${reservation.nights} in The House at Bacalar for USD $${reservation.night_price} each.`
+      description: `${form.nights} nights in The House at Bacalar for USD $${reservation.night_price} each.`
     }]
   }
 
@@ -81,9 +107,12 @@ async function formatPayment(form, reservation) {
     const expProfile = experiences.find(xp => xp.name === 'unahil')
 
     basicPayment.experience_profile_id = expProfile.id
-    basicPayment.redirect_urls = {
-      return_url: '',
-      cancel_url: ''
+    basicPayment.redirect_urls = environment === 'production' ? {
+      return_url: 'https://admin.unahil.com/api/unahil/execute_payment/',
+      cancel_url: 'https://admin.unahil.com/api/unahil/cancel_payment/'
+    } : {
+      return_url: `http://localhost:8000/api/unahil/execute_payment/${token.substring(7)}`,
+      cancel_url: `http://localhost:8000/api/unahil/cancel_payment/${token.substring(7)}`
     }
   }
 
