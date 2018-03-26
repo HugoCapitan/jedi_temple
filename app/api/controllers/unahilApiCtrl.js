@@ -5,6 +5,7 @@ const paypalCtrl = require('./paypalCtrl')
 module.exports = {
   cancelPayment,
   executePayment,
+  getCalendarInfo,
   makeReservation
 }
 
@@ -28,6 +29,16 @@ async function executePayment(req, res) {
   } catch (e) {
     console.log(e)
   }
+}
+
+async function getCalendarInfo(req, res) {
+  try {
+    const unahilStore = await Store.findOne({slug: 'unahil'}).exec()
+    res.status(200).json(unahilStore)
+  } catch(e) {
+    res.send(500).send('Unexpected Error')
+  }
+  
 }
 
 async function makeReservation(req, res) {
