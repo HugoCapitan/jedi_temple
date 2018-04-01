@@ -49,19 +49,19 @@ async function makeReservation(req, res) {
    * 3. Return the answer to the browser
   */
   try {
-    const thisStore = await Store.findOne({slug: 'unahil'}).exec()
-    const newReservation = await new Reservation(formatReservation(req.body, thisStore)).save()
-
-    const formattedPayment = await formatPayment(req.body, newReservation, req.headers.authorization)
+    const thisStore      = await Store.findOne({slug: 'unahil'}).exec()
+    const newReservation = await new Reservation( formatReservation(req.body, thisStore) ).save()
+    const paymentToSend  = await formatPayment(req.body, newReservation, req.headers.authorization)
 
     if (req.body.payment_method === 'credit_card') {
       res.status(200).send('hold it bro')
     } else if (req.body.payment_method === 'paypal') {
-      const newPayment = await paypalCtrl.createPayment(formattedPayment)
-      newReservation.payment_id = newPayment.id
+      const reservationPayment = await paypalCtrl.createPayment(paymentToSend)
+      
+      newReservation.payment_id = reservationPayment.id
       newReservation.save()
 
-      const redirection = newPayment.links.find(l => l.rel === 'approval_url' && l.method === 'REDIRECT')
+      const redirection = reservationPayment.links.find(l => l.rel === 'approval_url' && l.method === 'REDIRECT')
       res.status(200).send({ redirection: redirection.href })
     }
 
