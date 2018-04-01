@@ -1,3 +1,4 @@
+const moment = require('moment')
 const Reservation = require('../models/Reservation')
 const Store = require('../models/Store')
 const paypalCtrl = require('./paypalCtrl')
@@ -5,7 +6,7 @@ const paypalCtrl = require('./paypalCtrl')
 module.exports = {
   cancelPayment,
   executePayment,
-  getCalendarInfo,
+  getCalendar,
   makeReservation
 }
 
@@ -21,7 +22,11 @@ async function executePayment(req, res) {
     if (executedPayment.state === 'approved') {
       thisReservation.status = 'Payed'
       thisReservation.save()
-      res.status(200).redirect('http://localhost:8080/payment_success')
+      res.status(200).redirect('http://localhost:8080/payment_success/'
+                             + '?arriving=' + moment(thisReservation.arrive_date).valueOf()
+                             + '&departure=' + moment(thisReservation.departure_date).valueOf()
+                             + '&night=' + thisReservation.night_price
+                             + '&total=' + thisReservation.total)
     } else {
       res.status(500).send(executedPayment)
     }
@@ -31,7 +36,7 @@ async function executePayment(req, res) {
   }
 }
 
-async function getCalendarInfo(req, res) {
+async function getCalendar(req, res) {
   try {
     const unahilStore = await Store.findOne({slug: 'unahil'}).exec()
     res.status(200).json(unahilStore)
@@ -57,7 +62,7 @@ async function makeReservation(req, res) {
       res.status(200).send('hold it bro')
     } else if (req.body.payment_method === 'paypal') {
       const reservationPayment = await paypalCtrl.createPayment(paymentToSend)
-      
+
       newReservation.payment_id = reservationPayment.id
       newReservation.save()
 
