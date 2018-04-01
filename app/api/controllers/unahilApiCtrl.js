@@ -26,7 +26,8 @@ async function executePayment(req, res) {
                              + '?arriving=' + moment(thisReservation.arrive_date).valueOf()
                              + '&departure=' + moment(thisReservation.departure_date).valueOf()
                              + '&night=' + thisReservation.night_price
-                             + '&total=' + thisReservation.total)
+                             + '&total=' + thisReservation.total
+                             + '&email=' + thisReservation.email)
     } else {
       res.status(500).send(executedPayment)
     }
