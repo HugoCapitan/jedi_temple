@@ -28,9 +28,9 @@ module.exports = router => {
       'DELETE': ['clients']
     }
     const storePerms = {
-      'GET':  ['custom_fields', 'hm_products', 'orders', 'products'],
-      'POST': ['orders'],
-      'PUT':  ['orders']
+      'GET':  ['custom_fields', 'hm_products', 'orders', 'products', 'kampamocha'],
+      'POST': ['orders', 'kampamocha'],
+      'PUT':  ['orders', 'kampamocha']
     }
     const unahilPerms = {
       'GET':  ['reservations', 'unahil'],
