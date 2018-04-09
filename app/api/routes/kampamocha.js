@@ -1,5 +1,5 @@
 const kampamochaApiCtrl = require('../controllers/kampamochaApiCtrl')
 
-module.exports = roter => {
-  server.get('/kampamocha/products', kampamochaApiCtrl.getProducts)
+module.exports = router => {
+  router.get('/kampamocha/products/', kampamochaApiCtrl.getProducts)
 }
