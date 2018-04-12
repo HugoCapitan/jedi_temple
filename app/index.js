@@ -47,7 +47,7 @@ module.exports = async server => {
   /***************
    * STATICFILES *
    ***************/
-  server.use('/dist/', express.static(path.resolve(__dirname, 'dist')))
+  server.use('/dist/', express.static(__dirname +  '/../dist'))
 
   /**************
    * WEB CONFIG *
