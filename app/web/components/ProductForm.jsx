@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import FlatButton from 'material-ui/FlatButton'
+import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 
 import ProductCustomsForm from './ProductCustomsForm'
@@ -67,6 +68,36 @@ class ProductForm extends React.Component {
               rows={5}
               value={this.state.description}
             />
+            <RaisedButton
+              className={`${formStyles['image-input']} ${formStyles['half-input']}`}
+              containerElement='label' // <-- Just add me!
+              label='Add Image'>
+                <input type="file" />
+            </RaisedButton>
+            <RaisedButton
+              className={`${formStyles['image-input']} ${formStyles['half-input']}`}
+              containerElement='label' // <-- Just add me!
+              label='Add Image'>
+                <input type="file" />
+            </RaisedButton>
+            <RaisedButton
+              className={`${formStyles['image-input']} ${formStyles['half-input']}`}
+              containerElement='label' // <-- Just add me!
+              label='Add Image'>
+                <input type="file" />
+            </RaisedButton>
+            <RaisedButton
+              className={`${formStyles['image-input']} ${formStyles['half-input']}`}
+              containerElement='label' // <-- Just add me!
+              label='Add Image'>
+                <input type="file" />
+            </RaisedButton>
+            <RaisedButton
+              className={`${formStyles['image-input']} ${formStyles['half-input']}`}
+              containerElement='label' // <-- Just add me!
+              label='Add Image'>
+                <input type="file" />
+            </RaisedButton>
           </div>
           <div className={gridStyles['half-column']}>
             <ProductCustomsForm 
