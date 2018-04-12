@@ -1,25 +1,81 @@
 [{
-  "name": "Some product",
+  "name": "Arracadas Doradas 1",
   "stock": "20",
   "store": "kampamocha",
   "price": 599.99,
   "description": "Some product description",
   "images": [{
-    "url": "someurl.com/image.png",
-    "x": "50%",
-    "y": "2px"
+    "url": "dist/images/kampamocha/products/arracadas_doradas_1/arracadas_doradas_1_0.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/arracadas_doradas_1/arracadas_doradas_1_1.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/arracadas_doradas_1/arracadas_doradas_1_2.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/arracadas_doradas_1/arracadas_doradas_1_3.jpg",
+    "x": "0%",
+    "y": "0%"
   }],
   "customs": []
 }, {
-  "name": "Another product",
+  "name": "Collar Redondo 1",
   "stock": "20",
   "store": "kampamocha",
   "price": 599.99,
   "description": "Some product description",
   "images": [{
-    "url": "someurl.com/image.png",
-    "x": "50%",
-    "y": "2px"
+    "url": "dist/images/kampamocha/products/collar_redondo_1/collar_redondo_1_0.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/collar_redondo_1/collar_redondo_1_1.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/collar_redondo_1/collar_redondo_1_2.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/collar_redondo_1/collar_redondo_1_3.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/collar_redondo_1/collar_redondo_1_4.jpg",
+    "x": "0%",
+    "y": "0%"
+  }],
+  "customs": []
+}, {
+  "name": "Collar Sandalias",
+  "stock": "20",
+  "store": "kampamocha",
+  "price": 599.99,
+  "description": "Some product description",
+  "images": [{
+    "url": "dist/images/kampamocha/products/collar_sandalias/collar_sandalias_0.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/collar_sandalias/collar_sandalias_1.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/collar_sandalias/collar_sandalias_2.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/collar_sandalias/collar_sandalias_3.jpg",
+    "x": "0%",
+    "y": "0%"
+  }, {
+    "url": "dist/images/kampamocha/products/collar_sandalias/collar_sandalias_4.jpg",
+    "x": "0%",
+    "y": "0%"
   }],
   "customs": []
 }, {
