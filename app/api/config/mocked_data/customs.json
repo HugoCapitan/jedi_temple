@@ -1,12 +1,26 @@
 [{
   "name": "Weight",
   "show": true,
+  "filter": true,
   "store": "kampamocha",
   "type": "number",
   "min": "auto",
   "max": "500",
   "unit": "grams",
   "unit_place": "after"
+}, {
+  "name": "Stones",
+  "show": true,
+  "filter": true,
+  "store": "kampamocha",
+  "type": "string",
+  "values": [{
+    "value": "Diamond" 
+  }, {
+    "value": "Ruby" 
+  }, {
+    "value": "Emmerald"
+  }]
 }, {
   "name": "Number CustomField",
   "show": true,
@@ -18,7 +32,8 @@
   "unit_place": "after"
 }, {
   "name": "String CustomField",
-  "show": true, 
+  "show": true,
+  "filter": true,
   "store": "tuchadesigns",
   "type": "string",
   "values": [{

@@ -2,7 +2,7 @@
   "name": "Arracadas Doradas 1",
   "stock": "20",
   "store": "kampamocha",
-  "price": 599.99,
+  "price": 999.99,
   "description": "Some product description",
   "images": [{
     "url": "dist/images/kampamocha/products/arracadas_doradas_1/arracadas_doradas_1_0.jpg",
@@ -23,11 +23,11 @@
   }],
   "customs": []
 }, {
-  "name": "Collar Redondo 1",
+  "name": "Collar De Oro Luna Menguante",
   "stock": "20",
   "store": "kampamocha",
   "price": 599.99,
-  "description": "Some product description",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur libero perferendis doloremque, repellat rerum vero obcaecati sint vel mollitia alias! Quia totam voluptates neque perferendis dicta voluptatum quis cupiditate officia!",
   "images": [{
     "url": "dist/images/kampamocha/products/collar_redondo_1/collar_redondo_1_0.jpg",
     "x": "0%",
@@ -54,7 +54,7 @@
   "name": "Collar Sandalias",
   "stock": "20",
   "store": "kampamocha",
-  "price": 599.99,
+  "price": 1399.99,
   "description": "Some product description",
   "images": [{
     "url": "dist/images/kampamocha/products/collar_sandalias/collar_sandalias_0.jpg",

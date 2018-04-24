@@ -41,8 +41,6 @@ module.exports = router => {
     const scope  = req.user.scope
     const method = req.method
     const path   = req.path.split('/')[1]
-
-    console.log(scope)
     
     if (scope === 'admin' || generalPerms[method].includes(path) || 
        (scope === 'stores' && storePerms[method].includes(path)) ||

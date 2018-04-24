@@ -39,7 +39,8 @@ async function saveMaterialCustom() {
     type: 'string',
     store: 'kampamocha',
     values: [{ value: '24K Gold' }, { value: '14K Gold' }],
-    show: true
+    show: true,
+    filter: true
   }).save()
   .catch(e => { throw e })
 }
@@ -50,6 +51,7 @@ async function savePriceCustom () {
     type: 'number',
     store: 'kampamocha',
     show: false,
+    filter: true,
     min: 'auto',
     max: 'auto',
     unit: 'US$ ',
